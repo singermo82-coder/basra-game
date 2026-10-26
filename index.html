@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 باصرة - اونلاين</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase v9 Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(180deg, #2C1810 0%, #1a0f08 100%);
+            color: #F8FAFC;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.5);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,193,7,0.4);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #FFC107;
+            text-shadow: 0 0 20px rgba(255,193,7,0.5);
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 10px 25px;
+            background: rgba(76,175,80,0.2);
+            border: 2px solid #4CAF50;
+            border-radius: 25px;
+            color: #4CAF50;
+            font-weight: 700;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .status.offline {
+            background: rgba(244,67,54,0.2);
+            border-color: #F44336;
+            color: #F44336;
+        }
+
+        .setup-screen {
+            background: rgba(0,0,0,0.7);
+            padding: 50px;
+            border-radius: 25px;
+            border: 3px solid rgba(255,193,7,0.4);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .setup-screen h2 {
+            color: #FFC107;
+            margin-bottom: 35px;
+            font-size: 2.2em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            color: #FFC107;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2em;
+            border: 3px solid rgba(255,193,7,0.4);
+            border-radius: 15px;
+            background: rgba(0,0,0,0.5);
+            color: #F8FAFC;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: 0 0 25px rgba(255,193,7,0.4);
+        }
+
+        .btn {
+            padding: 18px 50px;
+            font-size: 1.3em;
+            font-weight: 800;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+            margin: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFC107, #FF9800);
+            color: #1a0f08;
+            box-shadow: 0 5px 20px rgba(255,193,7,0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255,193,7,0.7);
+        }
+
+        .game-board {
+            display: none;
+            width: 100%;
+        }
+
+        .game-board.active { display: block; }
+
+        .game-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            background: rgba(0,0,0,0.7);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 3px solid rgba(255,193,7,0.4);
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .info-card h3 {
+            color: #FFC107;
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 1.5em;
+            font-weight: 800;
+        }
+
+        .players-area {
+            background: rgba(0,0,0,0.5);
+            padding: 25px;
+            border-radius: 18px;
+            border: 3px solid rgba(255,193,7,0.4);
+            margin-bottom: 25px;
+        }
+
+        .players-area h3 {
+            color: #FFC107;
+            margin-bottom: 18px;
+            font-size: 1.4em;
+        }
+
+        .player-item {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .player-item.active {
+            background: rgba(255,193,7,0.25);
+            border: 2px solid #FFC107;
+        }
+
+        .table-area {
+            background: rgba(0,0,0,0.7);
+            padding: 40px;
+            border-radius: 22px;
+            border: 3px solid rgba(255,193,7,0.4);
+            min-height: 220px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card {
+            width: 75px;
+            height: 110px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.4);
+            font-weight: 700;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.08);
+        }
+
+        .card.red { color: #F44336; }
+        .card.black { color: #000; }
+
+        .hand-area {
+            background: rgba(0,0,0,0.7);
+            padding: 25px;
+            border-radius: 18px;
+            border: 3px solid rgba(255,193,7,0.4);
+        }
+
+        .hand-area h3 {
+            color: #FFC107;
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 1.4em;
+        }
+
+        .hand-cards {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.2em; }
+            .setup-screen { padding: 30px; }
+            .card { width: 65px; height: 95px; font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🃏 باصرة - اونلاين 🌍</h1>
+            <p style="color: #FFC107; font-size: 1.3em; margin: 12px 0;">العب مع أصحابك من أي مكان في العالم</p>
+            <span class="status" id="status">⚡ جاري الاتصال...</span>
+        </div>
+
+        <div class="setup-screen" id="setup">
+            <h2>ابدأ لعبة جديدة</h2>
+            <div class="input-group">
+                <label>اسمك:</label>
+                <input type="text" id="playerName" placeholder="اكتب اسمك هنا" maxlength="20">
+            </div>
+            <div class="input-group">
+                <label>كود الغرفة (اختياري):</label>
+                <input type="text" id="roomCode" placeholder="اترك فاضي للعبة جديدة" maxlength="6">
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">🎮 ابدأ اللعب</button>
+        </div>
+
+        <div class="game-board" id="board">
+            <div class="game-info">
+                <div class="info-card">
+                    <h3>كود الغرفة</h3>
+                    <p id="roomDisplay" style="color: #FFC107;">----</p>
+                </div>
+                <div class="info-card">
+                    <h3>نقاطك</h3>
+                    <p id="scoreDisplay">0</p>
+                </div>
+                <div class="info-card">
+                    <h3>دورك؟</h3>
+                    <p id="turnDisplay">❌</p>
+                </div>
+            </div>
+
+            <div class="players-area">
+                <h3>🎲 اللاعبين</h3>
+                <div id="playersList"></div>
+            </div>
+
+            <div class="table-area" id="table">
+                <p style="color: rgba(255,255,255,0.6); font-size: 1.2em;">لا توجد أوراق على الطاولة</p>
+            </div>
+
+            <div class="hand-area">
+                <h3>أوراقك</h3>
+                <div class="hand-cards" id="hand"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn btn-primary" onclick="location.reload()">🚪 غادر اللعبة</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I",
+            authDomain: "basra-game-2995a.firebaseapp.com",
+            databaseURL: "https://basra-game-2995a-default-rtdb.firebaseio.com",
+            projectId: "basra-game-2995a",
+            storageBucket: "basra-game-2995a.firebasestorage.app",
+            messagingSenderId: "1024179389498",
+            appId: "1:1024179389498:web:3ba98f053d49bfa1676103"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('.info/connected').on('value', snap => {
+            const el = document.getElementById('status');
+            if (snap.val()) {
+                el.textContent = '🌍 متصل';
+                el.classList.remove('offline');
+            } else {
+                el.textContent = '❌ غير متصل';
+                el.classList.add('offline');
+            }
+        });
+
+        let myId, myRoom;
+        const suits = ['♥', '♦', '♣', '♠'];
+        const vals = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+
+        function makeDeck() {
+            const deck = [];
+            suits.forEach(s => vals.forEach(v => deck.push({suit:s, val:v, display:v+s})));
+            for(let i=deck.length-1; i>0; i--) {
+                const j = Math.floor(Math.random()*(i+1));
+                [deck[i],deck[j]] = [deck[j],deck[i]];
+            }
+            return deck;
+        }
+
+        function genCode() {
+            return Math.random().toString(36).substring(2,8).toUpperCase();
+        }
+
+        function startGame() {
+            const name = document.getElementById('playerName').value.trim();
+            let code = document.getElementById('roomCode').value.trim().toUpperCase();
+            if(!name) { alert('⚠️ اكتب اسمك'); return; }
+            if(!code) code = genCode();
+
+            myId = 'p_' + Date.now();
+            myRoom = code;
+            const ref = db.ref('games/' + code);
+
+            ref.once('value').then(snap => {
+                const data = snap.val();
+                if(!data) {
+                    ref.set({
+                        room: code,
+                        table: [],
+                        deck: makeDeck(),
+                        turn: 0,
+                        players: {[myId]: {id:myId, name, score:0, hand:[]}}
+                    }).then(() => showBoard());
+                } else {
+                    const pCount = Object.keys(data.players||{}).length;
+                    if(pCount >= 4) { alert('⚠️ الغرفة ممتلئة!'); return; }
+                    ref.child('players/'+myId).set({id:myId, name, score:0, hand:[]}).then(() => showBoard());
+                }
+            });
+
+            ref.child('players/'+myId).onDisconnect().remove();
+        }
+
+        function showBoard() {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('board').classList.add('active');
+            document.getElementById('roomDisplay').textContent = myRoom;
+
+            db.ref('games/'+myRoom).on('value', snap => {
+                const g = snap.val();
+                if(!g) return;
+                updatePlayers(g.players);
+                updateTable(g.table);
+                if(g.players && g.players[myId]) {
+                    updateHand(g.players[myId].hand);
+                    document.getElementById('scoreDisplay').textContent = g.players[myId].score;
+                }
+                updateTurn(g);
+            });
+        }
+
+        function updatePlayers(ps) {
+            const c = document.getElementById('playersList');
+            c.innerHTML = '';
+            Object.values(ps||{}).forEach(p => {
+                const d = document.createElement('div');
+                d.className = 'player-item' + (p.id===myId?' active':'');
+                d.innerHTML = `<span>${p.name}</span><span style="color:#FFC107;font-weight:800;">${p.score} نقطة</span>`;
+                c.appendChild(d);
+            });
+        }
+
+        function updateTable(cards) {
+            const c = document.getElementById('table');
+            if(!cards || !cards.length) {
+                c.innerHTML = '<p style="color:rgba(255,255,255,0.6);font-size:1.2em;">لا توجد أوراق على الطاولة</p>';
+                return;
+            }
+            c.innerHTML = '';
+            cards.forEach(card => {
+                const d = document.createElement('div');
+                d.className = 'card ' + (['♥','♦'].includes(card.suit)?'red':'black');
+                d.textContent = card.display;
+                c.appendChild(d);
+            });
+        }
+
+        function updateHand(cards) {
+            const c = document.getElementById('hand');
+            if(!cards || !cards.length) {
+                c.innerHTML = '<p style="color:rgba(255,255,255,0.6);">لا توجد أوراق</p>';
+                return;
+            }
+            c.innerHTML = '';
+            cards.forEach((card,i) => {
+                const d = document.createElement('div');
+                d.className = 'card ' + (['♥','♦'].includes(card.suit)?'red':'black');
+                d.textContent = card.display;
+                d.onclick = () => play(i);
+                c.appendChild(d);
+            });
+        }
+
+        function updateTurn(g) {
+            const ids = Object.keys(g.players||{});
+            const cur = ids[g.turn % ids.length];
+            const el = document.getElementById('turnDisplay');
+            if(cur === myId) {
+                el.textContent = '✅';
+                el.style.color = '#4CAF50';
+            } else {
+                el.textContent = '❌';
+                el.style.color = '#F44336';
+            }
+        }
+
+        function play(idx) {
+            const ref = db.ref('games/'+myRoom);
+            ref.once('value').then(snap => {
+                const g = snap.val();
+                const ids = Object.keys(g.players);
+                const cur = ids[g.turn % ids.length];
+                if(cur !== myId) { alert('⚠️ مش دورك!'); return; }
+
+                const hand = g.players[myId].hand;
+                if(!hand || !hand[idx]) return;
+
+                const card = hand.splice(idx,1)[0];
+                const table = [...(g.table||[]), card];
+
+                ref.update({
+                    table,
+                    ['players/'+myId+'/hand']: hand,
+                    turn: g.turn + 1
+                });
+            });
+        }
+    </script>
+</body>
+</html>
