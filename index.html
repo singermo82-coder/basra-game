@@ -4,125 +4,151 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>باصرة أونلاين — إصلاح الانضمام v4</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <title>قهوة الباصرة | باصرة أونلاين v5</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    :root { --gold:#ffc107; --orange:#ff9800; --bg:#1a0f08; --panel:rgba(0,0,0,.58); --line:rgba(255,193,7,.42); --muted:#c7b9a8; --green:#4caf50; --red:#f44336; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; font-family:'Cairo',sans-serif; color:#f8fafc; background:linear-gradient(180deg,#2c1810 0%,var(--bg) 100%); }
-    .container { width:min(1100px,100%); margin:auto; padding:20px; }
-    .header { text-align:center; margin:4px auto 22px; padding:20px 24px; background:var(--panel); border:1px solid var(--line); border-radius:18px; width:min(700px,100%); }
-    .header h1 { margin:0 0 8px; color:var(--gold); font-size:clamp(1.6rem,4vw,2.6rem); text-shadow:0 0 18px #ffc10730; }
-    .header p { margin:0 0 12px; color:var(--gold); }
-    .status { display:inline-block; padding:5px 16px; border:1px solid var(--green); border-radius:24px; color:#72e879; background:#4caf501b; font-weight:700; }
-    .status.offline { color:#ff7777; border-color:var(--red); background:#f443361b; }
-    .panel { background:rgba(0,0,0,.64); border:1px solid var(--line); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 8px 24px #00000012; }
-    .setup { width:min(550px,100%); margin:0 auto; }
-    h2,h3 { color:var(--gold); margin-top:0; }
-    h2 { font-size:1.6rem; margin-bottom:22px; text-align:center; }
-    .input-group { margin:0 0 18px; }
-    label { display:block; color:var(--gold); font-weight:700; margin:0 0 8px; }
-    input { width:100%; border:2px solid #ffc10766; border-radius:12px; padding:14px; background:#0a0705; color:#fff; font:inherit; text-align:center; outline:none; }
-    input:focus { border-color:var(--gold); box-shadow:0 0 0 3px #ffc1071b; }
-    .btn { border:0; border-radius:12px; padding:12px 22px; margin:5px; cursor:pointer; font:700 1rem 'Cairo',sans-serif; transition:transform .15s,opacity .15s; }
-    .btn:hover { transform:translateY(-1px); }
-    .btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
-    .btn-primary { background:linear-gradient(135deg,var(--gold),var(--orange)); color:#211306; box-shadow:0 4px 18px #ffc10726; }
-    .btn-secondary { color:var(--gold); background:#ffc10712; border:1px solid #ffc1075c; }
-    .btn-danger { color:#ff9d9d; background:#f4433615; border:1px solid #f4433655; }
-    .center { text-align:center; }
-    .hidden { display:none!important; }
-    .info-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
-    .info-card { background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:13px; min-width:0; }
-    .info-card h3 { font-size:.9rem; margin:0 0 5px; }
-    .info-card p { font-size:1.25rem; font-weight:900; margin:0; overflow-wrap:anywhere; }
-    .players-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .player-item { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:12px 14px; background:#ffffff0a; border:1px solid transparent; border-radius:10px; }
-    .player-item.active { border-color:var(--gold); background:#ffc10720; }
-    .player-name { font-weight:800; overflow-wrap:anywhere; }
-    .player-meta { text-align:left; color:var(--gold); white-space:nowrap; font-size:.88rem; }
-    .notice { border:1px solid #ffc10755; border-radius:11px; padding:11px 14px; margin:0 0 16px; background:#ffc1070d; color:#f3dfb1; text-align:center; }
-    .notice.good { border-color:#4caf5055; background:#4caf5010; color:#b8f5bd; }
-    .notice.bad { border-color:#f4433655; background:#f4433610; color:#ffc0c0; }
-    .table-area { min-height:190px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; }
-    .card { position:relative; display:flex; flex-direction:column; justify-content:space-between; align-items:center; width:72px; height:105px; padding:7px 4px; color:#111; background:linear-gradient(140deg,#fff,#f1eee8); border:1px solid #d8d2c8; border-radius:9px; box-shadow:0 4px 10px #0005; font-family:Arial,sans-serif; font-weight:800; user-select:none; }
-    .card.red { color:#d21d28; }
-    .card .corner { align-self:flex-start; direction:ltr; font-size:.85rem; line-height:1.1; }
-    .card .suit-big { font-size:2rem; line-height:1; }
-    .card .rank { font-size:1.35rem; line-height:1; }
-    .hand-cards { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; min-height:112px; }
-    .hand-card { cursor:pointer; transition:transform .15s,box-shadow .15s; }
-    .hand-card:hover:not(.disabled) { transform:translateY(-7px); box-shadow:0 7px 17px #ffc10735; }
-    .hand-card.disabled { opacity:.65; cursor:not-allowed; }
-    .empty { color:#b7aa9b; text-align:center; margin:20px 0; }
-    .result { white-space:pre-line; line-height:1.9; }
-    .footer-note { color:#b5a696; font-size:.88rem; text-align:center; margin:16px 0 4px; }
-    @media (max-width:720px) {
-      .container { padding:12px; }
-      .panel { padding:15px; }
-      .info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .players-list { grid-template-columns:1fr; }
-      .card { width:61px; height:91px; }
-      .card .suit-big { font-size:1.65rem; }
-      .card .rank { font-size:1.15rem; }
-    }
-  </style>
+  :root{--coffee:#1b100c;--coffee-2:#29170f;--wood:#4b2b18;--gold:#dbb66f;--gold-bright:#f2d493;--ivory:#f8f0dc;--muted:#c4b69f;--felt:#07513d;--felt-deep:#043628;--felt-light:#0b674c;--panel:rgba(20,12,8,.86);--line:rgba(219,182,111,.34);--green:#91d7a7;--red:#df6d6d;--shadow:0 18px 55px rgba(0,0,0,.32)}
+  *{box-sizing:border-box}
+  html{min-height:100%;background:var(--coffee)}
+  body{margin:0;min-height:100vh;font-family:'Cairo','Tajawal',system-ui,sans-serif;color:var(--ivory);background:radial-gradient(ellipse at 50% -10%,#5b3420 0,#2a170f 34%,#130b08 78%);overflow-x:hidden}
+  body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.32;background:radial-gradient(circle at 12% 24%,#d6a14a13 0 2px,transparent 3px),radial-gradient(circle at 78% 72%,#e4c4880d 0 1px,transparent 3px),repeating-linear-gradient(133deg,transparent 0 11px,#fff 12px,transparent 13px 29px);background-size:83px 83px,61px 61px,100% 100%}
+  button,input{font:inherit}button{touch-action:manipulation}
+  .container{width:min(1220px,100%);margin:auto;padding:22px clamp(12px,3vw,30px) 40px;position:relative}
+  .header{position:relative;isolation:isolate;text-align:center;padding:24px 24px 20px;margin:4px auto 24px;width:min(880px,100%);border:1px solid #dbb66f67;border-radius:28px 28px 18px 18px;background:linear-gradient(135deg,rgba(39,22,13,.94),rgba(14,9,7,.96));box-shadow:0 15px 45px #0006,inset 0 0 0 5px #dbb66f0a}
+  .header:before{content:"";position:absolute;inset:7px;border:1px solid #dbb66f25;border-radius:23px 23px 13px 13px;pointer-events:none;z-index:-1}
+  .header:after{content:"✦  ❖  ✦";display:block;color:#dbb66f70;letter-spacing:.8em;font-size:.7rem;margin-top:13px}
+  .brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .brand-tag,.version-tag{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;border:1px solid #dbb66f45;background:#dbb66f0c;color:var(--gold-bright);font-size:.8rem;font-weight:800}
+  .version-tag{color:#b4d7b9;border-color:#75b98b40;background:#75b98b0c;direction:ltr}
+  .header h1{font-size:clamp(1.8rem,4.2vw,3rem);line-height:1.4;margin:0 0 3px;color:var(--gold-bright);font-weight:900;text-shadow:0 2px 0 #603816,0 0 28px #dba64b26}
+  .header p{margin:0 auto 14px;color:#ddc9a3;font-size:clamp(.92rem,2vw,1.05rem)}
+  .header-actions{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+  .status{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;color:#9de2aa;background:#2a6a3829;border:1px solid #7ec28b66;font-size:.86rem;font-weight:800}
+  .status:before{content:"";width:7px;height:7px;border-radius:50%;background:#76e18e;box-shadow:0 0 11px #76e18e}
+  .status.offline{color:#ffb1a6;border-color:#e76c5c70;background:#a9342925}.status.offline:before{background:#ff7364;box-shadow:0 0 10px #ff7364}
+  .panel{position:relative;background:linear-gradient(145deg,rgba(38,23,15,.94),rgba(17,11,8,.95));border:1px solid var(--line);border-radius:20px;padding:clamp(14px,2.2vw,24px);margin-bottom:17px;box-shadow:var(--shadow),inset 0 1px 0 #fff1}
+  .panel:before{content:"";position:absolute;inset:5px;border:1px solid #dbb66f14;border-radius:15px;pointer-events:none}
+  .setup{width:min(590px,100%);margin:0 auto;padding:clamp(20px,4vw,36px)}
+  h2,h3{color:var(--gold-bright);margin-top:0}h2{font-size:clamp(1.35rem,3vw,1.8rem);margin-bottom:8px;text-align:center}h3{font-size:1.03rem;margin-bottom:12px}
+  .setup-subtitle{text-align:center;color:var(--muted);margin:0 0 24px}
+  .input-group{margin:0 0 17px}label{display:block;color:#e4c783;font-weight:800;margin:0 0 8px;font-size:.93rem}
+  input{width:100%;border:1px solid #dbb66f70;border-radius:14px;padding:14px 16px;background:#100a07;color:#fff3d9;font:inherit;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s}
+  input::placeholder{color:#988875}input:focus{border-color:var(--gold-bright);box-shadow:0 0 0 4px #dbb66f18}
+  #roomCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;font-weight:900;font-size:1.1rem}
+  .btn{border:1px solid transparent;border-radius:13px;padding:11px 18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:.92rem;transition:transform .16s,filter .16s,background .16s;min-height:43px}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.45;cursor:wait;transform:none}
+  .btn-primary{background:linear-gradient(135deg,#f4d58e,#c79542);color:#25170b;border-color:#f7dca0;box-shadow:0 7px 18px #bf8b3924,inset 0 1px #fff8}
+  .btn-secondary{color:#eed49a;background:#d3a95712;border-color:#d8b46a53}.btn-danger{color:#ffc2b8;background:#d7554515;border-color:#d7554550}.btn-small{padding:7px 11px;min-height:34px;font-size:.82rem}
+  .primary-wide{width:100%;margin-top:4px;min-height:52px;font-size:1rem}
+  .setup-foot{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px;color:#b3a48d;font-size:.83rem}
+  .footer-note{color:#b5a48e;font-size:.84rem;text-align:center;margin:16px 0 0;line-height:1.8}
+  .center{text-align:center}.hidden{display:none!important}
+  .info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:15px}
+  .info-card{background:linear-gradient(145deg,#281910,#160e09);border:1px solid #dbb66f40;border-radius:16px;padding:15px;min-width:0;box-shadow:inset 0 1px #fff1}
+  .info-card h3{font-size:.8rem;color:#bfa77a;margin:0 0 7px;font-weight:700}.info-card p{font-size:1.4rem;line-height:1.3;font-weight:900;color:#ffdf9b;margin:0;overflow-wrap:anywhere;direction:ltr;text-align:right}
+  #roomDisplay{font-family:ui-monospace,Consolas,monospace;letter-spacing:.13em;font-size:clamp(1.15rem,2vw,1.55rem)}
+  .info-card .btn{margin-top:10px;width:100%}
+  .notice{border:1px solid #dbb66f4b;border-radius:14px;padding:12px 15px;margin:0 0 16px;background:#d5a84d0d;color:#f3dfb1;text-align:center;line-height:1.8;font-size:.92rem}
+  .notice.good{border-color:#4caf5055;background:#4caf5010;color:#c5f3ce}.notice.bad{border-color:#f4433655;background:#f4433610;color:#ffc0c0}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-title h3{margin:0}.section-hint{font-size:.78rem;color:#b6a58c}
+  .players-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .player-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;background:#ffffff08;border:1px solid #ffffff0c;border-radius:13px;min-width:0}
+  .player-item.active{border-color:#dcbc70;background:#dbb66f16;box-shadow:inset 3px 0 #dbb66f}.player-name{font-weight:900;overflow-wrap:anywhere}.player-meta{text-align:left;color:#d8c69e;white-space:nowrap;font-size:.8rem}
+  .opponent-panel{padding-block:15px}.back-cards{display:flex;justify-content:center;align-items:center;min-height:72px;gap:clamp(0px,1vw,7px);padding:4px 0 2px}.back-card{width:42px;height:61px;flex:0 0 auto;margin-inline:-3px;transform:rotate(var(--rot,0deg));box-shadow:0 4px 9px #0006}.back-card:nth-child(2n){--rot:3deg}.back-card:nth-child(3n){--rot:-3deg}
+  .table-panel{padding:9px;border:2px solid #8c6036;background:linear-gradient(135deg,#76502d,#3e2516 50%,#8b6339);box-shadow:0 17px 45px #0007,inset 0 0 0 2px #f1d29b28}
+  .table-surface{position:relative;overflow:hidden;min-height:300px;border:2px solid #b78f53;border-radius:14px;padding:16px 12px;background:radial-gradient(ellipse at 48% 35%,#0d7150 0,#07533d 45%,#043727 100%);box-shadow:inset 0 0 0 7px #e0c18810,inset 0 0 50px #001d14b0,0 4px 8px #0004}
+  .table-surface:before{content:"";position:absolute;inset:12px;border:1px solid #d7bd7c35;border-radius:9px;pointer-events:none}
+  .table-surface:after{content:"باصرة";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-14deg);font-size:clamp(2.7rem,8vw,6.5rem);font-weight:900;letter-spacing:.1em;color:#d9c17b0b;pointer-events:none;white-space:nowrap}
+  .table-label{position:relative;z-index:1;display:flex;justify-content:space-between;gap:10px;align-items:center;color:#e6d3a9;font-size:.78rem;margin:0 5px 9px}
+  .table-area{position:relative;z-index:1;min-height:230px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(5px,1vw,11px);padding:17px 8px}
+  .table-caption{text-align:center;color:#d2c49b87;font-size:.74rem;letter-spacing:.12em;padding:2px 0 8px;position:relative;z-index:1}
+  .hand-panel{background:linear-gradient(145deg,#24170f,#150d09)}.hand-cards{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(3px,1vw,10px);min-height:112px;padding:8px 0 2px}
+  .card{--card-w:72px;--card-h:108px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;flex:0 0 auto;width:var(--card-w);height:var(--card-h);padding:8px 6px;color:#172019;background:radial-gradient(circle at 50% 40%,#fffdf4,#f4ead6 74%,#e7d7b8);border:1px solid #cfb989;border-radius:9px;box-shadow:0 7px 14px #0005,0 1px 0 #fff inset;font-family:Georgia,'Times New Roman',serif;font-weight:900;user-select:none;transition:transform .18s,box-shadow .18s;isolation:isolate;overflow:hidden}
+  .card:before{content:"";position:absolute;inset:4px;border:1px solid #c0a77599;border-radius:5px;pointer-events:none;z-index:-1}
+  .card:after{content:"✧";position:absolute;inset:0;display:grid;place-items:center;font-size:4.2rem;color:#b79b6330;pointer-events:none;z-index:-1}
+  .card.red{color:#b42f36}.card.black{color:#172b26}.corner{display:flex;flex-direction:column;align-items:center;line-height:.95;align-self:flex-start;direction:ltr;font-size:.83rem;gap:2px}.corner .corner-suit{font-size:.78rem}.card-center{position:absolute;inset:0;display:grid;place-items:center;font-size:2.3rem;line-height:1;transform:translateY(1px);text-shadow:0 1px #fff8}.card-center:after{content:"✦";position:absolute;font-size:.7rem;top:24%;opacity:.36}.corner-bottom{align-self:flex-end;transform:rotate(180deg)}.card-rank{font-size:1.02rem}.hand-card{cursor:pointer}.hand-card:hover:not(.disabled){transform:translateY(-9px) rotate(-1.5deg);box-shadow:0 13px 22px #0008,0 0 0 2px #e0bd75}.hand-card:focus-visible{outline:3px solid #f4d58e;outline-offset:3px}.hand-card.disabled{opacity:.74;cursor:not-allowed;filter:saturate(.7)}
+  .card-back{color:#e6cb8e;background:repeating-linear-gradient(45deg,#0c6248 0 4px,#094b39 4px 8px);border:1px solid #c6a365}
+  .card-back:before{inset:4px;border:2px solid #d6b777;border-radius:5px}.card-back:after{content:"❖";font-size:2.2rem;color:#e4c47f;opacity:.92;text-shadow:0 0 6px #f1dba0;z-index:1}
+  .card-back .back-inner{position:absolute;inset:9px;border:1px solid #d6b77788;pointer-events:none}.card-back .back-inner:before,.card-back .back-inner:after{content:"✦";position:absolute;left:50%;transform:translateX(-50%);font-size:.55rem;color:#e8d39c}.card-back .back-inner:before{top:3px}.card-back .back-inner:after{bottom:3px}
+  .empty{color:#d0c3a1;text-align:center;margin:20px 0;position:relative;z-index:1}.result{white-space:pre-line;line-height:1.9;color:#ead9b6}.footer-line{margin-top:20px;text-align:center;color:#8f7e65;font-size:.78rem}
+  .table-area .card{transform:rotate(var(--card-rot,0deg))}.table-area .card:nth-child(2n){--card-rot:2deg}.table-area .card:nth-child(3n){--card-rot:-2deg}
+  @media(max-width:760px){.container{padding:12px 10px 28px}.header{padding:18px 14px 14px;margin-bottom:15px;border-radius:23px 23px 15px 15px}.brand-row{justify-content:center}.header:after{margin-top:9px}.panel{padding:14px;border-radius:17px;margin-bottom:12px}.setup{padding:20px 16px}.info-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.info-card{padding:11px}.info-card p{font-size:1.15rem}.players-list{grid-template-columns:1fr}.table-surface{min-height:245px;padding:10px 6px}.table-area{min-height:185px;padding:12px 3px;gap:5px}.card{--card-w:clamp(49px,12.7vw,65px);--card-h:clamp(74px,19vw,94px);padding:6px 4px;border-radius:7px}.card-center{font-size:1.75rem}.corner{font-size:.67rem}.corner .corner-suit{font-size:.62rem}.card-rank{font-size:.86rem}.card:after{font-size:3.2rem}.back-card{width:32px;height:48px}.back-cards{min-height:58px}.table-caption{font-size:.63rem}.btn{padding:10px 13px;font-size:.86rem}.header-actions .btn{min-height:38px}.section-title{align-items:flex-start}.section-hint{max-width:50%;text-align:left}}
+  @media(max-width:380px){.header h1{font-size:1.55rem}.brand-tag,.version-tag{font-size:.73rem}.card{--card-w:46px;--card-h:70px}.card-center{font-size:1.55rem}.corner{font-size:.6rem}.card-rank{font-size:.77rem}.hand-cards{gap:3px}.table-area{gap:3px}.back-card{width:27px;height:42px}}
+  @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
   <main class="container">
     <header class="header">
-      <h1>🃏 باصرة أونلاين 🌍</h1>
-      <p>العب مع أصحابك من أي مكان في العالم</p>
-      <span class="status" id="status">جاري الاتصال...</span>
+      <div class="brand-row">
+        <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
+        <span class="version-tag">BUILD 5.0</span>
+      </div>
+      <h1>قهوة الباصرة</h1>
+      <p>لمة صحاب • شاي على الفحم • دورك يا معلم</p>
+      <div class="header-actions">
+        <span class="status" id="status">جاري الاتصال...</span>
+        <button class="btn btn-secondary btn-small" id="soundToggle" type="button" onclick="toggleCafeAudio()">☕ تشغيل أجواء القهوة</button>
+        <button class="btn btn-secondary btn-small" type="button" onclick="copyInviteLink()">↗ مشاركة اللعبة</button>
+      </div>
     </header>
 
     <section class="panel setup" id="setup">
-      <h2>ابدأ لعبة جديدة</h2>
+      <h2>اتفضل على الطاولة</h2>
+      <p class="setup-subtitle">اعمل قعدة جديدة أو ادخل كود صاحبك، واللعب يبدأ لما تتقابلوا.</p>
       <div class="input-group">
-        <label for="playerName">اسمك</label>
-        <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="اكتب اسمك هنا">
+        <label for="playerName">اسم اللاعب</label>
+        <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="اكتب اسمك يا معلم">
       </div>
       <div class="input-group">
-        <label for="roomCode">كود الغرفة (اتركه فارغًا لإنشاء غرفة)</label>
-        <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" placeholder="مثال: MANX83">
+        <label for="roomCode">كود القعدة <span style="color:#b4a184;font-weight:500">(سيبه فاضي لإنشاء غرفة)</span></label>
+        <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="مثال: K7RM4W">
       </div>
-      <div class="center"><button class="btn btn-primary" id="startBtn" onclick="startGame()">🎮 ابدأ اللعب</button></div>
-      <div class="footer-note">حاليًا: مباراة فردية بين لاعبين، باستخدام مجموعة من ٥٢ ورقة.</div>
+      <button class="btn btn-primary primary-wide" id="startBtn" onclick="startGame()">🃏 ابدأ اللعب</button>
+      <div class="setup-foot"><span>♣ ورق 52 كارت</span><span>•</span><span>♦ لاعبان أونلاين</span><span>•</span><span>♠ كود خاص لكل قعدة</span></div>
+      <p class="footer-note">نصيحة: المضيف يضغط «نسخ الكود» بعد إنشاء القعدة ويرسله لصاحبه كما هو. الكود الجديد يتجنب الحروف والأرقام المتشابهة.</p>
     </section>
 
     <section class="hidden" id="board">
       <div class="info-grid">
-        <div class="info-card"><h3>كود الغرفة</h3><p id="roomDisplay">----</p><button class="btn btn-secondary" onclick="copyRoomCode()">نسخ الكود</button></div>
-        <div class="info-card"><h3>نقاطك</h3><p id="scoreDisplay">0</p></div>
+        <div class="info-card"><h3>كود القعدة</h3><p id="roomDisplay">------</p><button class="btn btn-secondary btn-small" onclick="copyRoomCode()">▣ نسخ الكود</button></div>
+        <div class="info-card"><h3>رصيدك</h3><p id="scoreDisplay">0</p></div>
         <div class="info-card"><h3>الدور الحالي</h3><p id="turnDisplay">—</p></div>
-        <div class="info-card"><h3>الأوراق المتبقية</h3><p id="deckDisplay">0</p></div>
+        <div class="info-card"><h3>ورق السحب</h3><p id="deckDisplay">0</p></div>
       </div>
-      <div id="gameNotice" class="notice">بانتظار لاعب آخر للانضمام.</div>
+      <div id="gameNotice" class="notice">بنجهز القعدة...</div>
       <section class="panel">
-        <h3>🎲 اللاعبون</h3>
+        <div class="section-title"><h3>👥 القاعدين على الطاولة</h3><span class="section-hint">كل لاعب يشوف ورقه هو بس في الواجهة</span></div>
         <div class="players-list" id="playersList"></div>
       </section>
-      <section class="panel">
-        <h3>🃏 أوراق الطاولة</h3>
-        <div class="table-area" id="tableCards"></div>
+      <section class="panel opponent-panel">
+        <div class="section-title"><h3>🎴 ورق الخصم</h3><span class="section-hint" id="opponentCount">بانتظار اللاعب الثاني</span></div>
+        <div class="back-cards" id="opponentCards"></div>
       </section>
-      <section class="panel">
-        <h3 class="center">أوراقك — اضغط على ورقة للعبها</h3>
+      <section class="panel table-panel">
+        <div class="table-surface">
+          <div class="table-label"><span>طاولة القهوة</span><span>اللي ياكل الورق يكسب النقطة</span></div>
+          <div class="table-area" id="tableCards"></div>
+          <div class="table-caption">✦ قهوة • شدة • لمة حلوة ✦</div>
+        </div>
+      </section>
+      <section class="panel hand-panel">
+        <div class="section-title"><h3>🂠 ورقك في إيدك</h3><span class="section-hint">اضغط على الكارت وقت دورك</span></div>
         <div class="hand-cards" id="handCards"></div>
       </section>
       <section class="panel hidden" id="roundResultPanel">
         <h3 id="roundResultTitle">نتيجة الجولة</h3>
         <div class="result" id="roundResult"></div>
-        <div class="center"><button class="btn btn-primary" id="nextRoundBtn" onclick="startNextRound()">🔄 ابدأ جولة جديدة</button></div>
+        <div class="center"><button class="btn btn-primary" id="nextRoundBtn" onclick="startNextRound()">🔄 الجولة اللي بعدها</button></div>
       </section>
-      <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 مغادرة اللعبة</button></div>
+      <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 قوم من القعدة</button></div>
     </section>
+    <div class="footer-line">قهوة الباصرة · لعبة ورق اجتماعية مستقلة · نسخة تجريبية 5.0</div>
   </main>
-
   <script>
-    // إعداد Firebase هو نفسه المستخدم في النسخة المنشورة الحالية.
+    // Firebase Realtime Database. Uses the existing project's public client configuration.
     const firebaseConfig = {
       apiKey: "AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I",
       authDomain: "basra-game-2995a.firebaseapp.com",
@@ -140,6 +166,12 @@
     let gameListener = null;
     let joiningName = '';
     let isBusy = false;
+    const APP_VERSION = '5.0';
+    const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let audioContext = null;
+    let cafeAudioOn = false;
+    let ambienceNodes = [];
+    let ambienceTimer = null;
     const suits = ['♥', '♦', '♣', '♠'];
     const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
@@ -211,7 +243,11 @@
       };
     }
 
-    function genRoomCode() { return Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, 'X'); }
+    function genRoomCode() {
+      const bytes = new Uint8Array(6);
+      if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes); else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+      return Array.from(bytes, byte => ROOM_ALPHABET[byte % ROOM_ALPHABET.length]).join('');
+    }
     function genPlayerId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
     function gameRef() { return db.ref('games/' + myRoom); }
     function activeOrder(game) {
@@ -323,28 +359,40 @@
     async function startGame() {
       if (isBusy) return;
       const name = document.getElementById('playerName').value.trim();
-      const enteredCode = document.getElementById('roomCode').value.trim().toUpperCase();
-      if (!name) { alert('اكتب اسمك أولًا.'); return; }
+      const enteredCode = document.getElementById('roomCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      if (!name) { showSetupError('اكتب اسم اللاعب الأول.'); return; }
+      if (enteredCode && enteredCode.length !== 6) { showSetupError('كود القعدة لازم يكون 6 خانات. انسخه من المضيف بدل كتابته يدويًا.'); return; }
       joiningName = name;
       myId = genPlayerId();
       myRoom = enteredCode || genRoomCode();
-      setBusy(true, 'جارٍ الانضمام...');
-
+      setBusy(true, 'جارٍ الاتصال بالقعدة...');
       try {
-        const result = await runJoinTransaction(enteredCode);
-        if (result === 'collision') {
-          myRoom = genRoomCode();
-          const retry = await runJoinTransaction('');
-          if (retry !== 'joined') throw new Error('تعذر إنشاء غرفة جديدة. حاول مرة أخرى.');
-        } else if (result !== 'joined') {
+        await waitForDatabaseConnection();
+        let result = await runJoinTransaction(enteredCode);
+        if (result === 'collision' && !enteredCode) {
+          let retries = 0;
+          while (result === 'collision' && retries < 5) {
+            myRoom = genRoomCode();
+            result = await runJoinTransaction('');
+            retries++;
+          }
+        }
+        if (result !== 'joined') {
           const messages = {
-            'not-found': 'كود الغرفة غير موجود. تأكد من الكود أو أنشئ غرفة جديدة بترك الخانة فارغة.',
-            'full': 'الغرفة بها لاعبان بالفعل.',
-            'old-version': 'هذه الغرفة أُنشئت بالنسخة القديمة. أنشئ غرفة جديدة واترك خانة الكود فارغة.',
-            'closed': 'المباراة انتهت بالفعل ولا تقبل لاعبين جددًا.',
-            'error': 'تعذر الاتصال بقاعدة البيانات. تحقق من الاتصال وحاول مرة أخرى.'
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v5، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v5.',
+            'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
+            'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
+            'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
+            'etag-missing': 'Firebase لم يرجع رقم مراجعة ETag اللازم لتحديث آمن؛ لم نكتب على الغرفة. راجع إعدادات Realtime Database/Proxy.',
+            'no-deck': 'الغرفة لا تحتوي على أوراق سحب كافية. أنشئ غرفة جديدة.',
+            'duplicate-player': 'معرّف اللاعب مكرر بشكل غير متوقع. أعد تحميل الصفحة وحاول مرة واحدة.',
+            'conflict': 'تغيرت بيانات الغرفة أثناء الانضمام عدة مرات. أعد المحاولة مرة واحدة؛ إذا تكرر الخطأ فهناك تعارض متزامن.',
+            'error': 'تعذر إكمال عملية الانضمام. افتح أدوات Firebase Console لفحص Realtime Database Rules وطلبات REST.'
           };
-          alert(messages[result] || messages.error);
+          showSetupError(messages[result] || messages.error);
+          setBusy(false);
           return;
         }
         const playerRef = gameRef().child('players/' + myId);
@@ -355,13 +403,13 @@
         if (gameListener) gameRef().off('value', gameListener);
         gameListener = snap => { const game = snap.val(); if (game) renderGame(game); };
         gameRef().on('value', gameListener);
+        playSfx('join');
       } catch (error) {
         console.error(error);
-        alert(error.message || 'حدث خطأ غير متوقع أثناء الانضمام.');
-      } finally {
-        setBusy(false);
-      }
+        showSetupError(error.message || 'حدث خطأ أثناء الاتصال بقاعدة البيانات.');
+      } finally { setBusy(false); }
     }
+
 
     function setBusy(busy, label) {
       isBusy = busy;
@@ -370,57 +418,165 @@
       btn.textContent = label || '🎮 ابدأ اللعب';
     }
 
-    async function runJoinTransaction(enteredCode) {
-      const ref = db.ref('games/' + myRoom);
-      let initialSnapshot;
+    function showSetupError(message) {
+      console.error('[Basra v' + APP_VERSION + ']', message);
+      let note = document.getElementById('setupError');
+      if (!note) {
+        note = document.createElement('div');
+        note.id = 'setupError';
+        note.className = 'notice bad';
+        const form = document.getElementById('setup');
+        const button = document.getElementById('startBtn');
+        form.insertBefore(note, button);
+      }
+      note.textContent = message;
+      note.classList.remove('hidden');
+    }
 
-      // استخدم get() لجلب القراءة الحالية من الخادم قبل المعاملة.
-      // once('value') قد تُرجع قيمة الذاكرة المحلية الأولية (null) في متصفح جديد،
-      // فيُرفض كود غرفة موجودة بالفعل قبل اكتمال مزامنة البيانات.
+    function firebaseRoomRestUrl(code) {
+      return firebaseConfig.databaseURL.replace(/\/$/, '') + '/games/' + encodeURIComponent(code) + '.json';
+    }
+
+    async function firebaseRestReadRoom(code) {
+      const response = await fetch(firebaseRoomRestUrl(code), {
+        method: 'GET', cache: 'no-store', headers: { 'X-Firebase-ETag': 'true' }
+      });
+      const raw = await response.text();
+      let payload = null;
+      try { payload = raw ? JSON.parse(raw) : null; } catch (_) { payload = raw; }
+      if (!response.ok) {
+        const message = payload && payload.error ? payload.error : ('HTTP ' + response.status);
+        const error = new Error(message);
+        error.httpStatus = response.status;
+        throw error;
+      }
+      return { data: payload, etag: response.headers.get('ETag') || response.headers.get('etag') };
+    }
+
+    async function firebaseRestCompareAndSwap(code, data, etag) {
+      if (!etag) throw new Error('Firebase لم يرجع ETag؛ لم يتم تعديل الغرفة حفاظًا على بياناتها.');
+      const response = await fetch(firebaseRoomRestUrl(code), {
+        method: 'PUT', cache: 'no-store',
+        headers: { 'Content-Type': 'application/json', 'if-match': etag },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 412) return false;
+      if (!response.ok) {
+        let payload = null;
+        try { payload = await response.json(); } catch (_) {}
+        throw new Error((payload && payload.error) || ('تعذر حفظ الانضمام (HTTP ' + response.status + ').'));
+      }
+      return true;
+    }
+
+    function validateRoomForJoin(current) {
+      if (!current || typeof current !== 'object') return 'not-found';
+      if (!Array.isArray(current.deck) || !Array.isArray(current.table) || !Array.isArray(current.turnOrder) || !current.players || typeof current.players !== 'object') return 'old-version';
+      if (current.status === 'finished' || current.status === 'roundOver') return 'closed';
+      const active = activeOrder(current);
+      if (active.length >= 2) return 'full';
+      if (!current.deck.length && active.length < 2) return 'no-deck';
+      return 'ok';
+    }
+
+    async function waitForDatabaseConnection(timeoutMs = 10000) {
+      const connectedRef = db.ref('.info/connected');
+      const already = await connectedRef.once('value');
+      if (already.val() === true) return true;
+      return new Promise((resolve, reject) => {
+        let finished = false;
+        const done = (err) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          connectedRef.off('value', listener);
+          if (err) reject(err); else resolve(true);
+        };
+        const listener = snap => { if (snap.val() === true) done(); };
+        const timer = setTimeout(() => done(new Error('الاتصال بقاعدة البيانات لم يكتمل. تأكد من الإنترنت ثم أعد المحاولة.')), timeoutMs);
+        connectedRef.on('value', listener);
+      });
+    }
+
+    async function runSdkJoinFallback(code) {
+      // Fallback for browsers/proxies that block ETag headers. First force a server read,
+      // then use the SDK's atomic transaction only when the room is confirmed to exist.
+      const ref = db.ref('games/' + code);
+      let before;
       try {
-        initialSnapshot = await ref.get();
+        await waitForDatabaseConnection();
+        before = await ref.get();
       } catch (error) {
-        console.error('Failed to read room before transaction:', error);
+        console.error('SDK fallback room read failed:', error);
         return 'error';
       }
-
-      const initialData = initialSnapshot.val();
-      if (enteredCode && !initialData) return 'not-found';
-      if (!enteredCode && initialData) return 'collision';
-
+      if (!before || !before.val()) return 'not-found';
+      const check = validateRoomForJoin(before.val());
+      if (check !== 'ok') return check;
       let reason = null;
       return new Promise((resolve, reject) => {
         ref.transaction(current => {
           reason = null;
-          if (!current) {
-            if (enteredCode) { reason = 'not-found'; return; }
-            const deck = makeDeck();
-            const table = takeInitialTable(deck);
-            const hand = deck.splice(0, 4);
-            return {
-              room: myRoom,
-              deck,
-              table,
-              players: { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0 } },
-              turnOrder: [myId],
-              turnIndex: 0,
-              status: 'waiting',
-              roundNumber: 1,
-              lastCaptureBy: null,
-              roundResults: null,
-              winner: null
-            };
+          if (!current) { reason = 'not-found'; return; }
+          const validation = validateRoomForJoin(current);
+          if (validation !== 'ok') { reason = validation; return; }
+          if (current.players && current.players[myId]) { reason = 'duplicate-player'; return; }
+          const next = JSON.parse(JSON.stringify(current));
+          const order = activeOrder(next);
+          if (!Array.isArray(next.deck) || next.deck.length < 4) { reason = 'no-deck'; return; }
+          next.players[myId] = { id: myId, name: joiningName, score: 0, hand: next.deck.splice(0, 4), captured: [], basras: 0 };
+          next.turnOrder = order.concat(myId);
+          next.status = 'playing';
+          if (!Number.isInteger(next.turnIndex)) next.turnIndex = 0;
+          next.lastUpdatedAt = Date.now();
+          return next;
+        }, (error, committed, snapshot) => {
+          if (error) return reject(error);
+          if (committed) return resolve('joined');
+          const data = snapshot.val();
+          if (reason) return resolve(reason);
+          if (data && activeOrder(data).length >= 2) return resolve('full');
+          resolve('error');
+        }, false);
+      }).catch(error => {
+        console.error('SDK fallback transaction failed:', error);
+        return /permission/i.test(error.message || '') ? 'permission' : 'error';
+      });
+    }
+
+    async function runJoinTransaction(enteredCode) {
+      if (enteredCode) {
+        // Joining uses a real server read and ETag compare-and-swap. This avoids treating a
+        // new browser's empty local transaction cache as an absent room, and prevents races
+        // if two guests try to join the final seat at the same time.
+        const code = enteredCode.trim().toUpperCase();
+        if (!/^[A-Z0-9]{6}$/.test(code)) return 'not-found';
+        for (let attempt = 0; attempt < 5; attempt++) {
+          let snapshot;
+          try {
+            snapshot = await firebaseRestReadRoom(code);
+          } catch (error) {
+            console.error('Firebase REST room read failed:', error);
+            if (error.httpStatus === 401 || error.httpStatus === 403 || /permission/i.test(error.message)) return 'permission';
+            if (error.message && error.message.includes('Failed to fetch')) {
+              const fallback = await runSdkJoinFallback(code);
+              return fallback === 'joined' ? 'joined' : (fallback === 'error' ? 'network' : fallback);
+            }
+            return 'error';
           }
-          if (!enteredCode) { reason = 'collision'; return; }
-          // نتجنب التعامل مع بيانات الغرف القديمة التي لا تحتوي على بنية الجولة الحالية.
-          if (!Array.isArray(current.deck) || !Array.isArray(current.table) || !Array.isArray(current.turnOrder) || !current.players) {
-            reason = 'old-version'; return;
+          const current = snapshot.data;
+          if (!current) return 'not-found';
+          const validation = validateRoomForJoin(current);
+          if (validation !== 'ok') return validation;
+          if (!snapshot.etag) {
+            const fallback = await runSdkJoinFallback(code);
+            return fallback === 'joined' ? 'joined' : (fallback === 'error' ? 'etag-missing' : fallback);
           }
-          if (current.status === 'finished' || current.status === 'roundOver') { reason = 'closed'; return; }
-          const active = activeOrder(current);
-          if (active.length >= 2) { reason = 'full'; return; }
-          if (current.players[myId]) { reason = 'error'; return; }
           const nextGame = JSON.parse(JSON.stringify(current));
+          const active = activeOrder(nextGame);
+          if (!nextGame.players) nextGame.players = {};
+          if (!Array.isArray(nextGame.deck) || nextGame.deck.length < 4) return 'no-deck';
+          if (nextGame.players[myId]) return 'duplicate-player';
           nextGame.players[myId] = {
             id: myId,
             name: joiningName,
@@ -429,20 +585,56 @@
             captured: [],
             basras: 0
           };
-          nextGame.turnOrder.push(myId);
+          nextGame.turnOrder = active.concat(myId);
           nextGame.status = 'playing';
           if (!Number.isInteger(nextGame.turnIndex)) nextGame.turnIndex = 0;
-          return nextGame;
+          nextGame.lastUpdatedAt = Date.now();
+          try {
+            const committed = await firebaseRestCompareAndSwap(code, nextGame, snapshot.etag);
+            if (committed) return 'joined';
+            // HTTP 412 means another player changed the room after our read. Retry with fresh data.
+          } catch (error) {
+            console.error('Firebase REST room update failed:', error);
+            if (error.httpStatus === 401 || error.httpStatus === 403 || /permission/i.test(error.message)) return 'permission';
+            if (error.message && error.message.includes('Failed to fetch')) {
+              try {
+                const check = await firebaseRestReadRoom(code);
+                if (check.data && check.data.players && check.data.players[myId]) return 'joined';
+              } catch (_) {}
+              const fallback = await runSdkJoinFallback(code);
+              return fallback === 'joined' ? 'joined' : (fallback === 'error' ? 'network' : fallback);
+            }
+            return 'error';
+          }
+        }
+        return 'conflict';
+      }
+
+      // Room creation is a transaction on a freshly generated, unambiguous code.
+      const ref = db.ref('games/' + myRoom);
+      let reason = null;
+      return new Promise((resolve, reject) => {
+        ref.transaction(current => {
+          reason = null;
+          if (current) { reason = 'collision'; return; }
+          const deck = makeDeck();
+          const table = takeInitialTable(deck);
+          const hand = deck.splice(0, 4);
+          return {
+            room: myRoom,
+            roomCode: myRoom,
+            appVersion: APP_VERSION,
+            createdAt: Date.now(),
+            deck, table,
+            players: { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0 } },
+            turnOrder: [myId], turnIndex: 0, status: 'waiting', roundNumber: 1,
+            lastCaptureBy: null, roundResults: null, winner: null
+          };
         }, (error, committed, snapshot) => {
           if (error) return reject(error);
           if (committed) return resolve('joined');
-          const data = snapshot.val();
-          if (!enteredCode && data) return resolve('collision');
-          if (reason === 'old-version') return resolve('old-version');
-          if (reason === 'closed') return resolve('closed');
-          if (reason === 'full' || (data && activeOrder(data).length >= 2)) return resolve('full');
-          if (reason === 'not-found' || (enteredCode && !data)) return resolve('not-found');
-          resolve(reason || 'error');
+          if (reason === 'collision' || snapshot.val()) return resolve('collision');
+          resolve('error');
         }, false);
       });
     }
@@ -472,6 +664,25 @@
         item.append(name, meta);
         document.getElementById('playersList').appendChild(item);
       });
+
+      const opponentCardsContainer = document.getElementById('opponentCards');
+      opponentCardsContainer.replaceChildren();
+      const opponentIds = order.filter(id => id !== myId);
+      const opponent = opponentIds.length ? game.players[opponentIds[0]] : null;
+      const opponentHandCount = opponent ? (opponent.hand || []).length : 0;
+      document.getElementById('opponentCount').textContent = opponent ? `${opponent.name} · ${opponentHandCount} ورقات` : 'لسه مستنيين صاحبك';
+      for (let i = 0; i < Math.min(opponentHandCount, 12); i++) {
+        const back = document.createElement('div');
+        back.className = 'card card-back back-card';
+        back.setAttribute('aria-hidden', 'true');
+        const inner = document.createElement('span'); inner.className = 'back-inner';
+        back.appendChild(inner);
+        opponentCardsContainer.appendChild(back);
+      }
+      if (!opponent) {
+        const wait = document.createElement('span'); wait.className = 'section-hint'; wait.textContent = 'ابعث كود القعدة لصاحبك عشان ينضم';
+        opponentCardsContainer.appendChild(wait);
+      }
 
       const tableContainer = document.getElementById('tableCards');
       tableContainer.replaceChildren();
@@ -514,11 +725,20 @@
 
     function makeCardElement(card, interactive) {
       const el = document.createElement('div');
-      el.className = 'card' + (['♥','♦'].includes(card.suit) ? ' red' : '') + (interactive ? ' hand-card' : '');
-      const corner = document.createElement('span'); corner.className = 'corner'; corner.textContent = card.val + card.suit;
-      const suit = document.createElement('span'); suit.className = 'suit-big'; suit.textContent = card.suit;
-      const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = card.val;
-      el.append(corner, suit, rank);
+      const isRed = ['♥','♦'].includes(card.suit);
+      el.className = 'card' + (isRed ? ' red' : ' black') + (interactive ? ' hand-card' : '');
+      const top = document.createElement('span');
+      top.className = 'corner corner-top';
+      const topRank = document.createElement('span'); topRank.className = 'card-rank'; topRank.textContent = card.val;
+      const topSuit = document.createElement('span'); topSuit.className = 'corner-suit'; topSuit.textContent = card.suit;
+      top.append(topRank, topSuit);
+      const center = document.createElement('span'); center.className = 'card-center'; center.textContent = card.suit;
+      const bottom = document.createElement('span'); bottom.className = 'corner corner-bottom';
+      const bottomRank = document.createElement('span'); bottomRank.className = 'card-rank'; bottomRank.textContent = card.val;
+      const bottomSuit = document.createElement('span'); bottomSuit.className = 'corner-suit'; bottomSuit.textContent = card.suit;
+      bottom.append(bottomRank, bottomSuit);
+      el.append(top, center, bottom);
+      el.setAttribute('aria-label', card.val + ' ' + card.suit);
       return el;
     }
 
@@ -597,6 +817,7 @@
             resolve(reason || 'conflict');
           }, false);
         });
+        if (outcome === 'played') playSfx('card');
         if (outcome !== 'played') {
           const messages = { 'not-turn':'مش دورك حاليًا.', waiting:'انتظر انضمام اللاعب الآخر.', 'not-playing':'لا يمكن لعب ورقة في هذه المرحلة.', 'bad-card':'الورقة لم تعد في يدك؛ حدّثت اللعبة، جرّب مرة أخرى.', conflict:'تغيرت حالة اللعبة. حاول مرة أخرى.' };
           if (outcome !== 'bad-card') alert(messages[outcome] || messages.conflict);
@@ -626,6 +847,7 @@
             resolve(committed ? 'started' : (reason || 'already-started'));
           }, false);
         });
+        if (outcome === 'started') playSfx('shuffle');
         if (outcome !== 'started') alert(outcome === 'players-missing' ? 'يجب أن يكون اللاعبان متصلين لبدء الجولة.' : 'بدأ لاعب آخر الجولة أو تغيرت حالة المباراة.');
       } catch (error) { console.error(error); alert('تعذر بدء الجولة الجديدة.'); }
       finally { setBusy(false); }
@@ -647,8 +869,123 @@
       location.reload();
     }
 
+    async function copyInviteLink() {
+      const link = location.origin + location.pathname + '?v=5';
+      try {
+        await navigator.clipboard.writeText(link);
+        showNotice('تم نسخ رابط اللعبة. ابعته لصاحبك، وبعدها ابعت له كود القعدة.', 'good');
+      } catch (_) { window.prompt('انسخ رابط اللعبة:', link); }
+    }
+
+    function getAudioContext() {
+      if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) throw new Error('المتصفح لا يدعم الصوت التفاعلي.');
+        audioContext = new AudioCtx();
+      }
+      return audioContext;
+    }
+
+    function makeNoiseBuffer(ctx, seconds = 2) {
+      const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * seconds), ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < data.length; i++) {
+        const white = Math.random() * 2 - 1;
+        last = (last + 0.018 * white) / 1.018;
+        data[i] = last * 3.5;
+      }
+      return buffer;
+    }
+
+    function startCafeAmbience() {
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') ctx.resume();
+      stopCafeAmbience(false);
+      // Procedurally generated, low-volume café bed: soft room murmur, no external audio files.
+      const roomNoise = ctx.createBufferSource();
+      roomNoise.buffer = makeNoiseBuffer(ctx, 3); roomNoise.loop = true;
+      const lowpass = ctx.createBiquadFilter(); lowpass.type = 'lowpass'; lowpass.frequency.value = 380; lowpass.Q.value = .55;
+      const roomGain = ctx.createGain(); roomGain.gain.value = .075;
+      roomNoise.connect(lowpass).connect(roomGain).connect(ctx.destination); roomNoise.start();
+      const chatterNoise = ctx.createBufferSource(); chatterNoise.buffer = makeNoiseBuffer(ctx, 2); chatterNoise.loop = true;
+      const chatterFilter = ctx.createBiquadFilter(); chatterFilter.type = 'bandpass'; chatterFilter.frequency.value = 620; chatterFilter.Q.value = .45;
+      const chatterGain = ctx.createGain(); chatterGain.gain.value = .014;
+      chatterNoise.connect(chatterFilter).connect(chatterGain).connect(ctx.destination); chatterNoise.start();
+      const humA = ctx.createOscillator(); humA.type = 'sine'; humA.frequency.value = 72;
+      const humAGain = ctx.createGain(); humAGain.gain.value = .016; humA.connect(humAGain).connect(ctx.destination); humA.start();
+      const humB = ctx.createOscillator(); humB.type = 'triangle'; humB.frequency.value = 108;
+      const humBGain = ctx.createGain(); humBGain.gain.value = .005; humB.connect(humBGain).connect(ctx.destination); humB.start();
+      ambienceNodes = [roomNoise, lowpass, roomGain, chatterNoise, chatterFilter, chatterGain, humA, humAGain, humB, humBGain];
+      scheduleCafeClink();
+    }
+
+    function stopCafeAmbience(updateButton = true) {
+      if (ambienceTimer) { clearTimeout(ambienceTimer); ambienceTimer = null; }
+      ambienceNodes.forEach(node => { try { if (node.stop) node.stop(); } catch (_) {} try { node.disconnect(); } catch (_) {} });
+      ambienceNodes = [];
+      if (updateButton) {
+        const btn = document.getElementById('soundToggle');
+        if (btn) btn.textContent = '☕ تشغيل أجواء القهوة';
+      }
+    }
+
+    function scheduleCafeClink() {
+      if (!cafeAudioOn || !audioContext) return;
+      ambienceTimer = setTimeout(() => {
+        if (!cafeAudioOn || !audioContext) return;
+        playSfx('cup', true);
+        scheduleCafeClink();
+      }, 9500 + Math.random() * 10000);
+    }
+
+    function playSfx(kind, ambient = false) {
+      if (!cafeAudioOn || !audioContext) return;
+      const ctx = audioContext;
+      if (ctx.state === 'suspended') ctx.resume();
+      const now = ctx.currentTime;
+      if (kind === 'cup') {
+        [1380, 1830, 2210].forEach((freq, i) => {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i * .018);
+          gain.gain.setValueAtTime(.0001, now + i * .018); gain.gain.exponentialRampToValueAtTime(ambient ? .012 : .025, now + i * .018 + .008); gain.gain.exponentialRampToValueAtTime(.0001, now + i * .018 + .22);
+          osc.connect(gain).connect(ctx.destination); osc.start(now + i * .018); osc.stop(now + i * .018 + .24);
+        });
+        return;
+      }
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = kind === 'shuffle' ? 'triangle' : 'sine';
+      osc.frequency.setValueAtTime(kind === 'join' ? 520 : kind === 'shuffle' ? 280 : 420, now);
+      osc.frequency.exponentialRampToValueAtTime(kind === 'join' ? 780 : 170, now + (kind === 'shuffle' ? .22 : .095));
+      gain.gain.setValueAtTime(.0001, now); gain.gain.exponentialRampToValueAtTime(kind === 'join' ? .045 : .035, now + .012); gain.gain.exponentialRampToValueAtTime(.0001, now + (kind === 'shuffle' ? .3 : .12));
+      osc.connect(gain).connect(ctx.destination); osc.start(now); osc.stop(now + (kind === 'shuffle' ? .31 : .13));
+      if (kind === 'card' && Math.random() < .2) setTimeout(() => playSfx('cup', true), 90);
+    }
+
+    async function toggleCafeAudio() {
+      const btn = document.getElementById('soundToggle');
+      try {
+        if (cafeAudioOn) {
+          cafeAudioOn = false; stopCafeAmbience();
+          if (audioContext && audioContext.state === 'running') await audioContext.suspend();
+        } else {
+          getAudioContext();
+          await audioContext.resume();
+          cafeAudioOn = true; startCafeAmbience();
+          btn.textContent = '🔊 أجواء القهوة شغالة';
+          playSfx('cup', true);
+        }
+      } catch (error) {
+        console.error(error);
+        cafeAudioOn = false; stopCafeAmbience();
+        btn.textContent = 'الصوت غير متاح';
+      }
+    }
+
     document.getElementById('roomCode').addEventListener('input', event => {
       event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      const note = document.getElementById('setupError');
+      if (note) note.classList.add('hidden');
     });
   </script>
 </body>
