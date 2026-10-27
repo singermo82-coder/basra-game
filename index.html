@@ -370,8 +370,23 @@
       btn.textContent = label || '🎮 ابدأ اللعب';
     }
 
-    function runJoinTransaction(enteredCode) {
+    async function runJoinTransaction(enteredCode) {
       const ref = db.ref('games/' + myRoom);
+      let initialSnapshot;
+
+      // اقرأ من Firebase أولًا حتى لا نعتبر الغرفة غير موجودة بسبب ذاكرة محلية فارغة.
+      // معاملة Firebase قد تستدعي دالة التحديث بقيمة null قبل تحميل بيانات المسار من الخادم.
+      try {
+        initialSnapshot = await ref.once('value');
+      } catch (error) {
+        console.error('Failed to read room before transaction:', error);
+        return 'error';
+      }
+
+      const initialData = initialSnapshot.val();
+      if (enteredCode && !initialData) return 'not-found';
+      if (!enteredCode && initialData) return 'collision';
+
       let reason = null;
       return new Promise((resolve, reject) => {
         ref.transaction(current => {
@@ -401,10 +416,9 @@
             reason = 'old-version'; return;
           }
           if (current.status === 'finished' || current.status === 'roundOver') { reason = 'closed'; return; }
-          const players = { ...current.players };
           const active = activeOrder(current);
           if (active.length >= 2) { reason = 'full'; return; }
-          if (players[myId]) { reason = 'error'; return; }
+          if (current.players[myId]) { reason = 'error'; return; }
           const nextGame = JSON.parse(JSON.stringify(current));
           nextGame.players[myId] = {
             id: myId,
@@ -431,7 +445,6 @@
         }, false);
       });
     }
-
     function renderGame(game) {
       const order = activeOrder(game);
       const myPlayer = game.players && game.players[myId];
