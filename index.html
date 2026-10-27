@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>قهوة الباصرة | أجواء مصرية v6</title>
+  <title>قهوة الباصرة | أجواء مصرية v6.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -34,8 +34,9 @@
   h2,h3{color:var(--gold-bright);margin-top:0}h2{font-size:clamp(1.35rem,3vw,1.8rem);margin-bottom:8px;text-align:center}h3{font-size:1.03rem;margin-bottom:12px}
   .setup-subtitle{text-align:center;color:var(--muted);margin:0 0 24px}
   .input-group{margin:0 0 17px}label{display:block;color:#e4c783;font-weight:800;margin:0 0 8px;font-size:.93rem}
-  input{width:100%;border:1px solid #dbb66f70;border-radius:14px;padding:14px 16px;background:#100a07;color:#fff3d9;font:inherit;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s}
-  input::placeholder{color:#988875}input:focus{border-color:var(--gold-bright);box-shadow:0 0 0 4px #dbb66f18}
+  input,select{width:100%;border:1px solid #dbb66f70;border-radius:14px;padding:14px 16px;background:#100a07;color:#fff3d9;font:inherit;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s}
+  input::placeholder{color:#988875}input:focus,select:focus{border-color:var(--gold-bright);box-shadow:0 0 0 4px #dbb66f18}
+  select{cursor:pointer;font-weight:800;background:linear-gradient(145deg,#21150d,#0d0806)}.mode-hint{display:block;color:#b7a487;font-size:.78rem;line-height:1.7;margin:7px 3px 0;text-align:center}
   #roomCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;font-weight:900;font-size:1.1rem}
   .btn{border:1px solid transparent;border-radius:13px;padding:11px 18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:.92rem;transition:transform .16s,filter .16s,background .16s;min-height:43px}
   .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.45;cursor:wait;transform:none}
@@ -128,7 +129,7 @@
   .modal-close{margin-inline-start:auto;border:1px solid #d6b46d66;background:#160d08;color:#ffdfa0;width:38px;height:38px;border-radius:50%;font-size:1.65rem;line-height:1;cursor:pointer}
   .modal-card h2{margin:5px 0 5px}
   .modal-subtitle{color:#c8b18c;text-align:center;margin:0 auto 18px;line-height:1.8;font-size:.9rem;max-width:600px}
-  .station-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0 15px}
+  .station-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px;margin:14px 0 15px}
   .station-button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;min-height:95px;color:#f5e3bc;background:linear-gradient(145deg,#1e392d,#0e1e17);border:1px solid #e1bb6b55;border-radius:13px;cursor:pointer;box-shadow:inset 0 1px #fff1,0 5px 14px #0003}
   .station-button strong{font-size:.87rem}.station-button small{font-size:.7rem;color:#bca77e}.station-frequency{direction:ltr;color:#ffdc8c;font:800 .8rem ui-monospace,monospace}
   .station-button.active{border-color:#ffdb80;background:linear-gradient(145deg,#8e5a26,#2c180d);box-shadow:0 0 0 2px #f4d18b20,0 0 24px #dc9e3b1c}
@@ -158,7 +159,7 @@
     <header class="header">
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
-        <span class="version-tag">BUILD 6.0</span>
+        <span class="version-tag">BUILD 6.3</span>
       </div>
       <h1>قهوة الباصرة</h1>
       <p>لمة صحاب • شاي على الفحم • دورك يا معلم</p>
@@ -181,12 +182,20 @@
         <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="اكتب اسمك يا معلم">
       </div>
       <div class="input-group">
+        <label for="gameMode">طريقة اللعب</label>
+        <select id="gameMode" aria-describedby="gameModeHint">
+          <option value="ai" selected>🤖 العب ضد المعلم (الذكاء الاصطناعي)</option>
+          <option value="online">🌐 أنشئ قعدة أونلاين لصاحبك</option>
+        </select>
+        <small id="gameModeHint" class="mode-hint">هنبدأ ضد المعلم تلقائيًا. لو كتبت كود قعدة، هتنضم لها أونلاين.</small>
+      </div>
+      <div class="input-group">
         <label for="roomCode">كود القعدة <span style="color:#b4a184;font-weight:500">(سيبه فاضي لإنشاء غرفة)</span></label>
         <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="مثال: K7RM4W">
       </div>
       <button class="btn btn-primary primary-wide" id="startBtn" onclick="startGame()">🃏 ابدأ اللعب</button>
       <div class="setup-foot"><span>♣ ورق 52 كارت</span><span>•</span><span>♦ لاعبان أونلاين</span><span>•</span><span>♠ كود خاص لكل قعدة</span></div>
-      <p class="footer-note">نصيحة: المضيف يضغط «نسخ الكود» بعد إنشاء القعدة ويرسله لصاحبه كما هو. الكود الجديد يتجنب الحروف والأرقام المتشابهة.</p>
+      <p class="footer-note">نصيحة: الوضع الافتراضي ضد المعلم الذكي. لاختيار اللعب مع صديق، اختر «قعدة أونلاين». عند إدخال كود، ستنضم للغرفة كما هي. الكود الجديد يتجنب الحروف والأرقام المتشابهة.</p>
     </section>
 
     <section class="hidden" id="board">
@@ -224,7 +233,7 @@
       <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 قوم من القعدة</button></div>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line">قهوة الباصرة · لمة مصرية أونلاين · نسخة تجريبية 6.0</div>
+    <div class="footer-line">قهوة الباصرة · لمة مصرية أونلاين · نسخة تجريبية 6.3</div>
   </main>
 
   <!-- راديو مستقل لكل لاعب. يعتمد على صفحات/مشغلات المحطات الرسمية، ولا يعيد بث الصوت من خادم اللعبة. -->
@@ -235,12 +244,13 @@
       <h2 id="radioTitle">📻 راديو القهوة</h2>
       <p class="modal-subtitle">اختار محطتك المفضلة. اختيار الراديو عندك أنت فقط، وكل لاعب يقدر يسمع محطة مختلفة.</p>
       <div class="station-grid" id="radioStationGrid">
-        <button type="button" class="station-button" data-station="9090" onclick="selectRadioStation('9090')"><span class="station-frequency">90.9 FM</span><strong>الراديو 9090</strong><small>هواء مصري</small></button>
+        <button type="button" class="station-button" data-station="nagham" onclick="selectRadioStation('nagham')"><span class="station-frequency">105.3 FM</span><strong>نغم FM</strong><small>أغاني مصرية وكلاسيكيات</small></button>
         <button type="button" class="station-button" data-station="nogoum" onclick="selectRadioStation('nogoum')"><span class="station-frequency">100.6 FM</span><strong>نجوم إف إم</strong><small>أغاني وبرامج</small></button>
         <button type="button" class="station-button" data-station="nile" onclick="selectRadioStation('nile')"><span class="station-frequency">104.2 FM</span><strong>Nile FM</strong><small>Music & shows</small></button>
-        <button type="button" class="station-button" data-station="masr" onclick="selectRadioStation('masr')"><span class="station-frequency">88.7 FM</span><strong>راديو مصر</strong><small>أخبار وبرامج</small></button>
+        <button type="button" class="station-button" data-station="nrj" onclick="selectRadioStation('nrj')"><span class="station-frequency">92.1 FM</span><strong>إنرجي مصر</strong><small>المزيكا لعبتها</small></button>
+        <button type="button" class="station-button" data-station="aghani" onclick="selectRadioStation('aghani')"><span class="station-frequency">105.8 FM</span><strong>إذاعة الأغاني</strong><small>أصل الطرب المصري</small></button>
       </div>
-      <div class="radio-now-row"><div><span class="radio-live-dot"></span><strong id="radioNowLabel">اختار محطة للبدء</strong><p id="radioNowHint">اضغط تشغيل داخل مشغل المحطة إذا طلب منك ذلك.</p></div><a id="radioOfficialLink" class="btn btn-secondary btn-small" href="https://www.9090.fm/" target="_blank" rel="noopener noreferrer">فتح الموقع الرسمي ↗</a></div>
+      <div class="radio-now-row"><div><span class="radio-live-dot"></span><strong id="radioNowLabel">اختار محطة للبدء</strong><p id="radioNowHint">اضغط تشغيل داخل مشغل المحطة إذا طلب منك ذلك.</p></div><a id="radioOfficialLink" class="btn btn-secondary btn-small" href="https://www.naghamfm1053.com/ar" target="_blank" rel="noopener noreferrer">فتح موقع نغم FM ↗</a></div>
       <div class="radio-frame-wrap"><iframe id="radioFrame" title="مشغل محطة الراديو الرسمية" src="about:blank" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><div id="radioFramePlaceholder" class="radio-frame-placeholder"><span>📻</span><strong>الراديو مستني اختيارك</strong><small>اختار واحدة من المحطات فوق</small></div></div>
       <div class="radio-modal-actions"><button class="btn btn-danger btn-small" type="button" onclick="stopRadio()">■ إيقاف الراديو</button><span class="section-hint">لو المشغل لم يظهر داخل اللعبة، استخدم زر الموقع الرسمي.</span></div>
       <p class="radio-legal-note">تفتح اللعبة المشغلات الرسمية أو صفحات الاستماع الخاصة بالمحطات، ولا تستضيف البث أو تعيد توزيعه. قد تمنع بعض المحطات التضمين داخل مواقع أخرى؛ عندها افتح الموقع الرسمي.</p>
@@ -284,7 +294,11 @@
     let gameListener = null;
     let joiningName = '';
     let isBusy = false;
-    const APP_VERSION = '6.0';
+    let aiTurnTimer = null;
+    let aiTurnInProgress = false;
+    let lastAiTurnSignature = '';
+    let aiRetryCount = 0;
+    const APP_VERSION = '6.3';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -297,10 +311,13 @@
     let effectsVolume = 0.55;
     let currentRadioStation = null;
     const RADIO_STATIONS = {
-      '9090': { name: 'الراديو 9090', subtitle: 'هواء مصري', embed: 'https://www.9090.fm/index.php/webradioplayer/index.php', official: 'https://www.9090.fm/' },
-      'nogoum': { name: 'نجوم إف إم', subtitle: 'برامج وأغاني مصرية', embed: 'https://www.nogoumfm.net/live-radio-stream/', official: 'https://www.nogoumfm.net/live-radio-stream/' },
-      'nile': { name: 'Nile FM', subtitle: 'Music & shows', embed: 'https://audio.nrpstream.com/public/nile_fm/embed', official: 'https://nilefm.com/listen-live' },
-      'masr': { name: 'راديو مصر', subtitle: 'أخبار وبرامج', embed: 'https://www.radiomasr.net/live-stream', official: 'https://www.radiomasr.net/live-stream' }
+      // اختيرت نغم وإنرجي بدل 9090 وراديو مصر حسب طلب صاحب اللعبة.
+      // روابط البث المباشر أدناه معروضة عبر مزودي بث خارجيين؛ صفحة المحطة الأصلية متاحة دائمًا كخيار بديل.
+      'nagham': { name: 'نغم FM 105.3', subtitle: 'أغاني مصرية وكلاسيكيات من التسعينيات والألفينات', embed: 'https://ahmsamir.radioca.st/stream', official: 'https://www.naghamfm1053.com/ar', officialLabel: 'فتح موقع نغم FM ↗' },
+      'nogoum': { name: 'نجوم إف إم 100.6', subtitle: 'برامج وأغاني مصرية', embed: 'https://www.nogoumfm.net/live-radio-stream/', official: 'https://www.nogoumfm.net/live-radio-stream/', officialLabel: 'فتح مشغل نجوم إف إم ↗' },
+      'nile': { name: 'Nile FM 104.2', subtitle: 'English music & shows', embed: 'https://audio.nrpstream.com/public/nile_fm/embed', official: 'https://nilefm.com/listen-live', officialLabel: 'فتح مشغل Nile FM ↗' },
+      'nrj': { name: 'إنرجي مصر NRJ 92.1', subtitle: 'المزيكا لعبتها — موسيقى وبرامج شبابية', embed: 'https://nrjstreaming.ahmed-melege.com/nrjegypt', official: 'https://www.facebook.com/NRJEgypt/', officialLabel: 'فتح صفحة إنرجي مصر الرسمية ↗' },
+      'aghani': { name: 'إذاعة الأغاني 105.8', subtitle: 'أصل الطرب المصري — ماسبيرو', embed: 'https://www.maspero.eg/stream/13', official: 'https://www.maspero.eg/stream/13', officialLabel: 'فتح بث إذاعة الأغاني ↗' }
     };
     const FEATURE_FLAGS = { sponsorSlotsEnabled: false };
     // Sponsor placements are intentionally disabled. Future campaigns can be switched on after direct deals/consent checks.
@@ -370,6 +387,7 @@
           id,
           name: old.name || 'لاعب',
           score: Number(old.score) || 0,
+          isAI: old.isAI === true,
           hand: deck.splice(0, 4),
           captured: [],
           basras: 0
@@ -512,23 +530,24 @@
       joiningName = name;
       myId = genPlayerId();
       myRoom = enteredCode || genRoomCode();
+      const playWithAI = !enteredCode && document.getElementById('gameMode')?.value !== 'online';
       setBusy(true, 'جارٍ الاتصال بالقعدة...');
       try {
         await waitForDatabaseConnection();
-        let result = await runJoinTransaction(enteredCode);
+        let result = await runJoinTransaction(enteredCode, playWithAI);
         if (result === 'collision' && !enteredCode) {
           let retries = 0;
           while (result === 'collision' && retries < 5) {
             myRoom = genRoomCode();
-            result = await runJoinTransaction('');
+            result = await runJoinTransaction('', playWithAI);
             retries++;
           }
         }
         if (result !== 'joined') {
           const messages = {
-            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.3، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
             'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
-            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.3.',
             'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
             'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
             'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
@@ -611,7 +630,10 @@
       if (!response.ok) {
         let payload = null;
         try { payload = await response.json(); } catch (_) {}
-        throw new Error((payload && payload.error) || ('تعذر حفظ الانضمام (HTTP ' + response.status + ').'));
+        const error = new Error((payload && payload.error) || ('تعذر حفظ البيانات (HTTP ' + response.status + ').'));
+        error.httpStatus = response.status;
+        error.payload = payload;
+        throw error;
       }
       return true;
     }
@@ -691,7 +713,7 @@
       });
     }
 
-    async function runJoinTransaction(enteredCode) {
+    async function runJoinTransaction(enteredCode, playWithAI = false) {
       if (enteredCode) {
         // Joining uses a real server read and ETag compare-and-swap. This avoids treating a
         // new browser's empty local transaction cache as an absent room, and prevents races
@@ -730,7 +752,8 @@
             score: 0,
             hand: nextGame.deck.splice(0, 4),
             captured: [],
-            basras: 0
+            basras: 0,
+            isAI: false
           };
           nextGame.turnOrder = active.concat(myId);
           nextGame.status = 'playing';
@@ -767,15 +790,25 @@
           const deck = makeDeck();
           const table = takeInitialTable(deck);
           const hand = deck.splice(0, 4);
+          const players = { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0, isAI: false } };
+          const turnOrder = [myId];
+          let status = 'waiting';
+          if (playWithAI) {
+            const aiId = 'ai_' + myRoom;
+            players[aiId] = { id: aiId, name: 'المعلم', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, isAI: true, aiLevel: 'normal' };
+            turnOrder.push(aiId);
+            status = 'playing';
+          }
           return {
             room: myRoom,
             roomCode: myRoom,
             appVersion: APP_VERSION,
             createdAt: Date.now(),
-            deck, table,
-            players: { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0 } },
-            turnOrder: [myId], turnIndex: 0, status: 'waiting', roundNumber: 1,
-            lastCaptureBy: null, roundResults: null, winner: null
+            lastUpdatedAt: Date.now(),
+            deck, table, players,
+            turnOrder, turnIndex: 0, status, roundNumber: 1,
+            lastCaptureBy: null, roundResults: null, winner: null,
+            playMode: playWithAI ? 'ai' : 'online'
           };
         }, (error, committed, snapshot) => {
           if (error) return reject(error);
@@ -785,6 +818,198 @@
         }, false);
       });
     }
+    // Server-side compare-and-swap for every move. This avoids the stale local-cache path
+    // of client transactions and exposes the real Firebase error if a rule rejects a move.
+    async function mutateRoomWithETag(mutator, actionType) {
+      const actionId = 'a_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      for (let attempt = 0; attempt < 8; attempt++) {
+        let snapshot;
+        try {
+          snapshot = await firebaseRestReadRoom(myRoom);
+        } catch (error) {
+          if (error.httpStatus === 401 || error.httpStatus === 403 || /permission_denied|permission denied/i.test(error.message || '')) {
+            throw new Error('Firebase رفض قراءة بيانات القعدة بسبب الصلاحيات (HTTP ' + (error.httpStatus || '?') + '). راجع Realtime Database Rules.');
+          }
+          if (/Failed to fetch|NetworkError|Load failed/i.test(error.message || '')) {
+            throw new Error('فشل الاتصال بخادم Firebase أثناء قراءة القعدة. تأكد من الإنترنت ثم جرّب مرة واحدة.');
+          }
+          throw error;
+        }
+        const current = snapshot.data;
+        if (!current || typeof current !== 'object') return { committed: false, reason: 'missing-room' };
+        const decision = mutator(current);
+        if (!decision || !decision.game) return { committed: false, reason: (decision && decision.reason) || 'conflict' };
+        if (!snapshot.etag) {
+          throw new Error('Firebase لم يُرجع ETag لتحديث آمن؛ لم يتم حفظ الحركة. نحتاج مراجعة اتصال Realtime Database.');
+        }
+        const nextGame = decision.game;
+        nextGame.lastUpdatedAt = Date.now();
+        nextGame.lastActionId = actionId;
+        nextGame.lastActionType = actionType;
+        let committed = false;
+        try {
+          committed = await firebaseRestCompareAndSwap(myRoom, nextGame, snapshot.etag);
+        } catch (error) {
+          // If the response was lost after the server committed, verify the action ID before retrying.
+          if (/Failed to fetch|NetworkError|Load failed/i.test(error.message || '')) {
+            try {
+              const verify = await firebaseRestReadRoom(myRoom);
+              if (verify.data && verify.data.lastActionId === actionId) {
+                return { committed: true, result: decision.result || 'ok', game: verify.data };
+              }
+            } catch (_) {}
+            throw new Error('انقطع الاتصال أثناء تأكيد الحركة. افحص حالة اللعبة قبل إعادة المحاولة.');
+          }
+          if (error.httpStatus === 401 || error.httpStatus === 403 || /permission_denied|permission denied/i.test(error.message || '')) {
+            throw new Error('Firebase رفض حفظ الحركة (HTTP ' + (error.httpStatus || '?') + '). هذه مشكلة صلاحيات أو قواعد تحقق في Realtime Database وليست مشكلة في الورقة المختارة.');
+          }
+          throw error;
+        }
+        if (committed) return { committed: true, result: decision.result || 'ok', game: nextGame };
+        // A 412 is expected if another client changed the room in between; reread and revalidate.
+        await new Promise(resolve => setTimeout(resolve, 60 + attempt * 35));
+      }
+      return { committed: false, reason: 'conflict' };
+    }
+
+    function applyCardToGame(current, playerId, index) {
+      if (!current || current.status !== 'playing') return { reason: 'not-playing' };
+      const order = activeOrder(current);
+      if (order.length !== 2) return { reason: 'waiting' };
+      const currentId = order[(Number(current.turnIndex) || 0) % order.length];
+      if (currentId !== playerId) return { reason: 'not-turn' };
+      const sourcePlayer = current.players && current.players[playerId];
+      if (!sourcePlayer || !Array.isArray(sourcePlayer.hand) || !sourcePlayer.hand[index]) return { reason: 'bad-card' };
+      const game = JSON.parse(JSON.stringify(current));
+      const player = game.players[playerId];
+      const played = player.hand.splice(index, 1)[0];
+      const tableBefore = Array.isArray(game.table) ? game.table.slice() : [];
+      const indices = findCapturedIndices(played, tableBefore);
+      if (indices.length) {
+        const takeSet = new Set(indices);
+        const taken = tableBefore.filter((_, i) => takeSet.has(i));
+        game.table = tableBefore.filter((_, i) => !takeSet.has(i));
+        player.captured = [...(player.captured || []), ...taken, played];
+        game.lastCaptureBy = playerId;
+        const cleared = game.table.length === 0 && tableBefore.length > 0;
+        const basra = cleared && (played.val === 'J' ? false : isSevenOfDiamonds(played) ? isSevenBasra(tableBefore) : true);
+        if (basra) player.basras = (player.basras || 0) + 1;
+      } else {
+        game.table.push(played);
+      }
+      game.turnIndex = (Number(game.turnIndex) + 1) % order.length;
+      const handsEmpty = order.every(id => (game.players[id].hand || []).length === 0);
+      if (handsEmpty) {
+        if (game.deck && game.deck.length) {
+          order.forEach(id => { game.players[id].hand = game.deck.splice(0, 4); });
+        } else {
+          finishRound(game, order);
+        }
+      }
+      return { game, result: 'played' };
+    }
+
+    function chooseAICard(game, aiId) {
+      const hand = (game.players[aiId] && game.players[aiId].hand) || [];
+      const table = game.table || [];
+      if (!hand.length) return -1;
+      let best = -Infinity;
+      let bestIndices = [];
+      hand.forEach((card, index) => {
+        const captured = findCapturedIndices(card, table);
+        let score = 0;
+        if (captured.length) {
+          const remaining = table.filter((_, i) => !new Set(captured).has(i));
+          score += 35 + captured.length * 4;
+          if (remaining.length === 0 && table.length > 0) {
+            if (card.val === 'J') score += 8;
+            else if (isSevenOfDiamonds(card)) score += isSevenBasra(table) ? 24 : 10;
+            else score += 19;
+          }
+          if (card.suit === '♦' && card.val === '10') score += 7;
+          if (card.suit === '♣' && card.val === '2') score += 5;
+          if (isSevenOfDiamonds(card)) score += 3;
+        } else {
+          const n = numericValue(card);
+          score -= n === null ? 3 : n * 0.35;
+          if (card.val === 'J') score -= 16;
+          if (isSevenOfDiamonds(card)) score -= 12;
+          if (card.suit === '♦' && card.val === '10') score -= 4;
+          if (card.suit === '♣' && card.val === '2') score -= 2;
+        }
+        score += Math.random() * 0.25;
+        if (score > best) { best = score; bestIndices = [index]; }
+        else if (Math.abs(score - best) < 0.0001) bestIndices.push(index);
+      });
+      return bestIndices[Math.floor(Math.random() * bestIndices.length)] ?? 0;
+    }
+
+    function aiStateSignature(game, aiId) {
+      const hand = (game.players[aiId] && game.players[aiId].hand || []).map(c => c.display || (c.val + c.suit)).join(',');
+      const table = (game.table || []).map(c => c.display || (c.val + c.suit)).join(',');
+      return [myRoom, game.roundNumber || 1, game.turnIndex || 0, hand, table, game.deck ? game.deck.length : 0].join('|');
+    }
+
+    function queueAIMove(game, aiId) {
+      if (aiTurnInProgress || aiTurnTimer) return;
+      const signature = aiStateSignature(game, aiId);
+      if (signature === lastAiTurnSignature) return;
+      aiTurnTimer = setTimeout(async () => {
+        aiTurnTimer = null;
+        aiTurnInProgress = true;
+        try {
+          const result = await mutateRoomWithETag(current => {
+            const order = activeOrder(current);
+            if (current.status !== 'playing' || order.length !== 2) return { reason: 'not-playing' };
+            const currentId = order[(Number(current.turnIndex) || 0) % order.length];
+            const aiPlayer = current.players && current.players[currentId];
+            if (currentId !== aiId || !aiPlayer || aiPlayer.isAI !== true) return { reason: 'not-ai-turn' };
+            const index = chooseAICard(current, aiId);
+            return applyCardToGame(current, aiId, index);
+          }, 'ai-move');
+          if (result.committed && result.result === 'played') {
+            lastAiTurnSignature = signature;
+            aiRetryCount = 0;
+            playSfx('card');
+          } else if (result.reason === 'conflict' && aiRetryCount < 2) {
+            aiRetryCount++;
+            lastAiTurnSignature = '';
+            setTimeout(() => gameRef().once('value').then(snap => { if (snap.val()) renderGame(snap.val()); }).catch(console.error), 400);
+          } else {
+            lastAiTurnSignature = signature;
+            if (result.reason !== 'not-ai-turn' && result.reason !== 'not-playing') {
+              showNotice('المعلم لم يتمكن من تنفيذ الحركة. ' + aiReasonMessage(result.reason), 'bad');
+            }
+          }
+        } catch (error) {
+          console.error('[Basra AI move]', error);
+          lastAiTurnSignature = signature;
+          showNotice('تعذر على المعلم تنفيذ الحركة: ' + explainMoveError(error), 'bad');
+        } finally {
+          aiTurnInProgress = false;
+        }
+      }, 650 + Math.random() * 450);
+    }
+
+    function aiReasonMessage(reason) {
+      const messages = {
+        'permission': 'راجع قواعد Firebase.',
+        'network': 'تحقق من الإنترنت.',
+        'not-ai-turn': 'الدور انتقل إلى اللاعب.',
+        'not-playing': 'الجولة ليست في حالة لعب.',
+        'conflict': 'حدث تعارض متكرر في تحديث القعدة.'
+      };
+      return messages[reason] || 'حاول تحديث الصفحة إذا استمرت المشكلة.';
+    }
+
+    function explainMoveError(error) {
+      const message = String(error && error.message || error || 'خطأ غير معروف');
+      if (/permission|PERMISSION_DENIED|HTTP 401|HTTP 403/i.test(message)) return 'Firebase رفض الحفظ بسبب الصلاحيات. ' + message;
+      if (/ETag/i.test(message)) return 'تعذر الحصول على مراجعة آمنة للبيانات. ' + message;
+      if (/fetch|network|Load failed|Failed to fetch/i.test(message)) return 'الاتصال بقاعدة البيانات انقطع. تحقق من الإنترنت. ' + message;
+      return message.slice(0, 260);
+    }
+
     function renderGame(game) {
       const order = activeOrder(game);
       const myPlayer = game.players && game.players[myId];
@@ -804,7 +1029,7 @@
         item.className = 'player-item' + (id === curId && game.status === 'playing' ? ' active' : '');
         const name = document.createElement('span');
         name.className = 'player-name';
-        name.textContent = player.name + (id === myId ? ' (أنت)' : '');
+        name.textContent = player.name + (id === myId ? ' (أنت)' : player.isAI === true ? ' 🤖' : '');
         const meta = document.createElement('span');
         meta.className = 'player-meta';
         meta.textContent = `${Number(player.score)||0} نقطة · ${(player.hand||[]).length} ورقة`;
@@ -868,6 +1093,11 @@
       } else if (game.status === 'roundOver' || game.status === 'finished') {
         renderResults(game);
       }
+      const activePlayer = curId && game.players ? game.players[curId] : null;
+      if (game.status === 'playing' && activePlayer && activePlayer.isAI === true && curId !== myId) {
+        showNotice('🤖 المعلم بيفكر في الحركة...', '');
+        queueAIMove(game, curId);
+      }
     }
 
     function makeCardElement(card, interactive) {
@@ -918,86 +1148,47 @@
     async function playCard(index) {
       if (!myRoom || isBusy) return;
       setBusy(true, 'جارٍ تنفيذ الحركة...');
-      let reason = null;
       try {
-        const outcome = await new Promise((resolve, reject) => {
-          gameRef().transaction(current => {
-            reason = null;
-            if (!current || current.status !== 'playing') { reason = 'not-playing'; return; }
-            const order = activeOrder(current);
-            if (order.length !== 2) { reason = 'waiting'; return; }
-            const currentId = order[(current.turnIndex || 0) % order.length];
-            if (currentId !== myId) { reason = 'not-turn'; return; }
-            if (!current.players[myId] || !current.players[myId].hand || !current.players[myId].hand[index]) { reason = 'bad-card'; return; }
-            const game = JSON.parse(JSON.stringify(current));
-            const player = game.players[myId];
-            const played = player.hand.splice(index, 1)[0];
-            const tableBefore = game.table.slice();
-            const indices = findCapturedIndices(played, tableBefore);
-
-            if (indices.length) {
-              const takeSet = new Set(indices);
-              const taken = tableBefore.filter((_, i) => takeSet.has(i));
-              game.table = tableBefore.filter((_, i) => !takeSet.has(i));
-              player.captured = [...(player.captured || []), ...taken, played];
-              game.lastCaptureBy = myId;
-              const cleared = game.table.length === 0 && tableBefore.length > 0;
-              const basra = cleared && (played.val === 'J' ? false : isSevenOfDiamonds(played) ? isSevenBasra(tableBefore) : true);
-              if (basra) player.basras = (player.basras || 0) + 1;
-            } else {
-              game.table.push(played);
-            }
-
-            game.turnIndex = (game.turnIndex + 1) % order.length;
-            const handsEmpty = order.every(id => (game.players[id].hand || []).length === 0);
-            if (handsEmpty) {
-              if (game.deck && game.deck.length) {
-                order.forEach(id => { game.players[id].hand = game.deck.splice(0, 4); });
-              } else {
-                finishRound(game, order);
-              }
-            }
-            return game;
-          }, (error, committed, snapshot) => {
-            if (error) return reject(error);
-            if (committed) return resolve('played');
-            resolve(reason || 'conflict');
-          }, false);
-        });
-        if (outcome === 'played') playSfx('card');
-        if (outcome !== 'played') {
-          const messages = { 'not-turn':'مش دورك حاليًا.', waiting:'انتظر انضمام اللاعب الآخر.', 'not-playing':'لا يمكن لعب ورقة في هذه المرحلة.', 'bad-card':'الورقة لم تعد في يدك؛ حدّثت اللعبة، جرّب مرة أخرى.', conflict:'تغيرت حالة اللعبة. حاول مرة أخرى.' };
-          if (outcome !== 'bad-card') alert(messages[outcome] || messages.conflict);
+        const outcome = await mutateRoomWithETag(current => applyCardToGame(current, myId, index), 'human-move');
+        if (outcome.committed && outcome.result === 'played') {
+          playSfx('card');
+        } else {
+          const messages = {
+            'not-turn': 'مش دورك حاليًا.',
+            waiting: 'انتظر انضمام اللاعب الآخر.',
+            'not-playing': 'لا يمكن لعب ورقة في هذه المرحلة.',
+            'bad-card': 'الورقة لم تعد في يدك؛ حدّثت اللعبة، جرّب مرة أخرى.',
+            conflict: 'تغيرت حالة اللعبة بالتزامن. حاول مرة أخرى.',
+            'missing-room': 'الغرفة لم تعد موجودة على الخادم. أنشئ غرفة جديدة.'
+          };
+          if (outcome.reason !== 'bad-card') alert(messages[outcome.reason] || 'تعذر تنفيذ الحركة: ' + aiReasonMessage(outcome.reason));
         }
       } catch (error) {
-        console.error(error); alert('تعذر تنفيذ الحركة. تحقق من الاتصال وحاول مرة أخرى.');
+        console.error('[Basra move]', error);
+        alert('تعذر حفظ الحركة. ' + explainMoveError(error));
       } finally { setBusy(false); }
     }
 
     async function startNextRound() {
       if (!myRoom || isBusy) return;
       setBusy(true, 'جارٍ تجهيز الجولة...');
-      let reason = null;
       try {
-        const outcome = await new Promise((resolve, reject) => {
-          gameRef().transaction(current => {
-            reason = null;
-            if (!current || current.status !== 'roundOver') { reason = 'already-started'; return; }
-            const order = activeOrder(current);
-            if (order.length !== 2) { reason = 'players-missing'; return; }
-            const players = current.players;
-            const nextStarter = ((current.turnIndex || 0) + 1) % order.length;
-            const fresh = makeRound(players, order, current.room, (current.roundNumber || 1) + 1, nextStarter);
-            return fresh;
-          }, (error, committed, snapshot) => {
-            if (error) return reject(error);
-            resolve(committed ? 'started' : (reason || 'already-started'));
-          }, false);
-        });
-        if (outcome === 'started') playSfx('shuffle');
-        if (outcome !== 'started') alert(outcome === 'players-missing' ? 'يجب أن يكون اللاعبان متصلين لبدء الجولة.' : 'بدأ لاعب آخر الجولة أو تغيرت حالة المباراة.');
-      } catch (error) { console.error(error); alert('تعذر بدء الجولة الجديدة.'); }
-      finally { setBusy(false); }
+        const outcome = await mutateRoomWithETag(current => {
+          if (!current || current.status !== 'roundOver') return { reason: 'already-started' };
+          const order = activeOrder(current);
+          if (order.length !== 2) return { reason: 'players-missing' };
+          const nextStarter = ((Number(current.turnIndex) || 0) + 1) % order.length;
+          const fresh = makeRound(current.players, order, current.room || myRoom, (current.roundNumber || 1) + 1, nextStarter);
+          fresh.appVersion = APP_VERSION;
+          fresh.playMode = current.playMode || (order.some(id => current.players[id].isAI) ? 'ai' : 'online');
+          return { game: fresh, result: 'started' };
+        }, 'next-round');
+        if (outcome.committed && outcome.result === 'started') playSfx('shuffle');
+        else alert(outcome.reason === 'players-missing' ? 'يجب أن يكون اللاعبان موجودين لبدء الجولة.' : 'بدأ لاعب آخر الجولة أو تغيرت حالة المباراة.');
+      } catch (error) {
+        console.error('[Basra next round]', error);
+        alert('تعذر بدء الجولة الجديدة. ' + explainMoveError(error));
+      } finally { setBusy(false); }
     }
 
     async function copyRoomCode() {
@@ -1235,7 +1426,7 @@
       if (placeholder) placeholder.classList.add('hidden');
       if (label) label.textContent = station.name;
       if (hint) hint.textContent = station.subtitle + ' — لو المشغل منع التضمين، افتح الموقع الرسمي.';
-      if (link) { link.href = station.official; link.textContent = 'فتح المشغل الرسمي ↗'; }
+      if (link) { link.href = station.official; link.textContent = station.officialLabel || 'فتح الموقع الرسمي ↗'; }
       document.querySelectorAll('.station-button').forEach(button => button.classList.toggle('active', button.dataset.station === key));
       // Stop the short local music sample when a live station is selected to avoid competing audio.
       if (musicOn) { const audio = document.getElementById('cafeMusicAudio'); if (audio) audio.pause(); musicOn = false; const btn=document.getElementById('musicToggle'); if(btn)btn.textContent='♫ موسيقى القعدة'; }
