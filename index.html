@@ -1,491 +1,641 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🃏 باصرة - اونلاين</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-
-    <!-- Firebase v9 Compat -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(180deg, #2C1810 0%, #1a0f08 100%);
-            color: #F8FAFC;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: rgba(0,0,0,0.5);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,193,7,0.4);
-        }
-
-        .header h1 {
-            font-size: 3em;
-            color: #FFC107;
-            text-shadow: 0 0 20px rgba(255,193,7,0.5);
-            margin-bottom: 10px;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 10px 25px;
-            background: rgba(76,175,80,0.2);
-            border: 2px solid #4CAF50;
-            border-radius: 25px;
-            color: #4CAF50;
-            font-weight: 700;
-            margin-top: 15px;
-            font-size: 1.1em;
-        }
-
-        .status.offline {
-            background: rgba(244,67,54,0.2);
-            border-color: #F44336;
-            color: #F44336;
-        }
-
-        .setup-screen {
-            background: rgba(0,0,0,0.7);
-            padding: 50px;
-            border-radius: 25px;
-            border: 3px solid rgba(255,193,7,0.4);
-            max-width: 550px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .setup-screen h2 {
-            color: #FFC107;
-            margin-bottom: 35px;
-            font-size: 2.2em;
-        }
-
-        .input-group {
-            margin-bottom: 25px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            color: #FFC107;
-            margin-bottom: 12px;
-            font-weight: 700;
-            font-size: 1.2em;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.2em;
-            border: 3px solid rgba(255,193,7,0.4);
-            border-radius: 15px;
-            background: rgba(0,0,0,0.5);
-            color: #F8FAFC;
-            font-family: 'Cairo', sans-serif;
-            text-align: center;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #FFC107;
-            box-shadow: 0 0 25px rgba(255,193,7,0.4);
-        }
-
-        .btn {
-            padding: 18px 50px;
-            font-size: 1.3em;
-            font-weight: 800;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            transition: all 0.3s;
-            margin: 12px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #FFC107, #FF9800);
-            color: #1a0f08;
-            box-shadow: 0 5px 20px rgba(255,193,7,0.5);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(255,193,7,0.7);
-        }
-
-        .game-board {
-            display: none;
-            width: 100%;
-        }
-
-        .game-board.active { display: block; }
-
-        .game-info {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .info-card {
-            background: rgba(0,0,0,0.7);
-            padding: 20px 30px;
-            border-radius: 15px;
-            border: 3px solid rgba(255,193,7,0.4);
-            flex: 1;
-            min-width: 220px;
-        }
-
-        .info-card h3 {
-            color: #FFC107;
-            font-size: 1em;
-            margin-bottom: 8px;
-        }
-
-        .info-card p {
-            font-size: 1.5em;
-            font-weight: 800;
-        }
-
-        .players-area {
-            background: rgba(0,0,0,0.5);
-            padding: 25px;
-            border-radius: 18px;
-            border: 3px solid rgba(255,193,7,0.4);
-            margin-bottom: 25px;
-        }
-
-        .players-area h3 {
-            color: #FFC107;
-            margin-bottom: 18px;
-            font-size: 1.4em;
-        }
-
-        .player-item {
-            padding: 15px 20px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .player-item.active {
-            background: rgba(255,193,7,0.25);
-            border: 2px solid #FFC107;
-        }
-
-        .table-area {
-            background: rgba(0,0,0,0.7);
-            padding: 40px;
-            border-radius: 22px;
-            border: 3px solid rgba(255,193,7,0.4);
-            min-height: 220px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .card {
-            width: 75px;
-            height: 110px;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2em;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.4);
-            font-weight: 700;
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.08);
-        }
-
-        .card.red { color: #F44336; }
-        .card.black { color: #000; }
-
-        .hand-area {
-            background: rgba(0,0,0,0.7);
-            padding: 25px;
-            border-radius: 18px;
-            border: 3px solid rgba(255,193,7,0.4);
-        }
-
-        .hand-area h3 {
-            color: #FFC107;
-            margin-bottom: 18px;
-            text-align: center;
-            font-size: 1.4em;
-        }
-
-        .hand-cards {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 { font-size: 2.2em; }
-            .setup-screen { padding: 30px; }
-            .card { width: 65px; height: 95px; font-size: 1.8em; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a0f08">
+  <title>باصرة أونلاين — النسخة المطوّرة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <style>
+    :root { --gold:#ffc107; --orange:#ff9800; --bg:#1a0f08; --panel:rgba(0,0,0,.58); --line:rgba(255,193,7,.42); --muted:#c7b9a8; --green:#4caf50; --red:#f44336; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:'Cairo',sans-serif; color:#f8fafc; background:linear-gradient(180deg,#2c1810 0%,var(--bg) 100%); }
+    .container { width:min(1100px,100%); margin:auto; padding:20px; }
+    .header { text-align:center; margin:4px auto 22px; padding:20px 24px; background:var(--panel); border:1px solid var(--line); border-radius:18px; width:min(700px,100%); }
+    .header h1 { margin:0 0 8px; color:var(--gold); font-size:clamp(1.6rem,4vw,2.6rem); text-shadow:0 0 18px #ffc10730; }
+    .header p { margin:0 0 12px; color:var(--gold); }
+    .status { display:inline-block; padding:5px 16px; border:1px solid var(--green); border-radius:24px; color:#72e879; background:#4caf501b; font-weight:700; }
+    .status.offline { color:#ff7777; border-color:var(--red); background:#f443361b; }
+    .panel { background:rgba(0,0,0,.64); border:1px solid var(--line); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 8px 24px #00000012; }
+    .setup { width:min(550px,100%); margin:0 auto; }
+    h2,h3 { color:var(--gold); margin-top:0; }
+    h2 { font-size:1.6rem; margin-bottom:22px; text-align:center; }
+    .input-group { margin:0 0 18px; }
+    label { display:block; color:var(--gold); font-weight:700; margin:0 0 8px; }
+    input { width:100%; border:2px solid #ffc10766; border-radius:12px; padding:14px; background:#0a0705; color:#fff; font:inherit; text-align:center; outline:none; }
+    input:focus { border-color:var(--gold); box-shadow:0 0 0 3px #ffc1071b; }
+    .btn { border:0; border-radius:12px; padding:12px 22px; margin:5px; cursor:pointer; font:700 1rem 'Cairo',sans-serif; transition:transform .15s,opacity .15s; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+    .btn-primary { background:linear-gradient(135deg,var(--gold),var(--orange)); color:#211306; box-shadow:0 4px 18px #ffc10726; }
+    .btn-secondary { color:var(--gold); background:#ffc10712; border:1px solid #ffc1075c; }
+    .btn-danger { color:#ff9d9d; background:#f4433615; border:1px solid #f4433655; }
+    .center { text-align:center; }
+    .hidden { display:none!important; }
+    .info-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+    .info-card { background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:13px; min-width:0; }
+    .info-card h3 { font-size:.9rem; margin:0 0 5px; }
+    .info-card p { font-size:1.25rem; font-weight:900; margin:0; overflow-wrap:anywhere; }
+    .players-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .player-item { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:12px 14px; background:#ffffff0a; border:1px solid transparent; border-radius:10px; }
+    .player-item.active { border-color:var(--gold); background:#ffc10720; }
+    .player-name { font-weight:800; overflow-wrap:anywhere; }
+    .player-meta { text-align:left; color:var(--gold); white-space:nowrap; font-size:.88rem; }
+    .notice { border:1px solid #ffc10755; border-radius:11px; padding:11px 14px; margin:0 0 16px; background:#ffc1070d; color:#f3dfb1; text-align:center; }
+    .notice.good { border-color:#4caf5055; background:#4caf5010; color:#b8f5bd; }
+    .notice.bad { border-color:#f4433655; background:#f4433610; color:#ffc0c0; }
+    .table-area { min-height:190px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; }
+    .card { position:relative; display:flex; flex-direction:column; justify-content:space-between; align-items:center; width:72px; height:105px; padding:7px 4px; color:#111; background:linear-gradient(140deg,#fff,#f1eee8); border:1px solid #d8d2c8; border-radius:9px; box-shadow:0 4px 10px #0005; font-family:Arial,sans-serif; font-weight:800; user-select:none; }
+    .card.red { color:#d21d28; }
+    .card .corner { align-self:flex-start; direction:ltr; font-size:.85rem; line-height:1.1; }
+    .card .suit-big { font-size:2rem; line-height:1; }
+    .card .rank { font-size:1.35rem; line-height:1; }
+    .hand-cards { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; min-height:112px; }
+    .hand-card { cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .hand-card:hover:not(.disabled) { transform:translateY(-7px); box-shadow:0 7px 17px #ffc10735; }
+    .hand-card.disabled { opacity:.65; cursor:not-allowed; }
+    .empty { color:#b7aa9b; text-align:center; margin:20px 0; }
+    .result { white-space:pre-line; line-height:1.9; }
+    .footer-note { color:#b5a696; font-size:.88rem; text-align:center; margin:16px 0 4px; }
+    @media (max-width:720px) {
+      .container { padding:12px; }
+      .panel { padding:15px; }
+      .info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .players-list { grid-template-columns:1fr; }
+      .card { width:61px; height:91px; }
+      .card .suit-big { font-size:1.65rem; }
+      .card .rank { font-size:1.15rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🃏 باصرة - اونلاين 🌍</h1>
-            <p style="color: #FFC107; font-size: 1.3em; margin: 12px 0;">العب مع أصحابك من أي مكان في العالم</p>
-            <span class="status" id="status">⚡ جاري الاتصال...</span>
-        </div>
+  <main class="container">
+    <header class="header">
+      <h1>🃏 باصرة أونلاين 🌍</h1>
+      <p>العب مع أصحابك من أي مكان في العالم</p>
+      <span class="status" id="status">جاري الاتصال...</span>
+    </header>
 
-        <div class="setup-screen" id="setup">
-            <h2>ابدأ لعبة جديدة</h2>
-            <div class="input-group">
-                <label>اسمك:</label>
-                <input type="text" id="playerName" placeholder="اكتب اسمك هنا" maxlength="20">
-            </div>
-            <div class="input-group">
-                <label>كود الغرفة (اختياري):</label>
-                <input type="text" id="roomCode" placeholder="اترك فاضي للعبة جديدة" maxlength="6">
-            </div>
-            <button class="btn btn-primary" onclick="startGame()">🎮 ابدأ اللعب</button>
-        </div>
+    <section class="panel setup" id="setup">
+      <h2>ابدأ لعبة جديدة</h2>
+      <div class="input-group">
+        <label for="playerName">اسمك</label>
+        <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="اكتب اسمك هنا">
+      </div>
+      <div class="input-group">
+        <label for="roomCode">كود الغرفة (اتركه فارغًا لإنشاء غرفة)</label>
+        <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" placeholder="مثال: MANX83">
+      </div>
+      <div class="center"><button class="btn btn-primary" id="startBtn" onclick="startGame()">🎮 ابدأ اللعب</button></div>
+      <div class="footer-note">حاليًا: مباراة فردية بين لاعبين، باستخدام مجموعة من ٥٢ ورقة.</div>
+    </section>
 
-        <div class="game-board" id="board">
-            <div class="game-info">
-                <div class="info-card">
-                    <h3>كود الغرفة</h3>
-                    <p id="roomDisplay" style="color: #FFC107;">----</p>
-                </div>
-                <div class="info-card">
-                    <h3>نقاطك</h3>
-                    <p id="scoreDisplay">0</p>
-                </div>
-                <div class="info-card">
-                    <h3>دورك؟</h3>
-                    <p id="turnDisplay">❌</p>
-                </div>
-            </div>
+    <section class="hidden" id="board">
+      <div class="info-grid">
+        <div class="info-card"><h3>كود الغرفة</h3><p id="roomDisplay">----</p><button class="btn btn-secondary" onclick="copyRoomCode()">نسخ الكود</button></div>
+        <div class="info-card"><h3>نقاطك</h3><p id="scoreDisplay">0</p></div>
+        <div class="info-card"><h3>الدور الحالي</h3><p id="turnDisplay">—</p></div>
+        <div class="info-card"><h3>الأوراق المتبقية</h3><p id="deckDisplay">0</p></div>
+      </div>
+      <div id="gameNotice" class="notice">بانتظار لاعب آخر للانضمام.</div>
+      <section class="panel">
+        <h3>🎲 اللاعبون</h3>
+        <div class="players-list" id="playersList"></div>
+      </section>
+      <section class="panel">
+        <h3>🃏 أوراق الطاولة</h3>
+        <div class="table-area" id="tableCards"></div>
+      </section>
+      <section class="panel">
+        <h3 class="center">أوراقك — اضغط على ورقة للعبها</h3>
+        <div class="hand-cards" id="handCards"></div>
+      </section>
+      <section class="panel hidden" id="roundResultPanel">
+        <h3 id="roundResultTitle">نتيجة الجولة</h3>
+        <div class="result" id="roundResult"></div>
+        <div class="center"><button class="btn btn-primary" id="nextRoundBtn" onclick="startNextRound()">🔄 ابدأ جولة جديدة</button></div>
+      </section>
+      <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 مغادرة اللعبة</button></div>
+    </section>
+  </main>
 
-            <div class="players-area">
-                <h3>🎲 اللاعبين</h3>
-                <div id="playersList"></div>
-            </div>
+  <script>
+    // إعداد Firebase هو نفسه المستخدم في النسخة المنشورة الحالية.
+    const firebaseConfig = {
+      apiKey: "AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I",
+      authDomain: "basra-game-2995a.firebaseapp.com",
+      databaseURL: "https://basra-game-2995a-default-rtdb.firebaseio.com",
+      projectId: "basra-game-2995a",
+      storageBucket: "basra-game-2995a.firebasestorage.app",
+      messagingSenderId: "1024179389498",
+      appId: "1:1024179389498:web:3ba98f053d49bfa1676103"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-            <div class="table-area" id="table">
-                <p style="color: rgba(255,255,255,0.6); font-size: 1.2em;">لا توجد أوراق على الطاولة</p>
-            </div>
+    let myId = null;
+    let myRoom = null;
+    let gameListener = null;
+    let joiningName = '';
+    let isBusy = false;
+    const suits = ['♥', '♦', '♣', '♠'];
+    const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
-            <div class="hand-area">
-                <h3>أوراقك</h3>
-                <div class="hand-cards" id="hand"></div>
-            </div>
+    db.ref('.info/connected').on('value', snap => {
+      const el = document.getElementById('status');
+      if (snap.val()) { el.textContent = '🌍 متصل'; el.classList.remove('offline'); }
+      else { el.textContent = '❌ غير متصل'; el.classList.add('offline'); }
+    });
 
-            <div style="text-align: center; margin-top: 25px;">
-                <button class="btn btn-primary" onclick="location.reload()">🚪 غادر اللعبة</button>
-            </div>
-        </div>
-    </div>
+    function makeDeck() {
+      const deck = [];
+      suits.forEach(suit => values.forEach(val => deck.push({suit, val, display: val + suit})));
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I",
-            authDomain: "basra-game-2995a.firebaseapp.com",
-            databaseURL: "https://basra-game-2995a-default-rtdb.firebaseio.com",
-            projectId: "basra-game-2995a",
-            storageBucket: "basra-game-2995a.firebasestorage.app",
-            messagingSenderId: "1024179389498",
-            appId: "1:1024179389498:web:3ba98f053d49bfa1676103"
+    function shuffle(deck) {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    // في التوزيع الابتدائي، الولد وسبعة الديناري لا يوضعان على الأرض؛ يُعادان إلى السحب.
+    function takeInitialTable(deck) {
+      const table = [];
+      const putBack = [];
+      while (table.length < 4 && deck.length) {
+        const card = deck.pop();
+        if (card.val === 'J' || (card.val === '7' && card.suit === '♦')) putBack.push(card);
+        else table.push(card);
+      }
+      deck.push(...putBack);
+      shuffle(deck);
+      return table;
+    }
+
+    function makeRound(players, order, room, roundNumber, startingIndex) {
+      const deck = makeDeck();
+      const table = takeInitialTable(deck);
+      const nextPlayers = {};
+      order.forEach(id => {
+        const old = players[id] || {};
+        nextPlayers[id] = {
+          id,
+          name: old.name || 'لاعب',
+          score: Number(old.score) || 0,
+          hand: deck.splice(0, 4),
+          captured: [],
+          basras: 0
         };
+      });
+      return {
+        room,
+        deck,
+        table,
+        players: nextPlayers,
+        turnOrder: order,
+        turnIndex: ((startingIndex % order.length) + order.length) % order.length,
+        status: order.length >= 2 ? 'playing' : 'waiting',
+        roundNumber: roundNumber || 1,
+        lastCaptureBy: null,
+        roundResults: null,
+        winner: null
+      };
+    }
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    function genRoomCode() { return Math.random().toString(36).slice(2, 8).toUpperCase().padEnd(6, 'X'); }
+    function genPlayerId() { return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
+    function gameRef() { return db.ref('games/' + myRoom); }
+    function activeOrder(game) {
+      const order = Array.isArray(game.turnOrder) ? game.turnOrder : Object.keys(game.players || {});
+      return order.filter(id => game.players && game.players[id]);
+    }
+    function numericValue(card) {
+      if (!card) return null;
+      if (card.val === 'A') return 1;
+      const n = Number(card.val);
+      return Number.isInteger(n) && n >= 2 && n <= 10 ? n : null;
+    }
+    function isSevenOfDiamonds(card) { return card && card.val === '7' && card.suit === '♦'; }
 
-        db.ref('.info/connected').on('value', snap => {
-            const el = document.getElementById('status');
-            if (snap.val()) {
-                el.textContent = '🌍 متصل';
-                el.classList.remove('offline');
-            } else {
-                el.textContent = '❌ غير متصل';
-                el.classList.add('offline');
-            }
+    // البحث عن مجموعة أرقام مجموعها يساوي الورقة التي تم لعبها.
+    function findSumGroup(table, target, availableIndices) {
+      const candidates = availableIndices
+        .filter(index => numericValue(table[index]) !== null && numericValue(table[index]) <= target)
+        .sort((a, b) => numericValue(table[a]) - numericValue(table[b]));
+      function search(start, remaining, chosen) {
+        if (remaining === 0) return chosen.length >= 2 ? chosen : null;
+        for (let i = start; i < candidates.length; i++) {
+          const index = candidates[i];
+          const val = numericValue(table[index]);
+          if (val > remaining) continue;
+          const result = search(i + 1, remaining - val, [...chosen, index]);
+          if (result) return result;
+        }
+        return null;
+      }
+      return search(0, target, []);
+    }
+
+    function findCapturedIndices(played, table) {
+      if (!table || table.length === 0) return [];
+      if (played.val === 'J' || isSevenOfDiamonds(played)) return table.map((_, i) => i);
+
+      const picked = new Set();
+      // تُؤخذ كل الأوراق المطابقة للرتبة أولًا.
+      table.forEach((card, i) => { if (card.val === played.val) picked.add(i); });
+
+      // الأوراق الرقمية يمكن أن تأخذ مجموعة أو أكثر مجموعها يساوي الرقم المُلعَب.
+      const target = numericValue(played);
+      if (target !== null) {
+        let remaining = table.map((_, i) => i).filter(i => !picked.has(i));
+        while (remaining.length) {
+          const group = findSumGroup(table, target, remaining);
+          if (!group) break;
+          group.forEach(i => picked.add(i));
+          const used = new Set(group);
+          remaining = remaining.filter(i => !used.has(i));
+        }
+      }
+      return [...picked].sort((a, b) => a - b);
+    }
+
+    function isSevenBasra(table) {
+      if (!table.length) return false;
+      let total = 0;
+      for (const card of table) {
+        const n = numericValue(card);
+        if (n === null) return false;
+        total += n;
+      }
+      return total <= 10;
+    }
+
+    function cardPoints(card) {
+      if (card.val === 'A' || card.val === 'J') return 1;
+      if (card.suit === '♣' && card.val === '2') return 2;
+      if (card.suit === '♦' && card.val === '10') return 3;
+      return 0;
+    }
+
+    function finishRound(game, order) {
+      const table = Array.isArray(game.table) ? game.table.slice() : [];
+      if (table.length) {
+        const receiver = order.includes(game.lastCaptureBy) ? game.lastCaptureBy : order[order.length - 1];
+        game.players[receiver].captured = [...(game.players[receiver].captured || []), ...table];
+      }
+      game.table = [];
+
+      const rows = order.map(id => {
+        const player = game.players[id];
+        const cards = player.captured || [];
+        const pointsFromCards = cards.reduce((sum, card) => sum + cardPoints(card), 0);
+        return { id, name: player.name, cardCount: cards.length, cardPoints: pointsFromCards, basraPoints: (player.basras || 0) * 10, majorityPoints: 0, total: 0 };
+      });
+      if (rows.length === 2) {
+        if (rows[0].cardCount > rows[1].cardCount) rows[0].majorityPoints = 30;
+        else if (rows[1].cardCount > rows[0].cardCount) rows[1].majorityPoints = 30;
+      }
+      rows.forEach(row => {
+        row.total = row.cardPoints + row.basraPoints + row.majorityPoints;
+        game.players[row.id].score = (Number(game.players[row.id].score) || 0) + row.total;
+      });
+      game.roundResults = rows;
+      const a = game.players[order[0]].score;
+      const b = game.players[order[1]].score;
+      if ((a >= 101 || b >= 101) && a !== b) {
+        game.status = 'finished';
+        game.winner = a > b ? order[0] : order[1];
+      } else {
+        game.status = 'roundOver';
+        game.winner = null;
+      }
+    }
+
+    async function startGame() {
+      if (isBusy) return;
+      const name = document.getElementById('playerName').value.trim();
+      const enteredCode = document.getElementById('roomCode').value.trim().toUpperCase();
+      if (!name) { alert('اكتب اسمك أولًا.'); return; }
+      joiningName = name;
+      myId = genPlayerId();
+      myRoom = enteredCode || genRoomCode();
+      setBusy(true, 'جارٍ الانضمام...');
+
+      try {
+        const result = await runJoinTransaction(enteredCode);
+        if (result === 'collision') {
+          myRoom = genRoomCode();
+          const retry = await runJoinTransaction('');
+          if (retry !== 'joined') throw new Error('تعذر إنشاء غرفة جديدة. حاول مرة أخرى.');
+        } else if (result !== 'joined') {
+          const messages = {
+            'not-found': 'كود الغرفة غير موجود. تأكد من الكود أو أنشئ غرفة جديدة بترك الخانة فارغة.',
+            'full': 'الغرفة بها لاعبان بالفعل.',
+            'old-version': 'هذه الغرفة أُنشئت بالنسخة القديمة. أنشئ غرفة جديدة واترك خانة الكود فارغة.',
+            'closed': 'المباراة انتهت بالفعل ولا تقبل لاعبين جددًا.',
+            'error': 'تعذر الاتصال بقاعدة البيانات. تحقق من الاتصال وحاول مرة أخرى.'
+          };
+          alert(messages[result] || messages.error);
+          return;
+        }
+        const playerRef = gameRef().child('players/' + myId);
+        playerRef.onDisconnect().remove();
+        document.getElementById('setup').classList.add('hidden');
+        document.getElementById('board').classList.remove('hidden');
+        document.getElementById('roomDisplay').textContent = myRoom;
+        if (gameListener) gameRef().off('value', gameListener);
+        gameListener = snap => { const game = snap.val(); if (game) renderGame(game); };
+        gameRef().on('value', gameListener);
+      } catch (error) {
+        console.error(error);
+        alert(error.message || 'حدث خطأ غير متوقع أثناء الانضمام.');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function setBusy(busy, label) {
+      isBusy = busy;
+      const btn = document.getElementById('startBtn');
+      btn.disabled = busy;
+      btn.textContent = label || '🎮 ابدأ اللعب';
+    }
+
+    function runJoinTransaction(enteredCode) {
+      const ref = db.ref('games/' + myRoom);
+      let reason = null;
+      return new Promise((resolve, reject) => {
+        ref.transaction(current => {
+          reason = null;
+          if (!current) {
+            if (enteredCode) { reason = 'not-found'; return; }
+            const deck = makeDeck();
+            const table = takeInitialTable(deck);
+            const hand = deck.splice(0, 4);
+            return {
+              room: myRoom,
+              deck,
+              table,
+              players: { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0 } },
+              turnOrder: [myId],
+              turnIndex: 0,
+              status: 'waiting',
+              roundNumber: 1,
+              lastCaptureBy: null,
+              roundResults: null,
+              winner: null
+            };
+          }
+          if (!enteredCode) { reason = 'collision'; return; }
+          // نتجنب التعامل مع بيانات الغرف القديمة التي لا تحتوي على بنية الجولة الحالية.
+          if (!Array.isArray(current.deck) || !Array.isArray(current.table) || !Array.isArray(current.turnOrder) || !current.players) {
+            reason = 'old-version'; return;
+          }
+          if (current.status === 'finished' || current.status === 'roundOver') { reason = 'closed'; return; }
+          const players = { ...current.players };
+          const active = activeOrder(current);
+          if (active.length >= 2) { reason = 'full'; return; }
+          if (players[myId]) { reason = 'error'; return; }
+          const nextGame = JSON.parse(JSON.stringify(current));
+          nextGame.players[myId] = {
+            id: myId,
+            name: joiningName,
+            score: 0,
+            hand: nextGame.deck.splice(0, 4),
+            captured: [],
+            basras: 0
+          };
+          nextGame.turnOrder.push(myId);
+          nextGame.status = 'playing';
+          if (!Number.isInteger(nextGame.turnIndex)) nextGame.turnIndex = 0;
+          return nextGame;
+        }, (error, committed, snapshot) => {
+          if (error) return reject(error);
+          if (committed) return resolve('joined');
+          const data = snapshot.val();
+          if (!enteredCode && data) return resolve('collision');
+          if (reason === 'old-version') return resolve('old-version');
+          if (reason === 'closed') return resolve('closed');
+          if (reason === 'full' || (data && activeOrder(data).length >= 2)) return resolve('full');
+          if (reason === 'not-found' || (enteredCode && !data)) return resolve('not-found');
+          resolve(reason || 'error');
+        }, false);
+      });
+    }
+
+    function renderGame(game) {
+      const order = activeOrder(game);
+      const myPlayer = game.players && game.players[myId];
+      if (!myPlayer) {
+        showNotice('تم إخراجك من الغرفة أو انقطع اتصالك بها. أنشئ غرفة جديدة للمتابعة.', 'bad');
+        return;
+      }
+      document.getElementById('scoreDisplay').textContent = Number(myPlayer.score) || 0;
+      document.getElementById('deckDisplay').textContent = (game.deck || []).length;
+      const curId = order.length ? order[(game.turnIndex || 0) % order.length] : null;
+      const isMyTurn = game.status === 'playing' && order.length === 2 && curId === myId;
+      document.getElementById('turnDisplay').textContent = order.length < 2 ? 'انتظار لاعب' : game.status === 'roundOver' ? 'انتهت الجولة' : game.status === 'finished' ? 'انتهت المباراة' : isMyTurn ? 'دورك' : 'دور الخصم';
+      document.getElementById('playersList').replaceChildren();
+      order.forEach(id => {
+        const player = game.players[id];
+        const item = document.createElement('div');
+        item.className = 'player-item' + (id === curId && game.status === 'playing' ? ' active' : '');
+        const name = document.createElement('span');
+        name.className = 'player-name';
+        name.textContent = player.name + (id === myId ? ' (أنت)' : '');
+        const meta = document.createElement('span');
+        meta.className = 'player-meta';
+        meta.textContent = `${Number(player.score)||0} نقطة · ${(player.hand||[]).length} ورقة`;
+        item.append(name, meta);
+        document.getElementById('playersList').appendChild(item);
+      });
+
+      const tableContainer = document.getElementById('tableCards');
+      tableContainer.replaceChildren();
+      (game.table || []).forEach(card => tableContainer.appendChild(makeCardElement(card, false)));
+      if (!(game.table || []).length) {
+        const empty = document.createElement('p'); empty.className = 'empty'; empty.textContent = 'الطاولة فارغة'; tableContainer.appendChild(empty);
+      }
+
+      const handContainer = document.getElementById('handCards');
+      handContainer.replaceChildren();
+      const hand = myPlayer.hand || [];
+      if (!hand.length) {
+        const empty = document.createElement('p'); empty.className = 'empty';
+        empty.textContent = game.deck && game.deck.length ? 'انتهت أوراقك؛ انتظر انتهاء يد اللاعب الآخر لإعادة التوزيع.' : 'لا توجد أوراق في يدك.';
+        handContainer.appendChild(empty);
+      } else {
+        hand.forEach((card, index) => {
+          const el = makeCardElement(card, true);
+          if (!isMyTurn) el.classList.add('disabled');
+          el.setAttribute('role', 'button');
+          el.setAttribute('aria-label', 'العب ' + card.display);
+          el.tabIndex = isMyTurn ? 0 : -1;
+          el.onclick = () => { if (isMyTurn && !isBusy) playCard(index); };
+          el.onkeydown = event => { if ((event.key === 'Enter' || event.key === ' ') && isMyTurn) { event.preventDefault(); playCard(index); } };
+          handContainer.appendChild(el);
         });
+      }
 
-        let myId, myRoom;
-        const suits = ['♥', '♦', '♣', '♠'];
-        const vals = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+      if (game.status === 'waiting' || game.status === 'playing') {
+        document.getElementById('roundResultPanel').classList.add('hidden');
+      }
+      if (game.status === 'waiting' || order.length < 2) {
+        showNotice('تم إنشاء الغرفة. شارك الكود مع لاعب آخر؛ يبدأ اللعب بعد انضمامه.', '');
+      } else if (game.status === 'playing') {
+        showNotice(isMyTurn ? 'دورك الآن: اختر ورقة من يدك.' : 'انتظر دورك حتى يلعب الخصم.', isMyTurn ? 'good' : '');
+      } else if (game.status === 'roundOver' || game.status === 'finished') {
+        renderResults(game);
+      }
+    }
 
-        function makeDeck() {
-            const deck = [];
-            suits.forEach(s => vals.forEach(v => deck.push({suit:s, val:v, display:v+s})));
-            for(let i=deck.length-1; i>0; i--) {
-                const j = Math.floor(Math.random()*(i+1));
-                [deck[i],deck[j]] = [deck[j],deck[i]];
-            }
-            return deck;
-        }
+    function makeCardElement(card, interactive) {
+      const el = document.createElement('div');
+      el.className = 'card' + (['♥','♦'].includes(card.suit) ? ' red' : '') + (interactive ? ' hand-card' : '');
+      const corner = document.createElement('span'); corner.className = 'corner'; corner.textContent = card.val + card.suit;
+      const suit = document.createElement('span'); suit.className = 'suit-big'; suit.textContent = card.suit;
+      const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = card.val;
+      el.append(corner, suit, rank);
+      return el;
+    }
 
-        function genCode() {
-            return Math.random().toString(36).substring(2,8).toUpperCase();
-        }
+    function showNotice(message, type) {
+      const el = document.getElementById('gameNotice');
+      el.textContent = message;
+      el.className = 'notice' + (type ? ' ' + type : '');
+    }
 
-        function startGame() {
-            const name = document.getElementById('playerName').value.trim();
-            let code = document.getElementById('roomCode').value.trim().toUpperCase();
-            if(!name) { alert('⚠️ اكتب اسمك'); return; }
-            if(!code) code = genCode();
+    function renderResults(game) {
+      const panel = document.getElementById('roundResultPanel');
+      panel.classList.remove('hidden');
+      const title = document.getElementById('roundResultTitle');
+      const result = document.getElementById('roundResult');
+      const next = document.getElementById('nextRoundBtn');
+      if (game.status === 'finished') {
+        const winner = game.players[game.winner];
+        title.textContent = '🏆 انتهت المباراة';
+        showNotice('الفائز: ' + (winner ? winner.name : 'غير محدد'), 'good');
+        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.total} نقطة في الجولة — الإجمالي ${game.players[r.id].score}`).join('\n') + `\n\nالفائز بالمباراة: ${winner ? winner.name : 'غير محدد'}`;
+        next.classList.add('hidden');
+      } else {
+        title.textContent = `نتيجة الجولة ${game.roundNumber || 1}`;
+        showNotice('انتهت الجولة. ابدأ جولة جديدة للاحتفاظ بالنقاط ومتابعة المباراة.', 'good');
+        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة، ${r.cardPoints} نقاط أوراق + ${r.basraPoints} نقاط بصرة + ${r.majorityPoints} نقاط الأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
+        next.classList.remove('hidden');
+      }
+    }
 
-            myId = 'p_' + Date.now();
-            myRoom = code;
-            const ref = db.ref('games/' + code);
+    async function playCard(index) {
+      if (!myRoom || isBusy) return;
+      setBusy(true, 'جارٍ تنفيذ الحركة...');
+      let reason = null;
+      try {
+        const outcome = await new Promise((resolve, reject) => {
+          gameRef().transaction(current => {
+            reason = null;
+            if (!current || current.status !== 'playing') { reason = 'not-playing'; return; }
+            const order = activeOrder(current);
+            if (order.length !== 2) { reason = 'waiting'; return; }
+            const currentId = order[(current.turnIndex || 0) % order.length];
+            if (currentId !== myId) { reason = 'not-turn'; return; }
+            if (!current.players[myId] || !current.players[myId].hand || !current.players[myId].hand[index]) { reason = 'bad-card'; return; }
+            const game = JSON.parse(JSON.stringify(current));
+            const player = game.players[myId];
+            const played = player.hand.splice(index, 1)[0];
+            const tableBefore = game.table.slice();
+            const indices = findCapturedIndices(played, tableBefore);
 
-            ref.once('value').then(snap => {
-                const data = snap.val();
-                if(!data) {
-                    ref.set({
-                        room: code,
-                        table: [],
-                        deck: makeDeck(),
-                        turn: 0,
-                        players: {[myId]: {id:myId, name, score:0, hand:[]}}
-                    }).then(() => showBoard());
-                } else {
-                    const pCount = Object.keys(data.players||{}).length;
-                    if(pCount >= 4) { alert('⚠️ الغرفة ممتلئة!'); return; }
-                    ref.child('players/'+myId).set({id:myId, name, score:0, hand:[]}).then(() => showBoard());
-                }
-            });
-
-            ref.child('players/'+myId).onDisconnect().remove();
-        }
-
-        function showBoard() {
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('board').classList.add('active');
-            document.getElementById('roomDisplay').textContent = myRoom;
-
-            db.ref('games/'+myRoom).on('value', snap => {
-                const g = snap.val();
-                if(!g) return;
-                updatePlayers(g.players);
-                updateTable(g.table);
-                if(g.players && g.players[myId]) {
-                    updateHand(g.players[myId].hand);
-                    document.getElementById('scoreDisplay').textContent = g.players[myId].score;
-                }
-                updateTurn(g);
-            });
-        }
-
-        function updatePlayers(ps) {
-            const c = document.getElementById('playersList');
-            c.innerHTML = '';
-            Object.values(ps||{}).forEach(p => {
-                const d = document.createElement('div');
-                d.className = 'player-item' + (p.id===myId?' active':'');
-                d.innerHTML = `<span>${p.name}</span><span style="color:#FFC107;font-weight:800;">${p.score} نقطة</span>`;
-                c.appendChild(d);
-            });
-        }
-
-        function updateTable(cards) {
-            const c = document.getElementById('table');
-            if(!cards || !cards.length) {
-                c.innerHTML = '<p style="color:rgba(255,255,255,0.6);font-size:1.2em;">لا توجد أوراق على الطاولة</p>';
-                return;
-            }
-            c.innerHTML = '';
-            cards.forEach(card => {
-                const d = document.createElement('div');
-                d.className = 'card ' + (['♥','♦'].includes(card.suit)?'red':'black');
-                d.textContent = card.display;
-                c.appendChild(d);
-            });
-        }
-
-        function updateHand(cards) {
-            const c = document.getElementById('hand');
-            if(!cards || !cards.length) {
-                c.innerHTML = '<p style="color:rgba(255,255,255,0.6);">لا توجد أوراق</p>';
-                return;
-            }
-            c.innerHTML = '';
-            cards.forEach((card,i) => {
-                const d = document.createElement('div');
-                d.className = 'card ' + (['♥','♦'].includes(card.suit)?'red':'black');
-                d.textContent = card.display;
-                d.onclick = () => play(i);
-                c.appendChild(d);
-            });
-        }
-
-        function updateTurn(g) {
-            const ids = Object.keys(g.players||{});
-            const cur = ids[g.turn % ids.length];
-            const el = document.getElementById('turnDisplay');
-            if(cur === myId) {
-                el.textContent = '✅';
-                el.style.color = '#4CAF50';
+            if (indices.length) {
+              const takeSet = new Set(indices);
+              const taken = tableBefore.filter((_, i) => takeSet.has(i));
+              game.table = tableBefore.filter((_, i) => !takeSet.has(i));
+              player.captured = [...(player.captured || []), ...taken, played];
+              game.lastCaptureBy = myId;
+              const cleared = game.table.length === 0 && tableBefore.length > 0;
+              const basra = cleared && (played.val === 'J' ? false : isSevenOfDiamonds(played) ? isSevenBasra(tableBefore) : true);
+              if (basra) player.basras = (player.basras || 0) + 1;
             } else {
-                el.textContent = '❌';
-                el.style.color = '#F44336';
+              game.table.push(played);
             }
+
+            game.turnIndex = (game.turnIndex + 1) % order.length;
+            const handsEmpty = order.every(id => (game.players[id].hand || []).length === 0);
+            if (handsEmpty) {
+              if (game.deck && game.deck.length) {
+                order.forEach(id => { game.players[id].hand = game.deck.splice(0, 4); });
+              } else {
+                finishRound(game, order);
+              }
+            }
+            return game;
+          }, (error, committed, snapshot) => {
+            if (error) return reject(error);
+            if (committed) return resolve('played');
+            resolve(reason || 'conflict');
+          }, false);
+        });
+        if (outcome !== 'played') {
+          const messages = { 'not-turn':'مش دورك حاليًا.', waiting:'انتظر انضمام اللاعب الآخر.', 'not-playing':'لا يمكن لعب ورقة في هذه المرحلة.', 'bad-card':'الورقة لم تعد في يدك؛ حدّثت اللعبة، جرّب مرة أخرى.', conflict:'تغيرت حالة اللعبة. حاول مرة أخرى.' };
+          if (outcome !== 'bad-card') alert(messages[outcome] || messages.conflict);
         }
+      } catch (error) {
+        console.error(error); alert('تعذر تنفيذ الحركة. تحقق من الاتصال وحاول مرة أخرى.');
+      } finally { setBusy(false); }
+    }
 
-        function play(idx) {
-            const ref = db.ref('games/'+myRoom);
-            ref.once('value').then(snap => {
-                const g = snap.val();
-                const ids = Object.keys(g.players);
-                const cur = ids[g.turn % ids.length];
-                if(cur !== myId) { alert('⚠️ مش دورك!'); return; }
+    async function startNextRound() {
+      if (!myRoom || isBusy) return;
+      setBusy(true, 'جارٍ تجهيز الجولة...');
+      let reason = null;
+      try {
+        const outcome = await new Promise((resolve, reject) => {
+          gameRef().transaction(current => {
+            reason = null;
+            if (!current || current.status !== 'roundOver') { reason = 'already-started'; return; }
+            const order = activeOrder(current);
+            if (order.length !== 2) { reason = 'players-missing'; return; }
+            const players = current.players;
+            const nextStarter = ((current.turnIndex || 0) + 1) % order.length;
+            const fresh = makeRound(players, order, current.room, (current.roundNumber || 1) + 1, nextStarter);
+            return fresh;
+          }, (error, committed, snapshot) => {
+            if (error) return reject(error);
+            resolve(committed ? 'started' : (reason || 'already-started'));
+          }, false);
+        });
+        if (outcome !== 'started') alert(outcome === 'players-missing' ? 'يجب أن يكون اللاعبان متصلين لبدء الجولة.' : 'بدأ لاعب آخر الجولة أو تغيرت حالة المباراة.');
+      } catch (error) { console.error(error); alert('تعذر بدء الجولة الجديدة.'); }
+      finally { setBusy(false); }
+    }
 
-                const hand = g.players[myId].hand;
-                if(!hand || !hand[idx]) return;
+    async function copyRoomCode() {
+      try {
+        await navigator.clipboard.writeText(myRoom || '');
+        showNotice('تم نسخ كود الغرفة: ' + myRoom, 'good');
+      } catch (_) {
+        window.prompt('انسخ كود الغرفة:', myRoom || '');
+      }
+    }
 
-                const card = hand.splice(idx,1)[0];
-                const table = [...(g.table||[]), card];
+    async function leaveGame() {
+      if (!myRoom || !myId) { location.reload(); return; }
+      try { await gameRef().child('players/' + myId).remove(); } catch (error) { console.warn(error); }
+      if (gameListener) gameRef().off('value', gameListener);
+      location.reload();
+    }
 
-                ref.update({
-                    table,
-                    ['players/'+myId+'/hand']: hand,
-                    turn: g.turn + 1
-                });
-            });
-        }
-    </script>
+    document.getElementById('roomCode').addEventListener('input', event => {
+      event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    });
+  </script>
 </body>
 </html>
