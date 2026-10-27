@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>قهوة الباصرة | أجواء مصرية v6.2</title>
+  <title>قهوة الباصرة | أجواء مصرية v6.5</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -152,6 +152,63 @@
   @media(max-width:380px){.header-actions .btn{font-size:.7rem}.table-surface{border-radius:28% / 15%}.table-surface:before{border-radius:28% / 15%}.station-grid{gap:6px}.station-button{padding:9px 4px}}
   @media(prefers-reduced-motion:reduce){.table-area .card{animation:none}}
 
+
+
+  /* v6.5 — classic red deck (user-selected style 2), with restrained paper texture */
+  .card{
+    background-color:#f4ead6;
+    background-image:
+      radial-gradient(ellipse at 50% 40%,#fffdf6 0,#f4ead6 73%,#e4d2af 100%),
+      repeating-linear-gradient(0deg,rgba(103,70,33,.018) 0 1px,transparent 1px 3px),
+      repeating-linear-gradient(90deg,rgba(103,70,33,.014) 0 1px,transparent 1px 4px);
+    border-color:#c6ad7f;
+    box-shadow:0 8px 16px #0006,0 1px 0 #fff9 inset,0 0 0 1px #a77b3c22;
+  }
+  .card:before{border-color:#bda170aa;box-shadow:inset 0 0 0 1px #fff6}
+  .card-back{
+    color:#f5d89b;
+    background-color:#8e1727;
+    background-image:
+      radial-gradient(ellipse at 50% 45%,rgba(201,47,61,.62),rgba(87,7,20,.92) 78%),
+      repeating-linear-gradient(45deg,rgba(255,229,184,.085) 0 2px,transparent 2px 7px),
+      repeating-linear-gradient(-45deg,rgba(255,229,184,.06) 0 1px,transparent 1px 6px);
+    border:2px solid #e2bd78;
+    box-shadow:0 9px 18px #0008,inset 0 0 0 2px #580c18,inset 0 0 0 5px #f4d18b42;
+  }
+  .card-back:before{
+    inset:7px;border:1px solid #f4d99c;
+    box-shadow:inset 0 0 0 2px #e8cb7a24;
+    background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(255,226,163,.055) 7px 8px);
+  }
+  .card-back:after{
+    content:"✥";font-size:2.55rem;color:#f7dfa0;
+    text-shadow:0 1px 0 #6b111c,0 0 10px #edca7650;
+  }
+  .card-back .back-inner{inset:12px;border:1px dashed #f3d88f88}
+  .card-back .back-inner:before,.card-back .back-inner:after{color:#f7d997;text-shadow:0 1px 2px #5b0c18}
+
+  /* Coming-soon notice, visible but not an ad */
+  .coming-games-banner{
+    display:flex;align-items:center;gap:13px;width:min(880px,100%);margin:-8px auto 18px;
+    padding:12px 16px;border:1px solid #dcb86e63;border-radius:17px;
+    background:linear-gradient(110deg,rgba(104,32,28,.88),rgba(43,22,13,.94) 56%,rgba(16,10,7,.97));
+    box-shadow:0 10px 32px #0004,inset 0 1px #fff1;position:relative;overflow:hidden;
+  }
+  .coming-games-banner:before{content:"";position:absolute;inset:5px;border:1px solid #e8c87828;border-radius:12px;pointer-events:none}
+  .coming-games-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#e8c477,#9d6225);color:#271408;font-size:1.25rem;box-shadow:inset 0 1px #fff8}
+  .coming-games-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}
+  .coming-games-copy strong{color:#ffe2a0;font-size:.93rem}
+  .coming-games-copy span{color:#d8c4a0;font-size:.78rem;line-height:1.6}
+  .coming-games-pill{flex:0 0 auto;border:1px solid #ebca81a6;background:#d5ac4c19;color:#ffdfa0;border-radius:999px;padding:5px 10px;font-weight:800;font-size:.72rem;white-space:nowrap}
+  .footer-line{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 15px;padding:8px 4px}
+  .creator-credit{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid #d6b56b45;border-radius:999px;color:#d2b77e;background:#0b07062e;font-size:.72rem;letter-spacing:.01em}
+  .creator-credit strong{color:#ffe0a0;font-weight:900}
+  .app-toast{position:fixed;z-index:2500;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,20px);width:min(560px,calc(100% - 28px));padding:12px 16px;border:1px solid #dbb66f88;border-radius:15px;background:linear-gradient(135deg,#3b2416,#150c08);color:#ffedc4;box-shadow:0 15px 50px #000a;text-align:center;line-height:1.7;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+  .app-toast.visible{opacity:1;transform:translate(-50%,0)}
+  .app-toast.good{border-color:#62b87a99;color:#d4f5d8}
+  .app-toast.bad{border-color:#e66a5e99;color:#ffd1ca}
+  @media(max-width:560px){.coming-games-banner{margin:-3px auto 13px;padding:10px 11px;gap:9px}.coming-games-icon{width:34px;height:34px;flex-basis:34px}.coming-games-copy strong{font-size:.82rem}.coming-games-copy span{font-size:.72rem}.coming-games-pill{font-size:.67rem;padding:4px 7px}.creator-credit{font-size:.68rem}}
+
 </style>
 </head>
 <body>
@@ -159,7 +216,7 @@
     <header class="header">
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
-        <span class="version-tag">BUILD 6.3</span>
+        <span class="version-tag">BUILD 6.5</span>
       </div>
       <h1>قهوة الباصرة</h1>
       <p>لمة صحاب • شاي على الفحم • دورك يا معلم</p>
@@ -169,9 +226,14 @@
         <button class="btn btn-secondary btn-small" id="musicToggle" type="button" onclick="toggleCafeMusic()">♫ موسيقى القعدة</button>
         <button class="btn btn-radio btn-small" id="radioOpenBtn" type="button" onclick="openRadioModal()">📻 راديو القهوة</button>
         <button class="btn btn-secondary btn-small" type="button" onclick="openSoundSettings()">⚙ ضبط الصوت</button>
-        <button class="btn btn-secondary btn-small" type="button" onclick="copyInviteLink()">↗ مشاركة اللعبة</button>
+        <button class="btn btn-secondary btn-small" type="button" onclick="shareGame()" aria-label="مشاركة اللعبة مع الأصدقاء">↗ مشاركة اللعبة</button>
       </div>
     </header>
+    <aside class="coming-games-banner" role="note" aria-label="تنويه عن ألعاب قادمة">
+      <span class="coming-games-icon" aria-hidden="true">🎮</span>
+      <span class="coming-games-copy"><strong>القعدة لسه هتكبر!</strong><span>تنويه: ألعاب مصرية جديدة هتتضاف قريبًا — تابعنا وخليك أول واحد يجربها.</span></span>
+      <span class="coming-games-pill">قريبًا</span>
+    </aside>
     <div class="sponsor-slot hidden" id="sponsorHomeSlot" data-sponsor-slot="home" aria-hidden="true"></div>
 
     <section class="panel setup" id="setup">
@@ -233,8 +295,10 @@
       <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 قوم من القعدة</button></div>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line">قهوة الباصرة · لمة مصرية أونلاين · نسخة تجريبية 6.3</div>
+    <div class="footer-line"><span>قهوة الباصرة · لمة مصرية أونلاين · الإصدار 6.5</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
+
+  <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
 
   <!-- راديو مستقل لكل لاعب. يعتمد على صفحات/مشغلات المحطات الرسمية، ولا يعيد بث الصوت من خادم اللعبة. -->
   <div class="modal-shell hidden" id="radioModal" role="dialog" aria-modal="true" aria-labelledby="radioTitle">
@@ -291,6 +355,7 @@
 
     let myId = null;
     let myRoom = null;
+    let myPlayMode = 'home';
     let gameListener = null;
     let joiningName = '';
     let isBusy = false;
@@ -298,7 +363,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '6.3';
+    const APP_VERSION = '6.5';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -531,6 +596,7 @@
       myId = genPlayerId();
       myRoom = enteredCode || genRoomCode();
       const playWithAI = !enteredCode && document.getElementById('gameMode')?.value !== 'online';
+      myPlayMode = playWithAI ? 'ai' : 'online';
       setBusy(true, 'جارٍ الاتصال بالقعدة...');
       try {
         await waitForDatabaseConnection();
@@ -545,9 +611,9 @@
         }
         if (result !== 'joined') {
           const messages = {
-            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.3، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.5، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
             'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
-            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.3.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.5.',
             'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
             'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
             'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
@@ -883,7 +949,20 @@
       const game = JSON.parse(JSON.stringify(current));
       const player = game.players[playerId];
       const played = player.hand.splice(index, 1)[0];
-      const tableBefore = Array.isArray(game.table) ? game.table.slice() : [];
+      // Firebase Realtime Database may omit an empty array node (or return it as null).
+      // Normalize the table before any push/slice/filter operation so an empty table is valid.
+      if (!Array.isArray(game.table)) {
+        if (game.table && typeof game.table === 'object') {
+          game.table = Object.keys(game.table)
+            .filter(key => /^\d+$/.test(key))
+            .sort((a, b) => Number(a) - Number(b))
+            .map(key => game.table[key])
+            .filter(Boolean);
+        } else {
+          game.table = [];
+        }
+      }
+      const tableBefore = game.table.slice();
       const indices = findCapturedIndices(played, tableBefore);
       if (indices.length) {
         const takeSet = new Set(indices);
@@ -1207,13 +1286,80 @@
       location.reload();
     }
 
-    async function copyInviteLink() {
-      const link = location.origin + location.pathname + '?v=6';
-      try {
-        await navigator.clipboard.writeText(link);
-        showNotice('تم نسخ رابط اللعبة. ابعته لصاحبك، وبعدها ابعت له كود القعدة.', 'good');
-      } catch (_) { window.prompt('انسخ رابط اللعبة:', link); }
+    let appToastTimer = null;
+    function showAppToast(message, type = 'good') {
+      const toast = document.getElementById('appToast');
+      if (!toast) { window.alert(message); return; }
+      toast.textContent = message;
+      toast.className = 'app-toast visible' + (type ? ' ' + type : '');
+      if (appToastTimer) clearTimeout(appToastTimer);
+      appToastTimer = setTimeout(() => { toast.classList.remove('visible'); }, 3400);
     }
+
+    function buildShareDetails() {
+      const url = new URL(location.origin + location.pathname);
+      url.searchParams.set('v', APP_VERSION);
+      const board = document.getElementById('board');
+      const activeRoom = Boolean(myRoom && myId && board && !board.classList.contains('hidden'));
+      const shareRoom = activeRoom && myPlayMode === 'online';
+      if (shareRoom) url.searchParams.set('room', String(myRoom).toUpperCase());
+      const text = shareRoom
+        ? `تعالى نلعب باصرة أونلاين على القهوة المصرية! كود القعدة: ${myRoom}`
+        : 'تعالى جرّب قهوة الباصرة — باصرة مصرية أونلاين، والعب ضد المعلم أو ادعُ أصحابك.';
+      return { url: url.toString(), text, title: 'قهوة الباصرة — لمة مصرية أونلاين', shareRoom };
+    }
+
+    async function copyTextFallback(text) {
+      try {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed'; area.style.insetInlineStart = '-9999px'; area.style.top = '0';
+        document.body.appendChild(area);
+        area.focus(); area.select(); area.setSelectionRange(0, area.value.length);
+        const copied = document.execCommand('copy');
+        area.remove();
+        return copied;
+      } catch (error) {
+        console.warn('[Basra share fallback]', error);
+        return false;
+      }
+    }
+
+    async function shareGame() {
+      const details = buildShareDetails();
+      const payload = `${details.text}\n${details.url}`;
+      // Prefer native share sheet on Android/iOS; this also avoids clipboard permission quirks.
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: details.title, text: details.text, url: details.url });
+          return;
+        } catch (error) {
+          // User cancellation is intentional: do not replace it with another prompt.
+          if (error && error.name === 'AbortError') return;
+          console.warn('[Basra native share]', error);
+        }
+      }
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(payload);
+          showAppToast(details.shareRoom ? 'تم نسخ رابط الدعوة وكود القعدة. ابعته لصاحبك!' : 'تم نسخ رابط اللعبة. ابعته لأصحابك وابدأوا القعدة!', 'good');
+          return;
+        }
+      } catch (error) {
+        console.warn('[Basra clipboard share]', error);
+      }
+      const copied = await copyTextFallback(payload);
+      if (copied) {
+        showAppToast(details.shareRoom ? 'تم نسخ دعوة القعدة. ابعتها لصاحبك!' : 'تم نسخ رابط اللعبة. شاركه مع أصحابك!', 'good');
+        return;
+      }
+      // Last resort for older browsers or restrictive in-app webviews.
+      window.prompt('انسخ رابط اللعبة أو دعوة القعدة من هنا:', payload);
+    }
+
+    // Keep the old handler name working for any legacy inline references.
+    async function copyInviteLink() { return shareGame(); }
 
     function getAudioContext() {
       if (!audioContext) {
@@ -1460,6 +1606,22 @@
       const note = document.getElementById('setupError');
       if (note) note.classList.add('hidden');
     });
+
+    function applyInviteFromUrl() {
+      try {
+        const params = new URLSearchParams(location.search);
+        const room = String(params.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+        if (!/^[A-Z0-9]{6}$/.test(room)) return;
+        const roomInput = document.getElementById('roomCode');
+        const modeInput = document.getElementById('gameMode');
+        const hint = document.getElementById('gameModeHint');
+        if (roomInput) roomInput.value = room;
+        if (modeInput) modeInput.value = 'online';
+        if (hint) hint.textContent = `صاحبك بعت لك دعوة للقعدة ${room}. اكتب اسمك واضغط «ابدأ اللعب» للانضمام.`;
+        showAppToast(`وصلك لينك دعوة للقعدة ${room}. اكتب اسمك واضغط «ابدأ اللعب».`, 'good');
+      } catch (error) { console.warn('[Basra invite URL]', error); }
+    }
+    applyInviteFromUrl();
   </script>
 </body>
 </html>
