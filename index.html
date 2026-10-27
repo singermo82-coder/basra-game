@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>قهوة الباصرة | أجواء مصرية v6.5</title>
+  <title>قهوة الباصرة | كوتشينة كلاسيكية v6.6</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -154,7 +154,7 @@
 
 
 
-  /* v6.5 — classic red deck (user-selected style 2), with restrained paper texture */
+  /* v6.6 — classic red deck back + traditional full-card faces */
   .card{
     background-color:#f4ead6;
     background-image:
@@ -209,6 +209,35 @@
   .app-toast.bad{border-color:#e66a5e99;color:#ffd1ca}
   @media(max-width:560px){.coming-games-banner{margin:-3px auto 13px;padding:10px 11px;gap:9px}.coming-games-icon{width:34px;height:34px;flex-basis:34px}.coming-games-copy strong{font-size:.82rem}.coming-games-copy span{font-size:.72rem}.coming-games-pill{font-size:.67rem;padding:4px 7px}.creator-credit{font-size:.68rem}}
 
+
+  /* v6.6 polish: visible creator credit and coming-soon notice */
+  .creator-credit-top{font-size:.82rem;padding:6px 13px;border-color:#edca83a8;background:linear-gradient(135deg,#352014,#110a07);box-shadow:0 4px 17px #0007,inset 0 1px #fff2;color:#f3d59b}
+  .creator-credit-top strong{font-size:.98rem;color:#ffe5a6;text-shadow:0 0 12px #efbc6133}
+  .coming-games-banner{border-width:1.5px;border-color:#e4b65d;background:linear-gradient(105deg,rgba(123,27,37,.96),rgba(67,33,18,.97) 48%,rgba(18,10,7,.98));box-shadow:0 13px 36px #0007,inset 0 1px #fff2,0 0 0 2px #e1b76012}
+  .coming-games-copy strong{font-size:1rem;text-shadow:0 1px 10px #efbc6130}
+  .coming-games-copy span{font-size:.84rem;color:#f1dfbf}
+  .coming-games-pill{background:linear-gradient(135deg,#ffe2a0,#c98c38);color:#2b1609;border-color:#ffdf9a;font-size:.78rem;box-shadow:0 3px 10px #0004}
+  .coming-games-inplay{margin:0 auto 14px;width:100%;position:relative}
+  @media(max-width:760px){.creator-credit-top{font-size:.73rem;padding:5px 9px}.coming-games-copy strong{font-size:.9rem}.coming-games-copy span{font-size:.76rem}}
+
+  /* Classic card fronts. If the CC0 SVG artwork cannot load, the local fallback renderer still draws pips and court figures. */
+  .card.asset-card{display:block;padding:0;background:transparent;border:0;box-shadow:none;filter:none;overflow:visible;isolation:auto}
+  .card.asset-card:before,.card.asset-card:after{display:none}
+  .card-full-art{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:fill;border-radius:9px;box-shadow:0 8px 15px #0007;pointer-events:none}
+  .card.fallback-card{overflow:hidden}
+  .card.fallback-card:after{display:none}
+  .card.fallback-card .corner{position:relative;z-index:4}
+  .card-center.ace-center{font-size:2.7rem;z-index:1}
+  .card-center.pip-field{display:block;inset:18px 6px 18px;transform:none;font-size:inherit;text-shadow:none;z-index:1}
+  .card-center.pip-field:after,.card-center.ace-center:after,.card-center.court-center:after{display:none}
+  .pip-field .pip{position:absolute;display:block;line-height:1;font-size:clamp(10px,1.22vw,15px);left:var(--pip-x);top:var(--pip-y);transform:translate(-50%,-50%) rotate(var(--pip-rot,0deg));font-family:Georgia,'Times New Roman',serif;font-weight:900;text-shadow:0 0 .4px currentColor}
+  .card-center.court-center{inset:12px 5px;display:block;transform:none;z-index:1}
+  .court-illustration{display:block;width:100%;height:100%;overflow:visible}
+  .card.fallback-card .corner-top{position:absolute;top:6px;left:6px;align-self:auto}
+  .card.fallback-card .corner-bottom{position:absolute;right:6px;bottom:6px;align-self:auto}
+  @media(max-width:760px){.card-center.ace-center{font-size:2rem}.card-center.pip-field{inset:14px 4px 14px}.pip-field .pip{font-size:clamp(8px,2.4vw,12px)}.card-center.court-center{inset:11px 4px}.card.fallback-card .corner-top{top:4px;left:4px}.card.fallback-card .corner-bottom{right:4px;bottom:4px}}
+  @media(max-width:380px){.card-center.ace-center{font-size:1.65rem}.card-center.court-center{inset:10px 3px}}
+
 </style>
 </head>
 <body>
@@ -216,7 +245,8 @@
     <header class="header">
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
-        <span class="version-tag">BUILD 6.5</span>
+        <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
+        <span class="version-tag">BUILD 6.6</span>
       </div>
       <h1>قهوة الباصرة</h1>
       <p>لمة صحاب • شاي على الفحم • دورك يا معلم</p>
@@ -229,9 +259,9 @@
         <button class="btn btn-secondary btn-small" type="button" onclick="shareGame()" aria-label="مشاركة اللعبة مع الأصدقاء">↗ مشاركة اللعبة</button>
       </div>
     </header>
-    <aside class="coming-games-banner" role="note" aria-label="تنويه عن ألعاب قادمة">
+    <aside class="coming-games-banner" role="note" aria-label="تنويه واضح عن ألعاب جديدة قادمة">
       <span class="coming-games-icon" aria-hidden="true">🎮</span>
-      <span class="coming-games-copy"><strong>القعدة لسه هتكبر!</strong><span>تنويه: ألعاب مصرية جديدة هتتضاف قريبًا — تابعنا وخليك أول واحد يجربها.</span></span>
+      <span class="coming-games-copy"><strong>📣 ألعاب جديدة في الطريق!</strong><span>قريبًا هتضاف ألعاب مصرية جديدة لقهوة الباصرة — من تصميم وتطوير ملاهي. تابعنا واختار لعبتك الجاية.</span></span>
       <span class="coming-games-pill">قريبًا</span>
     </aside>
     <div class="sponsor-slot hidden" id="sponsorHomeSlot" data-sponsor-slot="home" aria-hidden="true"></div>
@@ -261,6 +291,11 @@
     </section>
 
     <section class="hidden" id="board">
+      <aside class="coming-games-banner coming-games-inplay" role="note" aria-label="ألعاب مصرية جديدة قادمة">
+        <span class="coming-games-icon" aria-hidden="true">🎮</span>
+        <span class="coming-games-copy"><strong>ألعاب مصرية جديدة في الطريق</strong><span>قريبًا في قهوة الباصرة — تصميم وتطوير: ملاهي.</span></span>
+        <span class="coming-games-pill">قريبًا</span>
+      </aside>
       <div class="info-grid">
         <div class="info-card"><h3>كود القعدة</h3><p id="roomDisplay">------</p><button class="btn btn-secondary btn-small" onclick="copyRoomCode()">▣ نسخ الكود</button></div>
         <div class="info-card"><h3>رصيدك</h3><p id="scoreDisplay">0</p></div>
@@ -295,7 +330,7 @@
       <div class="center"><button class="btn btn-danger" onclick="leaveGame()">🚪 قوم من القعدة</button></div>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>قهوة الباصرة · لمة مصرية أونلاين · الإصدار 6.5</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>قهوة الباصرة · لمة مصرية أونلاين · الإصدار 6.6</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -363,7 +398,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '6.5';
+    const APP_VERSION = '6.6';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -611,9 +646,9 @@
         }
         if (result !== 'joined') {
           const messages = {
-            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.5، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.6، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
             'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
-            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.5.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.6.',
             'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
             'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
             'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
@@ -1179,22 +1214,155 @@
       }
     }
 
-    function makeCardElement(card, interactive) {
-      const el = document.createElement('div');
+    // The selected deck uses the traditional red-backed card style. Face artwork uses a public-domain/CC0 deck
+    // hosted on GitHub; if the external SVG is blocked or offline, the local fallback below remains playable.
+    function getClassicCardAssetUrl(card) {
+      const rankNames = { A: 'ace', J: 'jack', Q: 'queen', K: 'king' };
+      const suitNames = { '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs', '♠': 'spades' };
+      if (!card || !suitNames[card.suit] || !['A','2','3','4','5','6','7','8','9','10','J','Q','K'].includes(String(card.val))) return '';
+      const rank = rankNames[card.val] || String(card.val);
+      const filename = `${rank} of ${suitNames[card.suit]}.svg`;
+      return 'https://raw.githubusercontent.com/AustinGabriel/Public-Domain-and-CC0-Playing-Cards/main/svg%20cards/' + encodeURIComponent(filename);
+    }
+
+    function getPipPositions(val) {
+      const patterns = {
+        '2': [[50,18,0],[50,82,180]],
+        '3': [[50,16,0],[50,50,0],[50,84,180]],
+        '4': [[30,18,0],[70,18,0],[30,82,180],[70,82,180]],
+        '5': [[30,18,0],[70,18,0],[50,50,0],[30,82,180],[70,82,180]],
+        '6': [[30,17,0],[70,17,0],[30,50,0],[70,50,0],[30,83,180],[70,83,180]],
+        '7': [[30,17,0],[70,17,0],[30,50,0],[70,50,0],[50,34,0],[30,83,180],[70,83,180]],
+        '8': [[30,17,0],[70,17,0],[30,50,0],[70,50,0],[50,34,0],[50,66,180],[30,83,180],[70,83,180]],
+        '9': [[27,17,0],[50,17,0],[73,17,0],[27,50,0],[50,50,0],[73,50,0],[27,83,180],[50,83,180],[73,83,180]],
+        '10': [[30,12,0],[70,12,0],[30,31,0],[70,31,0],[30,50,0],[70,50,0],[30,69,180],[70,69,180],[30,88,180],[70,88,180]]
+      };
+      return patterns[String(val)] || [];
+    }
+
+    function makeCourtIllustration(value, suit) {
+      const isQueen = value === 'Q';
+      const isKing = value === 'K';
+      const isRed = ['♥','♦'].includes(suit);
+      const robe = isKing ? '#1f315f' : isQueen ? '#92223a' : '#1f4d77';
+      const robeLight = isKing ? '#324b84' : isQueen ? '#bc3348' : '#2f7095';
+      const accent = isRed ? '#bc283c' : '#19345e';
+      const hair = isQueen ? '#3b2119' : isKing ? '#70402a' : '#4e2818';
+      let headwear = '';
+      if (isKing) {
+        headwear = '<path d="M41 25 L36 9 L48 16 L57 5 L65 16 L78 8 L75 26Z" fill="#e2b843" stroke="#4b2b1a" stroke-width="1.8"/><path d="M40 24 L76 24 L74 30 L42 30Z" fill="#b61e35" stroke="#4b2b1a" stroke-width="1.5"/><circle cx="57" cy="15" r="3" fill="#f8e7a4"/>';
+      } else if (isQueen) {
+        headwear = '<path d="M40 24 L35 10 L47 17 L57 5 L67 17 L80 10 L75 27Z" fill="#e4bd52" stroke="#52351f" stroke-width="1.7"/><path d="M41 24 L75 24 L73 30 L43 30Z" fill="#b7243e" stroke="#52351f" stroke-width="1.4"/><circle cx="57" cy="15" r="3" fill="#fff1b7"/>';
+      } else {
+        headwear = '<path d="M37 27 Q30 17 43 10 Q55 1 69 12 L80 23 L72 29 L46 29Z" fill="#173e72" stroke="#2b2119" stroke-width="1.8"/><path d="M46 15 Q51 1 65 7 Q76 10 80 22 L68 19 L58 16Z" fill="#b8273a" stroke="#55241f" stroke-width="1.3"/><path d="M43 26 L78 26 L75 31 L45 31Z" fill="#e5bd50" stroke="#51331f" stroke-width="1.2"/>';
+      }
+      const hairBack = isQueen
+        ? '<path d="M41 25 Q29 28 31 47 L35 64 L43 72 L47 53 L70 54 L75 70 L83 62 L84 39 Q80 22 69 21Z" fill="#4a261b" stroke="#2b1c17" stroke-width="1.5"/>'
+        : '<path d="M40 26 Q38 20 46 18 L69 20 Q79 24 76 39 L73 51 L68 33 L46 35 L43 48 L37 41Z" fill="' + hair + '" stroke="#302018" stroke-width="1.5"/>';
+      const beard = isKing
+        ? '<path d="M45 48 Q57 55 69 48 L68 58 L58 68 L48 58Z" fill="#70402a" stroke="#3e2419" stroke-width="1.2"/><path d="M49 56 Q57 61 65 56" fill="none" stroke="#e0b16a" stroke-width="1.2"/>'
+        : (!isQueen ? '<path d="M45 48 Q49 54 57 52 Q65 54 69 48 L67 55 Q59 61 50 56Z" fill="#6d3d28" stroke="#3d241b" stroke-width="1"/>' : '');
+      const ornament = isQueen
+        ? '<path d="M42 72 L57 80 L72 72 L67 94 L47 94Z" fill="#e1bd59" stroke="#52371e" stroke-width="1.4"/><path d="M51 74 L57 85 L63 74" fill="none" stroke="#a42038" stroke-width="2"/>'
+        : '<path d="M43 72 L57 80 L71 72 L67 95 L47 95Z" fill="#e0b94e" stroke="#52371e" stroke-width="1.4"/><path d="M48 77 L66 91 M66 77 L48 91" stroke="#ad2037" stroke-width="2"/>';
+      const figure = `
+        <g stroke-linejoin="round" stroke-linecap="round">
+          <path d="M24 103 L29 83 Q34 72 44 69 L70 69 Q81 72 86 83 L91 103Z" fill="${robe}" stroke="#30251b" stroke-width="2"/>
+          <path d="M30 88 L43 75 L57 84 L71 75 L84 88 L78 103 L36 103Z" fill="${robeLight}" stroke="#e4bd54" stroke-width="1.4"/>
+          <path d="M47 65 L47 77 L57 84 L67 77 L67 65Z" fill="#e5b788" stroke="#3b251c" stroke-width="1.4"/>
+          <path d="M42 68 L57 82 L72 68 L69 77 L57 89 L45 77Z" fill="#f3e2ba" stroke="#5f4525" stroke-width="1.3"/>
+          <path d="M28 88 L38 84 L43 103 L31 103Z" fill="${accent}" stroke="#d9b14e" stroke-width="1.2"/>
+          <path d="M86 88 L76 84 L71 103 L83 103Z" fill="${accent}" stroke="#d9b14e" stroke-width="1.2"/>
+          <circle cx="57" cy="38" r="18" fill="${hair}" stroke="#302018" stroke-width="1.5"/>
+          ${hairBack}
+          <ellipse cx="57" cy="40" rx="13.5" ry="17" fill="#f0c59b" stroke="#5b3628" stroke-width="1.4"/>
+          <path d="M44 34 Q47 22 57 23 Q69 23 71 35 L66 30 L47 31Z" fill="${hair}"/>
+          <ellipse cx="42.5" cy="41" rx="2.4" ry="4.2" fill="#e8b389" stroke="#6a3b29" stroke-width=".9"/>
+          <ellipse cx="71.5" cy="41" rx="2.4" ry="4.2" fill="#e8b389" stroke="#6a3b29" stroke-width=".9"/>
+          <path d="M48 37 L54 37 M61 37 L67 37" stroke="#38271d" stroke-width="1.8"/>
+          <circle cx="51" cy="40" r="1.1" fill="#211b17"/><circle cx="64" cy="40" r="1.1" fill="#211b17"/>
+          <path d="M57 40 L55 46 L59 47" fill="none" stroke="#a56a4d" stroke-width="1.3"/>
+          <path d="M52 51 Q57 54 62 50" fill="none" stroke="#8f3e3a" stroke-width="1.3"/>
+          ${beard}
+          ${headwear}
+          <path d="M37 83 L44 79 M77 79 L83 83" stroke="#f4d577" stroke-width="2"/>
+          <circle cx="57" cy="93" r="3.5" fill="#f7d965" stroke="#5b3c1e" stroke-width="1"/>
+          <path d="M38 97 L47 101 M76 97 L67 101" stroke="#fff0bf" stroke-width="1.1"/>
+          ${ornament}
+          <path d="M35 105 L79 105" stroke="#a7792f" stroke-width="1.6"/>
+        </g>`;
+      return `<svg class="court-illustration" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 216" preserveAspectRatio="none" role="img" aria-label="${value === 'J' ? 'ولد الشدة' : value === 'Q' ? 'بنت الشدة' : 'شايب الشدة'}">
+        <rect x="1.5" y="1.5" width="111" height="213" rx="4" fill="#f6ead0" stroke="#b38a48" stroke-width="2"/>
+        <rect x="5" y="5" width="104" height="206" rx="2" fill="none" stroke="#d7ad59" stroke-width=".8"/>
+        <path d="M7 8 L17 8 L7 18 M107 8 L97 8 L107 18 M7 208 L17 208 L7 198 M107 208 L97 208 L107 198" fill="none" stroke="#a88548" stroke-width="1.4"/>
+        <g transform="translate(-0.5,2) scale(1,.98)">${figure}</g>
+        <g transform="translate(114,214) scale(-1,-.98) translate(0,-2)">${figure}</g>
+        <path d="M6 108 H108" stroke="#b18b4b" stroke-width="1.2"/>
+        <path d="M43 108 L57 102 L71 108 L57 114Z" fill="#f6ead0" stroke="#a77b37" stroke-width="1.1"/>
+        <text x="57" y="110.4" text-anchor="middle" dominant-baseline="middle" fill="${accent}" font-size="8" font-family="Georgia,serif" font-weight="bold">${suit}</text>
+      </svg>`;
+    }
+
+    function renderFallbackCardContent(el, card) {
       const isRed = ['♥','♦'].includes(card.suit);
-      el.className = 'card' + (isRed ? ' red' : ' black') + (interactive ? ' hand-card' : '');
+      el.classList.add('fallback-card', isRed ? 'red' : 'black');
       const top = document.createElement('span');
       top.className = 'corner corner-top';
       const topRank = document.createElement('span'); topRank.className = 'card-rank'; topRank.textContent = card.val;
       const topSuit = document.createElement('span'); topSuit.className = 'corner-suit'; topSuit.textContent = card.suit;
       top.append(topRank, topSuit);
-      const center = document.createElement('span'); center.className = 'card-center'; center.textContent = card.suit;
-      const bottom = document.createElement('span'); bottom.className = 'corner corner-bottom';
+      const bottom = document.createElement('span');
+      bottom.className = 'corner corner-bottom';
       const bottomRank = document.createElement('span'); bottomRank.className = 'card-rank'; bottomRank.textContent = card.val;
       const bottomSuit = document.createElement('span'); bottomSuit.className = 'corner-suit'; bottomSuit.textContent = card.suit;
       bottom.append(bottomRank, bottomSuit);
+      const center = document.createElement('span');
+      center.className = 'card-center';
+      if (['J','Q','K'].includes(card.val)) {
+        center.classList.add('court-center');
+        center.innerHTML = makeCourtIllustration(card.val, card.suit);
+      } else if (card.val === 'A') {
+        center.classList.add('ace-center');
+        center.textContent = card.suit;
+      } else {
+        center.classList.add('pip-field');
+        getPipPositions(card.val).forEach(([x,y,rotation]) => {
+          const pip = document.createElement('span');
+          pip.className = 'pip';
+          pip.textContent = card.suit;
+          pip.style.setProperty('--pip-x', x + '%');
+          pip.style.setProperty('--pip-y', y + '%');
+          pip.style.setProperty('--pip-rot', rotation + 'deg');
+          center.appendChild(pip);
+        });
+      }
       el.append(top, center, bottom);
+    }
+
+    function makeCardElement(card, interactive) {
+      const el = document.createElement('div');
+      el.className = 'card asset-card' + (interactive ? ' hand-card' : '');
       el.setAttribute('aria-label', card.val + ' ' + card.suit);
+      const img = document.createElement('img');
+      img.className = 'card-full-art';
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = () => {
+        if (!el.classList.contains('asset-card')) return;
+        el.replaceChildren();
+        el.classList.remove('asset-card');
+        renderFallbackCardContent(el, card);
+      };
+      el.appendChild(img);
+      const src = getClassicCardAssetUrl(card);
+      if (src) img.src = src;
+      else {
+        el.replaceChildren();
+        el.classList.remove('asset-card');
+        renderFallbackCardContent(el, card);
+      }
       return el;
     }
 
