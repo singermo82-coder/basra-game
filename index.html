@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>ع القهوة | ألعاب مصرية أونلاين — v7.1</title>
+  <title>ع القهوة | ألعاب مصرية أونلاين — v7.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -441,7 +441,7 @@
   @media(max-width:760px){.player-item{flex-wrap:nowrap;gap:6px}.player-avatar{flex-basis:31px;width:31px;height:31px;font-size:.93rem;border-width:1px}.player-details{min-width:0}.player-details .player-name{font-size:.68rem}.player-details .player-meta{font-size:.56rem}}
 
 
-  /* v7.1: brand refresh to ع القهوة; avatar selector, captured piles, traditional Egyptian rules */
+  /* v7.2: brand refresh to ع القهوة; avatar selector, captured piles, traditional Egyptian rules */
   .avatar-picker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
   .avatar-choice{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;min-height:67px;padding:7px 4px;border:1px solid #d9b46a55;border-radius:12px;background:linear-gradient(145deg,#28180f,#100a07);color:#f8e4bb;cursor:pointer;font-size:1.65rem;transition:transform .16s,border-color .16s,background .16s}
   .avatar-choice small{font-size:.61rem;color:#cbb38a;font-weight:800;line-height:1.3}
@@ -469,7 +469,7 @@
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
         <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
-        <span class="version-tag">BUILD 7.1</span>
+        <span class="version-tag">BUILD 7.2</span>
       </div>
       <h1>ع القهوة</h1>
       <p>من ملاهي | ألعاب مصرية أونلاين</p>
@@ -539,7 +539,7 @@
         <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="مثال: K7RM4W">
       </div>
       <button class="btn btn-primary primary-wide" id="startBtn" onclick="startGame()">🃏 ابدأ اللعب</button>
-      <div class="setup-foot"><span>♣ 52 ورقة</span><span>•</span><span>♦ البصرة بـ10 نقاط</span><span>•</span><span>♠ الفورة من 150</span></div>
+      <div class="setup-foot"><span>♣ 52 ورقة</span><span>•</span><span>♦ البصرة 10 نقاط • بصرة الولد 30</span><span>•</span><span>♠ الفورة من 150</span></div>
       <p class="footer-note">نصيحة: الوضع الافتراضي ضد المعلم الذكي. لاختيار اللعب مع صديق، اختر «قعدة أونلاين». عند إدخال كود، ستنضم للغرفة كما هي. الكود الجديد يتجنب الحروف والأرقام المتشابهة.</p>
     </section>
     </div><!-- /home-layout -->
@@ -582,7 +582,7 @@
         <div class="game-main-column">
           <section class="panel table-panel">
             <div class="table-surface">
-              <div class="table-label"><span>طاولة القهوة</span><span>المطابقة أو مجموع الورق • الكومي 7♦</span></div>
+              <div class="table-label"><span>طاولة القهوة</span><span>المطابقة أو مجموع الورق • الولد J يأكل الأرض • الكومي 7♦</span></div>
               <div class="table-area" id="tableCards"></div>
               <div class="table-caption">✦ قهوة • شدة • لمة حلوة ✦</div>
             </div>
@@ -606,7 +606,7 @@
       </aside>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.1</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.2</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -674,7 +674,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '7.1';
+    const APP_VERSION = '7.2';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -811,6 +811,7 @@
           hand: deck.splice(0, 4),
           captured: [],
           basras: 0,
+          basraPoints: 0,
           basraMarkers: []
         };
       });
@@ -892,6 +893,8 @@
     function findCapturedIndices(played, table) {
       const floor = cardsArray(table);
       if (!floor.length) return [];
+      // قاعدة الباصرة المصرية: الولد (J) يأخذ كل الورق الموجود على الأرض، بصرف النظر عن القيم.
+      if (String(played.val) === 'J') return floor.map((_, i) => i);
       if (isSevenOfDiamonds(played) && isKoumiSpecialCapture(floor)) return floor.map((_, i) => i);
 
       const picked = new Set();
@@ -913,12 +916,20 @@
       return [...picked].sort((a, b) => a - b);
     }
 
-    // البصرة العادية لا تُسجّل إلا بمطابقة الورقة الوحيدة على الأرض؛ للكومي استثناءه الخاص أعلاه.
+    // البصرة العادية = 10 نقاط. استثناء الولد: إذا كانت الأرض ولدًا واحدًا ولعب اللاعب ولدًا، فهي بصرة بـ30 نقطة.
     function isBasraCapture(played, tableBefore, capturedIndices) {
       const floor = cardsArray(tableBefore);
       if (!floor.length || !capturedIndices.length || capturedIndices.length !== floor.length) return false;
+      if (String(played.val) === 'J' && floor.length === 1 && String(floor[0].val) === 'J') return true;
       if (isSevenOfDiamonds(played) && isKoumiSpecialCapture(floor)) return true;
       return floor.length === 1 && floor[0].val === played.val;
+    }
+
+    function basraAwardPoints(played, tableBefore, capturedIndices) {
+      const floor = cardsArray(tableBefore);
+      if (!isBasraCapture(played, floor, capturedIndices)) return 0;
+      if (String(played.val) === 'J' && floor.length === 1 && String(floor[0].val) === 'J') return 30;
+      return 10;
     }
 
     function finishRound(game, order) {
@@ -936,12 +947,16 @@
         const cards = cardsArray(player.captured);
         const cardCount = cards.length;
         const basras = Number(player.basras) || 0;
+        // Compatibility with existing rooms created before per-basra point values were stored.
+        const rawBasraPoints = player.basraPoints;
+        const basraPoints = rawBasraPoints !== undefined && rawBasraPoints !== null && Number.isFinite(Number(rawBasraPoints))
+          ? Math.max(0, Number(rawBasraPoints)) : basras * 10;
         return {
           id, name: player.name, cardCount,
           pairs: Math.floor(cardCount / 2),
           oddCard: cardCount % 2,
           basras,
-          basraPoints: basras * 10,
+          basraPoints,
           majorityPoints: 0,
           total: 0
         };
@@ -995,9 +1010,9 @@
         }
         if (result !== 'joined') {
           const messages = {
-            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v7.1، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v7.2، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
             'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
-            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v7.1.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v7.2.',
             'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
             'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
             'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
@@ -1149,7 +1164,7 @@
           const next = JSON.parse(JSON.stringify(current));
           const order = activeOrder(next);
           if (!Array.isArray(next.deck) || next.deck.length < 4) { reason = 'no-deck'; return; }
-          next.players[myId] = { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand: next.deck.splice(0, 4), captured: [], basras: 0, basraMarkers: [], isAI: false };
+          next.players[myId] = { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand: next.deck.splice(0, 4), captured: [], basras: 0, basraPoints: 0, basraMarkers: [], isAI: false };
           next.turnOrder = order.concat(myId);
           if (!Array.isArray(next.table)) next.table = takeInitialTable(next.deck);
           next.status = 'playing';
@@ -1212,6 +1227,7 @@
             hand: nextGame.deck.splice(0, 4),
             captured: [],
             basras: 0,
+            basraPoints: 0,
             basraMarkers: [],
             isAI: false
           };
@@ -1252,7 +1268,7 @@
           if (current) { reason = 'collision'; return; }
           const deck = makeDeck();
           const hand = deck.splice(0, 4); // the room creator is the dealer
-          const players = { [myId]: { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand, captured: [], basras: 0, basraMarkers: [], isAI: false } };
+          const players = { [myId]: { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand, captured: [], basras: 0, basraPoints: 0, basraMarkers: [], isAI: false } };
           const turnOrder = [myId];
           let table = null; // an online room deals the table after the second player's hand is dealt
           let status = 'waiting';
@@ -1260,7 +1276,7 @@
           let startingPlayerId = null;
           if (playWithAI) {
             const aiId = 'ai_' + myRoom;
-            players[aiId] = { id: aiId, name: 'المعلم أبو شنب', avatar: 'teacher', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, basraMarkers: [], isAI: true, aiLevel: 'normal' };
+            players[aiId] = { id: aiId, name: 'المعلم أبو شنب', avatar: 'teacher', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, basraPoints: 0, basraMarkers: [], isAI: true, aiLevel: 'normal' };
             turnOrder.push(aiId);
             table = takeInitialTable(deck); // both four-card hands first, then four on the table
             status = 'playing';
@@ -1354,6 +1370,11 @@
       player.hand = cardsArray(player.hand);
       player.captured = cardsArray(player.captured);
       player.basraMarkers = cardsArray(player.basraMarkers);
+      if (player.basraPoints === undefined || player.basraPoints === null || !Number.isFinite(Number(player.basraPoints))) {
+        player.basraPoints = (Number(player.basras) || 0) * 10;
+      } else {
+        player.basraPoints = Math.max(0, Number(player.basraPoints));
+      }
       const played = player.hand.splice(index, 1)[0];
       game.table = cardsArray(game.table);
       const tableBefore = game.table.slice();
@@ -1364,8 +1385,10 @@
         game.table = tableBefore.filter((_, i) => !takeSet.has(i));
         player.captured = [...player.captured, ...taken, played];
         game.lastCaptureBy = playerId;
-        if (isBasraCapture(played, tableBefore, indices)) {
+        const basraPointsWon = basraAwardPoints(played, tableBefore, indices);
+        if (basraPointsWon > 0) {
           player.basras = (Number(player.basras) || 0) + 1;
+          player.basraPoints = (Number(player.basraPoints) || 0) + basraPointsWon;
           player.basraMarkers.push(played); // face-up marker for each basra; captured cards stay face-down
         }
       } else {
@@ -1399,7 +1422,9 @@
         if (captured.length) {
           const remaining = table.filter((_, i) => !new Set(captured).has(i));
           score += 35 + captured.length * 4;
-          if (isBasraCapture(card, table, captured)) score += 28;
+          const basraPoints = basraAwardPoints(card, table, captured);
+          if (basraPoints === 30) score += 45;
+          else if (basraPoints === 10) score += 28;
           if (remaining.length === 0 && table.length > 0) score += 5;
           if (card.suit === '♦' && card.val === '10') score += 7;
           if (card.suit === '♣' && card.val === '2') score += 5;
@@ -1531,7 +1556,7 @@
         cardsArray(player.basraMarkers).forEach((marker, markerIndex) => {
           const markerCard = makeCardElement(marker, false); markerCard.classList.add('basra-marker-card'); markerCard.title = `بصرة رقم ${markerIndex + 1}`; markers.appendChild(markerCard);
         });
-        const basraCount = document.createElement('span'); basraCount.className = 'capture-count'; basraCount.textContent = `بصرات: ${Number(player.basras)||0}`;
+        const basraCount = document.createElement('span'); basraCount.className = 'capture-count'; basraCount.textContent = `بصرات: ${Number(player.basras)||0} · ${Number(player.basraPoints ?? ((Number(player.basras)||0)*10))||0} نقطة`;
         captureRow.append(pile, count, basraCount, markers);
         item.append(mainLine, captureRow);
         document.getElementById('playersList').appendChild(item);
@@ -1774,7 +1799,7 @@
       } else {
         title.textContent = `نتيجة الجولة ${game.roundNumber || 1}`;
         showNotice('انتهت الجولة. ابدأ جولة جديدة للاحتفاظ بالنقاط ومتابعة المباراة.', 'good');
-        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة (${r.pairs} جوز${r.oddCard ? ' + ورقة فردية' : ''})، ${r.basras} بصرة × 10 = ${r.basraPoints} نقطة + ${r.majorityPoints} نقطة للأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
+        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة (${r.pairs} جوز${r.oddCard ? ' + ورقة فردية' : ''})، ${r.basras} بصرة = ${r.basraPoints} نقطة إجماليًا + ${r.majorityPoints} نقطة للأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
         next.classList.remove('hidden');
       }
     }
