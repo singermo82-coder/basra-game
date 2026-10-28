@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>قهوة الباصرة | كوتشينة كلاسيكية v6.7</title>
+  <title>قهوة الباصرة | القواعد المصرية v7.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -440,6 +440,27 @@
   .player-details .player-name{white-space:normal}
   @media(max-width:760px){.player-item{flex-wrap:nowrap;gap:6px}.player-avatar{flex-basis:31px;width:31px;height:31px;font-size:.93rem;border-width:1px}.player-details{min-width:0}.player-details .player-name{font-size:.68rem}.player-details .player-meta{font-size:.56rem}}
 
+
+  /* v7.0: avatar selector, visible captured piles, and traditional Egyptian rules UI */
+  .avatar-picker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+  .avatar-choice{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;min-height:67px;padding:7px 4px;border:1px solid #d9b46a55;border-radius:12px;background:linear-gradient(145deg,#28180f,#100a07);color:#f8e4bb;cursor:pointer;font-size:1.65rem;transition:transform .16s,border-color .16s,background .16s}
+  .avatar-choice small{font-size:.61rem;color:#cbb38a;font-weight:800;line-height:1.3}
+  .avatar-choice.active{border-color:#ffe09a;background:linear-gradient(145deg,#694323,#2b160c);box-shadow:0 0 0 2px #e7c37428,0 5px 15px #0005;transform:translateY(-2px)}
+  .player-item{display:flex;flex-direction:column;align-items:stretch;gap:7px}
+  .player-mainline{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
+  .capture-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:7px;border-top:1px solid #e5c77722;color:#d9c49a;font-size:.7rem}
+  .capture-pile{display:flex;align-items:center;direction:ltr;padding-inline:4px}
+  .capture-mini-back{width:16px;height:23px;border-radius:3px;border:1px solid #e3c47e;background:repeating-linear-gradient(45deg,#a21d2d 0 3px,#74131e 3px 6px);box-shadow:0 2px 4px #0006;margin-inline:-3px;position:relative}
+  .capture-mini-back:after{content:'✥';display:grid;place-items:center;height:100%;font-size:9px;color:#f4d99b}
+  .capture-count{font-size:.68rem;color:#e6d1a7;white-space:nowrap}
+  .basra-markers{display:flex;align-items:center;gap:2px;direction:ltr;max-width:100%;overflow:hidden}
+  .basra-marker-card{--card-w:24px!important;--card-h:36px!important;width:24px!important;height:36px!important;margin-inline:-3px;overflow:hidden;border-radius:3px!important;box-shadow:0 2px 4px #0008!important;cursor:default!important}
+  .basra-marker-card .card-full-art{border-radius:3px}
+  .player-avatar .teacher-avatar-art{display:block;width:100%;height:100%;border-radius:50%}
+  .teacher-tag{display:inline-flex;align-items:center;gap:4px;color:#ffe4a2;border:1px solid #e2bd7655;border-radius:999px;padding:2px 7px;font-size:.63rem;background:#6d452727;margin-inline-start:5px}
+  .round-rules-note{color:#f3ddb1;text-align:center;font-size:.77rem;line-height:1.8;margin-top:8px}
+  @media(max-width:760px){.avatar-picker{gap:5px}.avatar-choice{min-height:59px;font-size:1.35rem;padding:5px 2px}.avatar-choice small{font-size:.54rem}.player-item{gap:5px}.player-mainline{gap:6px}.capture-row{font-size:.58rem;gap:5px}.capture-mini-back{width:12px;height:18px;margin-inline:-2px}.capture-mini-back:after{font-size:7px}.basra-marker-card{--card-w:18px!important;--card-h:28px!important;width:18px!important;height:28px!important}}
+
 </style>
 </head>
 <body>
@@ -448,7 +469,7 @@
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
         <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
-        <span class="version-tag">BUILD 6.7</span>
+        <span class="version-tag">BUILD 7.0</span>
       </div>
       <h1>قهوة الباصرة</h1>
       <p>لمة صحاب • شاي على الفحم • دورك يا معلم</p>
@@ -491,6 +512,20 @@
         <label for="playerName">اسم اللاعب</label>
         <input id="playerName" type="text" maxlength="20" autocomplete="nickname" placeholder="اكتب اسمك يا معلم">
       </div>
+      <div class="input-group avatar-select-group">
+        <label>اختار صورتك الرمزية</label>
+        <div class="avatar-picker" id="avatarPicker" role="group" aria-label="اختيار الصورة الرمزية">
+          <button type="button" class="avatar-choice active" data-avatar="felah" aria-pressed="true" title="المصري الأصيل">👨🏻‍🌾<small>بلدي</small></button>
+          <button type="button" class="avatar-choice" data-avatar="mustache" aria-pressed="false" title="صاحب الشنب">🧔🏻<small>شنب</small></button>
+          <button type="button" class="avatar-choice" data-avatar="sunglasses" aria-pressed="false" title="الشاب العصري">😎<small>مودرن</small></button>
+          <button type="button" class="avatar-choice" data-avatar="elder" aria-pressed="false" title="العم الكبير">👴🏻<small>كبير القعدة</small></button>
+          <button type="button" class="avatar-choice" data-avatar="woman" aria-pressed="false" title="لاعبة">👩🏻<small>لاعبة</small></button>
+          <button type="button" class="avatar-choice" data-avatar="hijab" aria-pressed="false" title="لاعبة بالحجاب">🧕🏻<small>لاعبة</small></button>
+          <button type="button" class="avatar-choice" data-avatar="young" aria-pressed="false" title="شاب">🧑🏽<small>شاب</small></button>
+          <button type="button" class="avatar-choice" data-avatar="cat" aria-pressed="false" title="قط القهوة">🐈<small>قط القهوة</small></button>
+        </div>
+        <small class="mode-hint">اختيارك بيتحفظ على جهازك. تسجيل الحساب ورفع صورة شخصية ومزايا الأعضاء مرحلة لاحقة.</small>
+      </div>
       <div class="input-group">
         <label for="gameMode">طريقة اللعب</label>
         <select id="gameMode" aria-describedby="gameModeHint">
@@ -504,7 +539,7 @@
         <input id="roomCode" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="مثال: K7RM4W">
       </div>
       <button class="btn btn-primary primary-wide" id="startBtn" onclick="startGame()">🃏 ابدأ اللعب</button>
-      <div class="setup-foot"><span>♣ ورق 52 كارت</span><span>•</span><span>♦ لاعبان أونلاين</span><span>•</span><span>♠ كود خاص لكل قعدة</span></div>
+      <div class="setup-foot"><span>♣ 52 ورقة</span><span>•</span><span>♦ البصرة بـ10 نقاط</span><span>•</span><span>♠ الفورة من 150</span></div>
       <p class="footer-note">نصيحة: الوضع الافتراضي ضد المعلم الذكي. لاختيار اللعب مع صديق، اختر «قعدة أونلاين». عند إدخال كود، ستنضم للغرفة كما هي. الكود الجديد يتجنب الحروف والأرقام المتشابهة.</p>
     </section>
     </div><!-- /home-layout -->
@@ -526,7 +561,7 @@
       <div class="game-stage">
         <aside class="game-side-rail">
           <section class="panel players-panel">
-            <div class="section-title"><h3>👥 القاعدين على الطاولة</h3><span class="section-hint">النتيجة والدور</span></div>
+            <div class="section-title"><h3>👥 القاعدين على الطاولة</h3><span class="section-hint">المكسب والبصرات</span></div>
             <div class="players-list" id="playersList"></div>
           </section>
           <section class="panel opponent-panel">
@@ -547,7 +582,7 @@
         <div class="game-main-column">
           <section class="panel table-panel">
             <div class="table-surface">
-              <div class="table-label"><span>طاولة القهوة</span><span>اللي ياكل الورق يكسب النقطة</span></div>
+              <div class="table-label"><span>طاولة القهوة</span><span>المطابقة أو مجموع الورق • الكومي 7♦</span></div>
               <div class="table-area" id="tableCards"></div>
               <div class="table-caption">✦ قهوة • شدة • لمة حلوة ✦</div>
             </div>
@@ -571,7 +606,7 @@
       </aside>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>قهوة الباصرة · لمة مصرية أونلاين · الإصدار 6.7</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>قهوة الباصرة · القواعد المصرية المعتمدة · الفورة من 150 · الإصدار 7.0</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -639,7 +674,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '6.7';
+    const APP_VERSION = '7.0';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -686,6 +721,54 @@
       else { el.textContent = '❌ غير متصل'; el.classList.add('offline'); }
     });
 
+    const AVATAR_OPTIONS = {
+      felah: { glyph: '👨🏻‍🌾', label: 'بلدي' },
+      mustache: { glyph: '🧔🏻', label: 'شنب' },
+      sunglasses: { glyph: '😎', label: 'مودرن' },
+      elder: { glyph: '👴🏻', label: 'كبير القعدة' },
+      woman: { glyph: '👩🏻', label: 'لاعبة' },
+      hijab: { glyph: '🧕🏻', label: 'لاعبة' },
+      young: { glyph: '🧑🏽', label: 'شاب' },
+      cat: { glyph: '🐈', label: 'قط القهوة' },
+      teacher: { glyph: '🧓🏻', label: 'المعلم' }
+    };
+    let selectedAvatar = 'felah';
+
+    function teacherAvatarSvg() {
+      return `<svg class="teacher-avatar-art" viewBox="0 0 100 100" role="img" aria-label="المعلم المصري أبو شنب بالعمّة والجلابية">
+        <defs><radialGradient id="teacherBg" cx="30%" cy="20%"><stop offset="0" stop-color="#b98b4f"/><stop offset="1" stop-color="#2c180f"/></radialGradient><linearGradient id="galabiya" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6d1a4"/><stop offset="1" stop-color="#8c6842"/></linearGradient></defs>
+        <circle cx="50" cy="50" r="49" fill="url(#teacherBg)"/><path d="M13 100 Q16 69 37 66 L64 66 Q85 70 88 100Z" fill="url(#galabiya)" stroke="#614021" stroke-width="2"/><path d="M37 66 L50 79 L63 66 L59 100 L41 100Z" fill="#f5e7c6"/><path d="M25 78 L39 71 L50 83 L61 71 L75 78 L67 91 L33 91Z" fill="#5d3822"/><path d="M40 59 L40 71 L50 79 L60 71 L60 59Z" fill="#b8754b"/>
+        <ellipse cx="50" cy="43" rx="24" ry="27" fill="#c98b5d" stroke="#77452d" stroke-width="1.5"/><path d="M27 38 Q19 22 33 15 Q49 4 66 15 Q81 24 73 39 L66 29 L34 28Z" fill="#eee0c1" stroke="#80623c" stroke-width="2"/><path d="M31 25 Q50 12 70 25 L67 32 Q49 25 33 33Z" fill="#fff2d2"/><path d="M34 41 Q42 36 46 41 M55 41 Q61 36 67 41" fill="none" stroke="#392116" stroke-width="3" stroke-linecap="round"/><circle cx="41" cy="43" r="2" fill="#17110d"/><circle cx="60" cy="43" r="2" fill="#17110d"/><path d="M50 44 L47 51 L53 52" fill="none" stroke="#905a3d" stroke-width="2"/><path d="M34 51 Q42 47 49 52 Q55 47 67 51 Q63 62 51 59 Q40 62 34 51Z" fill="#3d2117"/><path d="M36 54 Q50 61 65 54" fill="none" stroke="#1d120d" stroke-width="2"/><path d="M34 66 L50 79 L66 66" fill="none" stroke="#6e4a29" stroke-width="2"/><circle cx="50" cy="88" r="3" fill="#d8b25d"/></svg>`;
+    }
+
+    function setSelectedAvatar(key) {
+      if (!AVATAR_OPTIONS[key] || key === 'teacher') return;
+      selectedAvatar = key;
+      document.querySelectorAll('.avatar-choice').forEach(button => {
+        const active = button.dataset.avatar === key;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      try { localStorage.setItem('basraAvatar', key); } catch (_) {}
+    }
+    function loadLocalProfile() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('basraProfile') || '{}');
+        const savedName = localStorage.getItem('basraName') || saved.name;
+        const savedAvatar = localStorage.getItem('basraAvatar') || saved.avatar;
+        if (savedName && document.getElementById('playerName')) document.getElementById('playerName').value = String(savedName).slice(0,20);
+        if (savedAvatar && AVATAR_OPTIONS[savedAvatar]) setSelectedAvatar(savedAvatar);
+      } catch (_) {}
+    }
+    document.getElementById('avatarPicker')?.addEventListener('click', event => {
+      const button = event.target.closest('[data-avatar]');
+      if (button) setSelectedAvatar(button.dataset.avatar);
+    });
+    document.getElementById('playerName')?.addEventListener('change', event => {
+      try { localStorage.setItem('basraName', String(event.target.value || '').slice(0,20)); } catch (_) {}
+    });
+    loadLocalProfile();
+
     function makeDeck() {
       const deck = [];
       suits.forEach(suit => values.forEach(val => deck.push({suit, val, display: val + suit})));
@@ -704,50 +787,52 @@
       return deck;
     }
 
-    // في التوزيع الابتدائي، الولد وسبعة الديناري لا يوضعان على الأرض؛ يُعادان إلى السحب.
+    // قواعد التوزيع المتفق عليها: 4 للموزّع، 4 للمنافس، ثم 4 على الأرض. كل ورقة من الـ52 ممكن تظهر في أي مكان.
     function takeInitialTable(deck) {
-      const table = [];
-      const putBack = [];
-      while (table.length < 4 && deck.length) {
-        const card = deck.pop();
-        if (card.val === 'J' || (card.val === '7' && card.suit === '♦')) putBack.push(card);
-        else table.push(card);
-      }
-      deck.push(...putBack);
-      shuffle(deck);
-      return table;
+      return Array.isArray(deck) ? deck.splice(0, 4) : [];
     }
 
     function makeRound(players, order, room, roundNumber, startingIndex) {
       const deck = makeDeck();
-      const table = takeInitialTable(deck);
+      const starterIndex = ((Number(startingIndex) || 0) % order.length + order.length) % order.length;
+      const dealerIndex = (starterIndex + 1) % order.length;
+      const dealOrder = [order[dealerIndex], ...order.filter((_, index) => index !== dealerIndex)];
       const nextPlayers = {};
-      order.forEach(id => {
+      // الموزّع أولًا، ثم اللاعب الذي يبدأ الدور، وبعدهما الأربع ورقات على الأرض.
+      dealOrder.forEach(id => {
         const old = players[id] || {};
         nextPlayers[id] = {
           id,
-          name: old.name || 'لاعب',
+          name: old.name || (old.isAI ? 'المعلم أبو شنب' : 'لاعب'),
+          avatar: old.avatar || (old.isAI ? 'teacher' : 'felah'),
           score: Number(old.score) || 0,
           isAI: old.isAI === true,
+          aiLevel: old.aiLevel || 'normal',
           hand: deck.splice(0, 4),
           captured: [],
-          basras: 0
+          basras: 0,
+          basraMarkers: []
         };
       });
+      const table = takeInitialTable(deck);
       return {
         room,
         deck,
         table,
         players: nextPlayers,
         turnOrder: order,
-        turnIndex: ((startingIndex % order.length) + order.length) % order.length,
+        turnIndex: starterIndex,
+        startingPlayerId: order[starterIndex],
         status: order.length >= 2 ? 'playing' : 'waiting',
         roundNumber: roundNumber || 1,
         lastCaptureBy: null,
+        lastPlayedBy: null,
         roundResults: null,
         winner: null
       };
     }
+
+
 
     function genRoomCode() {
       const bytes = new Uint8Array(6);
@@ -766,9 +851,15 @@
       const n = Number(card.val);
       return Number.isInteger(n) && n >= 2 && n <= 10 ? n : null;
     }
-    function isSevenOfDiamonds(card) { return card && card.val === '7' && card.suit === '♦'; }
+    function isSevenOfDiamonds(card) { return !!card && card.val === '7' && card.suit === '♦'; }
+    function isPicture(card) { return !!card && ['J','Q','K'].includes(String(card.val)); }
+    function cardsArray(value) {
+      if (Array.isArray(value)) return value.filter(card => card != null);
+      if (value && typeof value === 'object') return Object.keys(value).filter(key => /^\d+$/.test(key)).sort((a,b)=>Number(a)-Number(b)).map(key => value[key]).filter(card => card != null);
+      return [];
+    }
 
-    // البحث عن مجموعة أرقام مجموعها يساوي الورقة التي تم لعبها.
+    // Find a sum combination of 2+ cards. Exact-value matches are collected separately.
     function findSumGroup(table, target, availableIndices) {
       const candidates = availableIndices
         .filter(index => numericValue(table[index]) !== null && numericValue(table[index]) <= target)
@@ -787,20 +878,32 @@
       return search(0, target, []);
     }
 
+    // الكومي (7♦): يمسح الأرض ويعمل بصرة إذا كانت كل الأوراق أرقامًا ومجموعها 10 أو أقل؛
+    // أو إذا كانت هناك صورة واحدة فقط على الأرض. غير كده يُعامل كرقم 7 عادي للمطابقة/المجموع.
+    function isKoumiSpecialCapture(table) {
+      const floor = cardsArray(table);
+      if (!floor.length) return false;
+      if (floor.length === 1 && isPicture(floor[0])) return true;
+      if (!floor.every(card => numericValue(card) !== null)) return false;
+      const total = floor.reduce((sum, card) => sum + numericValue(card), 0);
+      return total <= 10;
+    }
+
     function findCapturedIndices(played, table) {
-      if (!table || table.length === 0) return [];
-      if (played.val === 'J' || isSevenOfDiamonds(played)) return table.map((_, i) => i);
+      const floor = cardsArray(table);
+      if (!floor.length) return [];
+      if (isSevenOfDiamonds(played) && isKoumiSpecialCapture(floor)) return floor.map((_, i) => i);
 
       const picked = new Set();
-      // تُؤخذ كل الأوراق المطابقة للرتبة أولًا.
-      table.forEach((card, i) => { if (card.val === played.val) picked.add(i); });
+      // المطابقة حسب القيمة/الصورة (لا يشترط تطابق النوع).
+      floor.forEach((card, i) => { if (card.val === played.val) picked.add(i); });
 
-      // الأوراق الرقمية يمكن أن تأخذ مجموعة أو أكثر مجموعها يساوي الرقم المُلعَب.
+      // الورق الرقمي فقط يمكنه أكل مجموعات منفصلة، كل مجموعة مجموعها يساوي الرقم الملعوب.
       const target = numericValue(played);
       if (target !== null) {
-        let remaining = table.map((_, i) => i).filter(i => !picked.has(i));
+        let remaining = floor.map((_, i) => i).filter(i => !picked.has(i));
         while (remaining.length) {
-          const group = findSumGroup(table, target, remaining);
+          const group = findSumGroup(floor, target, remaining);
           if (!group) break;
           group.forEach(i => picked.add(i));
           const used = new Set(group);
@@ -810,50 +913,52 @@
       return [...picked].sort((a, b) => a - b);
     }
 
-    function isSevenBasra(table) {
-      if (!table.length) return false;
-      let total = 0;
-      for (const card of table) {
-        const n = numericValue(card);
-        if (n === null) return false;
-        total += n;
-      }
-      return total <= 10;
-    }
-
-    function cardPoints(card) {
-      if (card.val === 'A' || card.val === 'J') return 1;
-      if (card.suit === '♣' && card.val === '2') return 2;
-      if (card.suit === '♦' && card.val === '10') return 3;
-      return 0;
+    // البصرة العادية لا تُسجّل إلا بمطابقة الورقة الوحيدة على الأرض؛ للكومي استثناءه الخاص أعلاه.
+    function isBasraCapture(played, tableBefore, capturedIndices) {
+      const floor = cardsArray(tableBefore);
+      if (!floor.length || !capturedIndices.length || capturedIndices.length !== floor.length) return false;
+      if (isSevenOfDiamonds(played) && isKoumiSpecialCapture(floor)) return true;
+      return floor.length === 1 && floor[0].val === played.val;
     }
 
     function finishRound(game, order) {
-      const table = Array.isArray(game.table) ? game.table.slice() : [];
+      const table = cardsArray(game.table);
       if (table.length) {
-        const receiver = order.includes(game.lastCaptureBy) ? game.lastCaptureBy : order[order.length - 1];
-        game.players[receiver].captured = [...(game.players[receiver].captured || []), ...table];
+        const receiver = order.includes(game.lastCaptureBy) ? game.lastCaptureBy :
+          order.includes(game.lastPlayedBy) ? game.lastPlayedBy : order[order.length - 1];
+        const prior = cardsArray(game.players[receiver].captured);
+        game.players[receiver].captured = [...prior, ...table];
       }
       game.table = [];
 
       const rows = order.map(id => {
         const player = game.players[id];
-        const cards = player.captured || [];
-        const pointsFromCards = cards.reduce((sum, card) => sum + cardPoints(card), 0);
-        return { id, name: player.name, cardCount: cards.length, cardPoints: pointsFromCards, basraPoints: (player.basras || 0) * 10, majorityPoints: 0, total: 0 };
+        const cards = cardsArray(player.captured);
+        const cardCount = cards.length;
+        const basras = Number(player.basras) || 0;
+        return {
+          id, name: player.name, cardCount,
+          pairs: Math.floor(cardCount / 2),
+          oddCard: cardCount % 2,
+          basras,
+          basraPoints: basras * 10,
+          majorityPoints: 0,
+          total: 0
+        };
       });
       if (rows.length === 2) {
-        if (rows[0].cardCount > rows[1].cardCount) rows[0].majorityPoints = 30;
-        else if (rows[1].cardCount > rows[0].cardCount) rows[1].majorityPoints = 30;
+        // طبقًا لقواعد صاحب اللعبة: 26 ورقة (13 جوز) لكل لاعب = تعادل؛ من جمع أكثر من 26 يأخذ 30 نقطة.
+        if (rows[0].cardCount > 26) rows[0].majorityPoints = 30;
+        else if (rows[1].cardCount > 26) rows[1].majorityPoints = 30;
       }
       rows.forEach(row => {
-        row.total = row.cardPoints + row.basraPoints + row.majorityPoints;
+        row.total = row.basraPoints + row.majorityPoints;
         game.players[row.id].score = (Number(game.players[row.id].score) || 0) + row.total;
       });
       game.roundResults = rows;
-      const a = game.players[order[0]].score;
-      const b = game.players[order[1]].score;
-      if ((a >= 101 || b >= 101) && a !== b) {
+      const a = Number(game.players[order[0]].score) || 0;
+      const b = Number(game.players[order[1]].score) || 0;
+      if ((a >= 150 || b >= 150) && a !== b) {
         game.status = 'finished';
         game.winner = a > b ? order[0] : order[1];
       } else {
@@ -862,6 +967,8 @@
       }
     }
 
+
+
     async function startGame() {
       if (isBusy) return;
       const name = document.getElementById('playerName').value.trim();
@@ -869,6 +976,7 @@
       if (!name) { showSetupError('اكتب اسم اللاعب الأول.'); return; }
       if (enteredCode && enteredCode.length !== 6) { showSetupError('كود القعدة لازم يكون 6 خانات. انسخه من المضيف بدل كتابته يدويًا.'); return; }
       joiningName = name;
+      try { localStorage.setItem('basraProfile', JSON.stringify({ name, avatar: selectedAvatar })); localStorage.setItem('basraName', name); localStorage.setItem('basraAvatar', selectedAvatar); } catch (_) {}
       myId = genPlayerId();
       myRoom = enteredCode || genRoomCode();
       const playWithAI = !enteredCode && document.getElementById('gameMode')?.value !== 'online';
@@ -887,9 +995,9 @@
         }
         if (result !== 'joined') {
           const messages = {
-            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v6.7، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
+            'not-found': `Firebase لم يجد غرفة بالكود ${enteredCode} داخل المشروع ${firebaseConfig.projectId}. تأكد أن المضيف أنشأ الغرفة من نفس رابط اللعبة بعد تحديث v7.0، ثم اضغط «نسخ الكود» والصقه هنا. لم يتم تعديل بيانات أي غرفة.`,
             'full': 'القعدة كاملة بالفعل؛ لا تسمح إلا بلاعبين.',
-            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v6.7.',
+            'old-version': 'الغرفة من إصدار قديم ولا تطابق بنية اللعبة الحالية. أنشئ غرفة جديدة من الإصدار v7.0.',
             'closed': 'انتهت هذه المباراة؛ أنشئ غرفة جديدة.',
             'permission': 'Firebase رفض قراءة الغرفة أو تعديلها (Permission denied). هذا خلل في صلاحيات Realtime Database وليس في شكل الكود؛ يجب مراجعة Rules من Firebase Console.',
             'network': 'تعذر الوصول إلى Firebase REST API. تأكد من اتصال الإنترنت وعدم وجود حظر للشبكة، ثم حاول مرة واحدة.',
@@ -983,13 +1091,18 @@
 
     function validateRoomForJoin(current) {
       if (!current || typeof current !== 'object') return 'not-found';
-      if (!Array.isArray(current.deck) || !Array.isArray(current.table) || !Array.isArray(current.turnOrder) || !current.players || typeof current.players !== 'object') return 'old-version';
-      if (current.status === 'finished' || current.status === 'roundOver') return 'closed';
+      if (!Array.isArray(current.deck) || !Array.isArray(current.turnOrder) || !current.players || typeof current.players !== 'object') return 'old-version';
       const active = activeOrder(current);
+      const pendingInitialDeal = current.status === 'waiting' && active.length === 1 && current.table == null;
+      if (!Array.isArray(current.table) && !pendingInitialDeal) return 'old-version';
+      if (current.status === 'finished' || current.status === 'roundOver') return 'closed';
       if (active.length >= 2) return 'full';
-      if (!current.deck.length && active.length < 2) return 'no-deck';
+      const needed = pendingInitialDeal ? 8 : 4; // 4 for the joining hand and, on a new room, 4 for the initial table
+      if (current.deck.length < needed) return 'no-deck';
       return 'ok';
     }
+
+
 
     async function waitForDatabaseConnection(timeoutMs = 10000) {
       const connectedRef = db.ref('.info/connected');
@@ -1036,10 +1149,12 @@
           const next = JSON.parse(JSON.stringify(current));
           const order = activeOrder(next);
           if (!Array.isArray(next.deck) || next.deck.length < 4) { reason = 'no-deck'; return; }
-          next.players[myId] = { id: myId, name: joiningName, score: 0, hand: next.deck.splice(0, 4), captured: [], basras: 0 };
+          next.players[myId] = { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand: next.deck.splice(0, 4), captured: [], basras: 0, basraMarkers: [], isAI: false };
           next.turnOrder = order.concat(myId);
+          if (!Array.isArray(next.table)) next.table = takeInitialTable(next.deck);
           next.status = 'playing';
-          if (!Number.isInteger(next.turnIndex)) next.turnIndex = 0;
+          next.turnIndex = next.turnOrder.indexOf(myId);
+          next.startingPlayerId = myId;
           next.lastUpdatedAt = Date.now();
           return next;
         }, (error, committed, snapshot) => {
@@ -1092,15 +1207,20 @@
           nextGame.players[myId] = {
             id: myId,
             name: joiningName,
+            avatar: selectedAvatar,
             score: 0,
             hand: nextGame.deck.splice(0, 4),
             captured: [],
             basras: 0,
+            basraMarkers: [],
             isAI: false
           };
           nextGame.turnOrder = active.concat(myId);
+          // Deal the starting table only after both players have received their four cards.
+          if (!Array.isArray(nextGame.table)) nextGame.table = takeInitialTable(nextGame.deck);
           nextGame.status = 'playing';
-          if (!Number.isInteger(nextGame.turnIndex)) nextGame.turnIndex = 0;
+          nextGame.turnIndex = nextGame.turnOrder.indexOf(myId);
+          nextGame.startingPlayerId = myId;
           nextGame.lastUpdatedAt = Date.now();
           try {
             const committed = await firebaseRestCompareAndSwap(code, nextGame, snapshot.etag);
@@ -1131,16 +1251,21 @@
           reason = null;
           if (current) { reason = 'collision'; return; }
           const deck = makeDeck();
-          const table = takeInitialTable(deck);
-          const hand = deck.splice(0, 4);
-          const players = { [myId]: { id: myId, name: joiningName, score: 0, hand, captured: [], basras: 0, isAI: false } };
+          const hand = deck.splice(0, 4); // the room creator is the dealer
+          const players = { [myId]: { id: myId, name: joiningName, avatar: selectedAvatar, score: 0, hand, captured: [], basras: 0, basraMarkers: [], isAI: false } };
           const turnOrder = [myId];
+          let table = null; // an online room deals the table after the second player's hand is dealt
           let status = 'waiting';
+          let turnIndex = 0;
+          let startingPlayerId = null;
           if (playWithAI) {
             const aiId = 'ai_' + myRoom;
-            players[aiId] = { id: aiId, name: 'المعلم', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, isAI: true, aiLevel: 'normal' };
+            players[aiId] = { id: aiId, name: 'المعلم أبو شنب', avatar: 'teacher', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, basraMarkers: [], isAI: true, aiLevel: 'normal' };
             turnOrder.push(aiId);
+            table = takeInitialTable(deck); // both four-card hands first, then four on the table
             status = 'playing';
+            turnIndex = 1; // the player who did not deal starts: the teacher in AI mode
+            startingPlayerId = aiId;
           }
           return {
             room: myRoom,
@@ -1149,8 +1274,8 @@
             createdAt: Date.now(),
             lastUpdatedAt: Date.now(),
             deck, table, players,
-            turnOrder, turnIndex: 0, status, roundNumber: 1,
-            lastCaptureBy: null, roundResults: null, winner: null,
+            turnOrder, turnIndex, startingPlayerId, status, roundNumber: 1,
+            lastCaptureBy: null, lastPlayedBy: null, roundResults: null, winner: null,
             playMode: playWithAI ? 'ai' : 'online'
           };
         }, (error, committed, snapshot) => {
@@ -1222,41 +1347,36 @@
       const currentId = order[(Number(current.turnIndex) || 0) % order.length];
       if (currentId !== playerId) return { reason: 'not-turn' };
       const sourcePlayer = current.players && current.players[playerId];
-      if (!sourcePlayer || !Array.isArray(sourcePlayer.hand) || !sourcePlayer.hand[index]) return { reason: 'bad-card' };
+      const sourceHand = sourcePlayer ? cardsArray(sourcePlayer.hand) : [];
+      if (!sourcePlayer || !sourceHand[index]) return { reason: 'bad-card' };
       const game = JSON.parse(JSON.stringify(current));
       const player = game.players[playerId];
+      player.hand = cardsArray(player.hand);
+      player.captured = cardsArray(player.captured);
+      player.basraMarkers = cardsArray(player.basraMarkers);
       const played = player.hand.splice(index, 1)[0];
-      // Firebase Realtime Database may omit an empty array node (or return it as null).
-      // Normalize the table before any push/slice/filter operation so an empty table is valid.
-      if (!Array.isArray(game.table)) {
-        if (game.table && typeof game.table === 'object') {
-          game.table = Object.keys(game.table)
-            .filter(key => /^\d+$/.test(key))
-            .sort((a, b) => Number(a) - Number(b))
-            .map(key => game.table[key])
-            .filter(Boolean);
-        } else {
-          game.table = [];
-        }
-      }
+      game.table = cardsArray(game.table);
       const tableBefore = game.table.slice();
       const indices = findCapturedIndices(played, tableBefore);
       if (indices.length) {
         const takeSet = new Set(indices);
         const taken = tableBefore.filter((_, i) => takeSet.has(i));
         game.table = tableBefore.filter((_, i) => !takeSet.has(i));
-        player.captured = [...(player.captured || []), ...taken, played];
+        player.captured = [...player.captured, ...taken, played];
         game.lastCaptureBy = playerId;
-        const cleared = game.table.length === 0 && tableBefore.length > 0;
-        const basra = cleared && (played.val === 'J' ? false : isSevenOfDiamonds(played) ? isSevenBasra(tableBefore) : true);
-        if (basra) player.basras = (player.basras || 0) + 1;
+        if (isBasraCapture(played, tableBefore, indices)) {
+          player.basras = (Number(player.basras) || 0) + 1;
+          player.basraMarkers.push(played); // face-up marker for each basra; captured cards stay face-down
+        }
       } else {
         game.table.push(played);
       }
+      game.lastPlayedBy = playerId;
       game.turnIndex = (Number(game.turnIndex) + 1) % order.length;
-      const handsEmpty = order.every(id => (game.players[id].hand || []).length === 0);
+      const handsEmpty = order.every(id => cardsArray(game.players[id].hand).length === 0);
       if (handsEmpty) {
-        if (game.deck && game.deck.length) {
+        if (cardsArray(game.deck).length) {
+          game.deck = cardsArray(game.deck);
           order.forEach(id => { game.players[id].hand = game.deck.splice(0, 4); });
         } else {
           finishRound(game, order);
@@ -1264,6 +1384,8 @@
       }
       return { game, result: 'played' };
     }
+
+
 
     function chooseAICard(game, aiId) {
       const hand = (game.players[aiId] && game.players[aiId].hand) || [];
@@ -1277,11 +1399,8 @@
         if (captured.length) {
           const remaining = table.filter((_, i) => !new Set(captured).has(i));
           score += 35 + captured.length * 4;
-          if (remaining.length === 0 && table.length > 0) {
-            if (card.val === 'J') score += 8;
-            else if (isSevenOfDiamonds(card)) score += isSevenBasra(table) ? 24 : 10;
-            else score += 19;
-          }
+          if (isBasraCapture(card, table, captured)) score += 28;
+          if (remaining.length === 0 && table.length > 0) score += 5;
           if (card.suit === '♦' && card.val === '10') score += 7;
           if (card.suit === '♣' && card.val === '2') score += 5;
           if (isSevenOfDiamonds(card)) score += 3;
@@ -1383,20 +1502,38 @@
         const player = game.players[id];
         const item = document.createElement('div');
         item.className = 'player-item' + (id === curId && game.status === 'playing' ? ' active' : '');
+        const mainLine = document.createElement('div');
+        mainLine.className = 'player-mainline';
         const avatar = document.createElement('span');
         avatar.className = 'player-avatar' + (player.isAI === true ? ' player-avatar-ai' : id === myId ? ' player-avatar-self' : '');
         avatar.setAttribute('aria-hidden', 'true');
-        avatar.textContent = player.isAI === true ? '🧓🏻' : id === myId ? '🧑🏻' : '👤';
+        if (player.isAI === true) avatar.innerHTML = teacherAvatarSvg();
+        else avatar.textContent = (AVATAR_OPTIONS[player.avatar] && AVATAR_OPTIONS[player.avatar].glyph) || AVATAR_OPTIONS[id === myId ? selectedAvatar : 'felah'].glyph;
         const details = document.createElement('span');
         details.className = 'player-details';
         const name = document.createElement('span');
         name.className = 'player-name';
-        name.textContent = player.name + (id === myId ? ' (أنت)' : player.isAI === true ? ' 🤖' : '');
+        name.textContent = player.name + (id === myId ? ' (أنت)' : '');
         const meta = document.createElement('span');
         meta.className = 'player-meta';
-        meta.textContent = `${Number(player.score)||0} نقطة · ${(player.hand||[]).length} ورقة`;
+        meta.textContent = `${Number(player.score)||0} نقطة · ${cardsArray(player.hand).length} ورقة`;
         details.append(name, meta);
-        item.append(avatar, details);
+        if (player.isAI === true) { const tag = document.createElement('span'); tag.className = 'teacher-tag'; tag.textContent = 'المعلم'; details.appendChild(tag); }
+        mainLine.append(avatar, details);
+
+        const captureRow = document.createElement('div');
+        captureRow.className = 'capture-row';
+        const pile = document.createElement('span'); pile.className = 'capture-pile'; pile.setAttribute('aria-label', 'ورق مكتسب مقلوب');
+        const captureCards = cardsArray(player.captured);
+        for (let i = 0; i < Math.min(captureCards.length, 5); i++) { const back = document.createElement('span'); back.className = 'capture-mini-back'; pile.appendChild(back); }
+        const count = document.createElement('span'); count.className = 'capture-count'; count.textContent = `المكسب: ${captureCards.length} ورقة`;
+        const markers = document.createElement('span'); markers.className = 'basra-markers'; markers.setAttribute('aria-label', `${Number(player.basras)||0} بصرات ظاهرة`);
+        cardsArray(player.basraMarkers).forEach((marker, markerIndex) => {
+          const markerCard = makeCardElement(marker, false); markerCard.classList.add('basra-marker-card'); markerCard.title = `بصرة رقم ${markerIndex + 1}`; markers.appendChild(markerCard);
+        });
+        const basraCount = document.createElement('span'); basraCount.className = 'capture-count'; basraCount.textContent = `بصرات: ${Number(player.basras)||0}`;
+        captureRow.append(pile, count, basraCount, markers);
+        item.append(mainLine, captureRow);
         document.getElementById('playersList').appendChild(item);
       });
 
@@ -1421,17 +1558,18 @@
 
       const tableContainer = document.getElementById('tableCards');
       tableContainer.replaceChildren();
-      (game.table || []).forEach(card => tableContainer.appendChild(makeCardElement(card, false)));
-      if (!(game.table || []).length) {
+      const visibleTableCards = cardsArray(game.table);
+      visibleTableCards.forEach(card => tableContainer.appendChild(makeCardElement(card, false)));
+      if (!visibleTableCards.length) {
         const empty = document.createElement('p'); empty.className = 'empty'; empty.textContent = 'الطاولة فارغة'; tableContainer.appendChild(empty);
       }
 
       const handContainer = document.getElementById('handCards');
       handContainer.replaceChildren();
-      const hand = myPlayer.hand || [];
+      const hand = cardsArray(myPlayer.hand);
       if (!hand.length) {
         const empty = document.createElement('p'); empty.className = 'empty';
-        empty.textContent = game.deck && game.deck.length ? 'انتهت أوراقك؛ انتظر انتهاء يد اللاعب الآخر لإعادة التوزيع.' : 'لا توجد أوراق في يدك.';
+        empty.textContent = cardsArray(game.deck).length ? 'انتهت أوراقك؛ انتظر انتهاء يد اللاعب الآخر لإعادة التوزيع.' : 'لا توجد أوراق في يدك.';
         handContainer.appendChild(empty);
       } else {
         hand.forEach((card, index) => {
@@ -1636,7 +1774,7 @@
       } else {
         title.textContent = `نتيجة الجولة ${game.roundNumber || 1}`;
         showNotice('انتهت الجولة. ابدأ جولة جديدة للاحتفاظ بالنقاط ومتابعة المباراة.', 'good');
-        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة، ${r.cardPoints} نقاط أوراق + ${r.basraPoints} نقاط بصرة + ${r.majorityPoints} نقاط الأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
+        result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة (${r.pairs} جوز${r.oddCard ? ' + ورقة فردية' : ''})، ${r.basras} بصرة × 10 = ${r.basraPoints} نقطة + ${r.majorityPoints} نقطة للأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
         next.classList.remove('hidden');
       }
     }
@@ -1673,7 +1811,8 @@
           if (!current || current.status !== 'roundOver') return { reason: 'already-started' };
           const order = activeOrder(current);
           if (order.length !== 2) return { reason: 'players-missing' };
-          const nextStarter = ((Number(current.turnIndex) || 0) + 1) % order.length;
+          const previousStarter = order.indexOf(current.startingPlayerId);
+          const nextStarter = previousStarter === 0 ? 1 : previousStarter === 1 ? 0 : ((Number(current.roundNumber) || 1) % 2);
           const fresh = makeRound(current.players, order, current.room || myRoom, (current.roundNumber || 1) + 1, nextStarter);
           fresh.appVersion = APP_VERSION;
           fresh.playMode = current.playMode || (order.some(id => current.players[id].isAI) ? 'ai' : 'online');
