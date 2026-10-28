@@ -179,6 +179,167 @@ button:focus-visible,input:focus-visible{outline:2px solid #ffe18d;outline-offse
   .felt{background:linear-gradient(180deg,rgba(16,7,3,.08),rgba(18,8,3,.18))!important;border:1px solid rgba(228,183,100,.38)!important;border-radius:8px!important}
 }
 
+
+
+/* v2.2 — fix: show the full domino hand on short desktop viewports */
+@media (min-width:761px) and (max-height:720px){
+  #app{grid-template-rows:58px minmax(0,1fr) 52px!important;gap:4px!important;padding:4px 5px 5px!important}
+  .header{min-height:0!important;padding:1px 5px!important}
+  .brand{height:50px!important}
+  .header-actions{gap:3px!important}
+  .top-action{height:43px!important;width:44px!important;padding:2px!important}
+  .top-action span{font-size:16px!important}
+  .top-action small{font-size:8px!important}
+  .layout{min-height:0!important;overflow:hidden!important}
+  .arena{grid-template-rows:42px minmax(115px,1fr) 112px 48px!important;gap:4px!important;min-height:0!important}
+  .player-row{padding:0 5px!important}
+  .player-card{height:39px!important;min-width:132px!important;padding:3px 6px!important}
+  .avatar{width:30px!important;height:30px!important;flex-basis:30px!important}
+  .player-details strong{font-size:11px!important}
+  .player-details span{font-size:8px!important}
+  .count-badge{font-size:9px!important;padding:3px 5px!important}
+  .table-shell{min-height:0!important;padding:5px 10px 7px!important;background-size:cover!important}
+  .felt{min-height:0!important}
+  .chain-viewport{min-height:0!important;padding:4px!important}
+  .table-tile{width:52px!important;height:30px!important}
+  .hand-zone{height:112px!important;min-height:112px!important;grid-template-rows:17px minmax(0,1fr) 24px!important;gap:2px!important;padding:3px 5px!important;overflow:hidden!important}
+  .hand-heading{font-size:10px!important;line-height:1.2!important}
+  .hand-heading small{font-size:8px!important}
+  .hand-track{min-height:0!important;height:100%!important;align-items:center!important;justify-content:center!important;gap:5px!important;padding:2px 4px!important;overflow-x:auto!important;overflow-y:hidden!important}
+  .hand-tile{width:42px!important;height:54px!important;min-width:42px!important;max-width:42px!important;flex:0 0 42px!important;padding:2px!important}
+  .hand-tile .half{min-height:0!important;padding:1px!important}
+  .hand-tile .dot{width:4px!important;height:4px!important}
+  .hand-tile .divider{flex:0 0 1px!important}
+  .actions-row{height:24px!important;gap:3px!important;flex-wrap:nowrap!important;overflow:hidden!important}
+  .actions-row button{height:23px!important;min-height:23px!important;padding:2px 5px!important;font-size:8px!important;line-height:1!important;white-space:nowrap!important}
+  .skin-strip{min-height:0!important;height:48px!important;grid-template-columns:86px minmax(0,1fr)!important;gap:4px!important;padding:2px 4px!important;overflow:hidden!important}
+  .skin-strip>strong{font-size:8px!important;line-height:1.1!important}
+  .skin-strip-options{min-width:0!important;gap:4px!important;overflow:hidden!important}
+  .skin-chip{min-width:0!important;padding:1px 3px!important;gap:2px!important}
+  .skin-chip .tile-preview{width:17px!important;height:22px!important;flex-basis:22px!important}
+  .skin-chip small{font-size:6px!important}
+  .upcoming-strip{min-height:0!important;height:100%!important;grid-template-columns:145px minmax(0,1fr) 70px!important;gap:4px!important;padding:2px 4px!important}
+  .upcoming-title,.upcoming-title b{font-size:10px!important}
+  .upcoming-title small{font-size:7px!important;line-height:1.1!important}
+  .future-game{height:39px!important;min-height:37px!important;padding:1px 3px!important}
+  .future-game span:first-child{font-size:14px!important}
+  .future-game strong{font-size:7px!important}
+  .future-game small{font-size:6px!important}
+  .footer-credit{font-size:7px!important;padding-left:3px!important}
+  .footer-credit b{font-size:12px!important}
+}
+
+
+/* v3.0 — connected domino chain, matching skin previews, table choices, responsive footer and chat */
+.chain-viewport{display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;position:relative!important;padding:8px!important;}
+.chain-track{display:block!important;position:relative!important;flex:0 0 auto!important;max-width:none!important;min-height:0!important;gap:0!important;direction:ltr!important;margin:auto!important;}
+.table-tile{display:flex!important;position:absolute!important;flex:0 0 auto!important;align-items:stretch!important;justify-content:stretch!important;gap:0!important;padding:2px!important;border-radius:5px!important;overflow:hidden!important;transform:none!important;animation:dropIn .16s ease-out;}
+.table-tile.tile-horizontal{flex-direction:row!important;}
+.table-tile.tile-horizontal.tile-reverse{flex-direction:row-reverse!important;}
+.table-tile.tile-vertical{flex-direction:column!important;}
+.table-tile.tile-vertical.tile-reverse{flex-direction:column-reverse!important;}
+.table-tile .half{flex:1 1 50%!important;min-width:0!important;min-height:0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(3,minmax(0,1fr))!important;gap:0!important;padding:1px!important;}
+.table-tile .divider{width:1px!important;min-width:1px!important;height:auto!important;flex:0 0 1px!important;margin:2px 0!important;}
+.table-tile.tile-vertical .divider{width:auto!important;min-width:0!important;height:1px!important;min-height:1px!important;flex:0 0 1px!important;margin:0 2px!important;}
+.table-tile .dot{width:clamp(3px,.42vw,6px)!important;height:clamp(3px,.42vw,6px)!important;max-width:100%;}
+.skin-preview-domino{position:relative!important;width:92px!important;height:46px!important;display:flex!important;flex:0 0 auto!important;align-items:stretch!important;gap:0!important;padding:3px!important;border-radius:7px!important;overflow:hidden!important;transform:none!important;box-shadow:inset 1px 1px 2px #fff8,0 4px 8px #0006!important;}
+.skin-preview-domino .half{flex:1 1 50%!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(3,1fr)!important;gap:1px!important;padding:1px!important;}
+.skin-preview-domino .dot{width:4px!important;height:4px!important;}
+.skin-preview-domino .divider{width:1px!important;height:auto!important;min-width:1px!important;margin:2px 0!important;flex:0 0 1px!important;}
+.skin-chip .skin-preview-domino{width:36px!important;height:22px!important;flex-basis:22px!important;border-radius:4px!important;padding:2px!important;}
+.skin-chip .skin-preview-domino .dot{width:2.8px!important;height:2.8px!important;}
+.skin-chip .skin-preview-domino .half{padding:0!important;gap:0!important;}
+.skin-chip .skin-preview-domino .divider{margin:1px 0!important;}
+.skin-chip.selected-skin{outline:2px solid #ffe08a;outline-offset:-2px;box-shadow:0 0 0 2px #ffdc7450 inset!important;}
+.table-skins-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+.table-skin-option{display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 7px;min-width:0;}
+.table-skin-option.active{border-color:#ffe08a;box-shadow:0 0 0 2px #ffce5a35;}
+.table-skin-option strong{font-size:12px;color:#ffe0a0}.table-skin-option small{font-size:10px;color:#cbb58d}
+.table-preview{width:100%;height:68px;border:5px double #d6ae63;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px #241207,0 5px 12px #0006;background-size:cover;background-position:center;}
+.table-preview span{font-family:Cairo,Tajawal,sans-serif;font-size:12px;font-weight:900;color:#f5d9a0;text-shadow:0 2px 3px #000;opacity:.8;}
+.table-preview i{position:absolute;inset:10px;border:1px solid #f0ca7c50;border-radius:8px;pointer-events:none;}
+.table-preview-wood{background-image:linear-gradient(#17090322,#17090322),url('./wood-table.webp');}
+.table-preview-green{background-image:radial-gradient(ellipse at center,#0c7755,#03402f 72%);}
+.table-preview-maroon{background-image:radial-gradient(ellipse at center,#8e2539,#360b17 75%);border-color:#b87f57;}
+.table-preview-navy{background-image:radial-gradient(ellipse at center,#245482,#07182e 75%);border-color:#8ea6c6;}
+.table-preview-black{background-image:radial-gradient(ellipse at center,#3a3020,#090807 80%);border-color:#e0b95e;}
+.table-preview-sand{background-image:radial-gradient(ellipse at center,#b89a63,#50402a 80%);border-color:#d8bd82;}
+body[data-table-skin="wood"] .table-shell{background-image:linear-gradient(180deg,rgba(8,4,2,.04),rgba(7,3,1,.18)),url('./wood-table.webp')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;border:4px double #d9b268!important;}
+body[data-table-skin="wood"] .felt{background:linear-gradient(180deg,rgba(16,7,3,.03),rgba(18,8,3,.10))!important;border-color:#d8b36d55!important;}
+body[data-table-skin="green"] .table-shell{background-image:linear-gradient(145deg,#98612f,#3c2413 45%,#a8793e)!important;border:5px double #d9b268!important;}
+body[data-table-skin="green"] .felt{background:radial-gradient(ellipse at 50% 43%,#10835d,#07513b 62%,#033627)!important;border:2px solid #d6b16988!important;}
+body[data-table-skin="maroon"] .table-shell{background-image:linear-gradient(145deg,#a7774a,#2b0b12 45%,#90563a)!important;border:5px double #d7ae70!important;}
+body[data-table-skin="maroon"] .felt{background:radial-gradient(ellipse at center,#8b2639,#541421 60%,#290912)!important;border:2px solid #d0a36a88!important;}
+body[data-table-skin="navy"] .table-shell{background-image:linear-gradient(145deg,#8d693c,#0b1d32 45%,#9b783f)!important;border:5px double #d9c68a!important;}
+body[data-table-skin="navy"] .felt{background:radial-gradient(ellipse at center,#244e78,#102e50 62%,#071c34)!important;border:2px solid #c0cfe288!important;}
+body[data-table-skin="black"] .table-shell{background-image:linear-gradient(145deg,#b48a3e,#11100d 42%,#6d4b1b)!important;border:5px double #dcb65b!important;}
+body[data-table-skin="black"] .felt{background:radial-gradient(ellipse at center,#32302a,#161411 65%,#080807)!important;border:2px solid #d9b66b88!important;}
+body[data-table-skin="sand"] .table-shell{background-image:linear-gradient(145deg,#c2a06a,#553c22 45%,#b28c54)!important;border:5px double #e0c48b!important;}
+body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,#9c8050,#6d5635 65%,#43301d)!important;border:2px solid #e0c48b88!important;}
+.table-skin-option:hover .table-preview{filter:brightness(1.12)}
+.chat-card.chat-hidden{display:none!important;}
+.side-panel.chat-collapsed{grid-template-rows:auto auto auto!important;}
+.chat-toggle{position:relative!important;}
+#chatTopUnread{position:absolute;top:-5px;right:-4px;min-width:17px;height:17px;line-height:17px;font-size:9px;padding:0 4px;border:1px solid #ffe09b;z-index:3;}
+.future-art{width:54px;height:37px;display:block;flex:0 0 auto;filter:drop-shadow(0 2px 3px #0008)}
+.future-game{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;overflow:hidden!important;}
+.future-game strong{font-size:10px!important;white-space:nowrap!important;}
+.future-game small{font-size:8px!important;}
+.upcoming-items{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:5px!important;}
+.upcoming-title{min-width:0!important;overflow-wrap:anywhere;}
+.left-nav{overflow-y:auto!important;scrollbar-width:thin;scrollbar-color:#8d632f #150b06;}
+.left-nav-spacer{flex:1 0 6px!important;min-height:6px!important;}
+.nav-sign{flex:0 0 auto!important;display:block!important;padding:6px 2px 5px!important;line-height:1.35!important;overflow:visible!important;}
+.nav-sign strong{font-size:20px!important;line-height:1.35!important;}
+@media (min-width:761px){
+ #app{grid-template-rows:clamp(58px,10vh,78px) minmax(0,1fr) clamp(70px,10vh,84px)!important;gap:4px!important;padding:4px!important;}
+ .layout{min-height:0!important;overflow:hidden!important;}
+ .arena{grid-template-rows:clamp(38px,6.5vh,55px) minmax(110px,1fr) clamp(94px,15vh,120px) clamp(46px,8vh,66px)!important;gap:4px!important;}
+ .side-panel{grid-template-rows:minmax(132px,1fr) auto auto auto!important;min-height:0!important;}
+ .chat-messages{min-height:38px!important;}
+ .upcoming-strip{min-height:0!important;height:100%!important;overflow:hidden!important;}
+}
+@media (min-width:761px) and (max-height:720px){
+ #app{grid-template-rows:58px minmax(0,1fr) 70px!important;padding:3px!important;}
+ .arena{grid-template-rows:38px minmax(100px,1fr) 100px 46px!important;}
+ .hand-zone{height:100%!important;min-height:0!important;}
+ .future-art{width:42px;height:29px;}
+ .future-game strong{font-size:8px!important;}
+ .future-game small{font-size:6px!important;}
+ .footer-credit b{font-size:16px!important;}
+}
+@media(max-width:1260px){.upcoming-strip{grid-template-columns:170px minmax(0,1fr) 90px!important;gap:4px!important;padding:4px 5px!important}.future-art{width:42px;height:29px}.future-game strong{font-size:8px!important}.future-game small{font-size:6px!important}.footer-credit b{font-size:15px!important;}}
+@media(max-width:760px){
+ #app{grid-template-rows:62px minmax(0,1fr) 67px!important;}
+ .upcoming-strip{grid-template-columns:78px minmax(0,1fr)!important;gap:3px!important;padding:3px 4px!important;}
+ .upcoming-title,.upcoming-title b{font-size:9px!important;line-height:1.12!important;}
+ .upcoming-title small{display:block!important;font-size:7px!important;line-height:1.2!important;margin-top:2px!important;}
+ .upcoming-items{display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none;gap:3px!important;justify-content:flex-start!important;}
+ .upcoming-items::-webkit-scrollbar{display:none;}
+ .future-game{flex:0 0 43px!important;width:43px!important;height:53px!important;min-height:53px!important;padding:1px!important;}
+ .future-art{width:31px;height:26px;}
+ .future-game strong{font-size:6.5px!important;}
+ .future-game small{display:none!important;}
+ .footer-credit{display:none!important;}
+ .table-skins-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+ .table-preview{height:56px;}
+ .side-panel.mobile-open{grid-template-rows:minmax(135px,1fr) auto auto auto!important;}
+ .chat-messages{min-height:70px!important;}
+ .chain-viewport{padding:4px!important;}
+}
+@media(max-width:390px){.future-game{flex-basis:39px!important;width:39px!important;}.future-art{width:27px;height:24px;}.upcoming-title,.upcoming-title b{font-size:8px!important;}}
+
+
+/* v3.1 — each domino preview now owns its actual palette, not the active body theme */
+.domino.skin-ivory{--tile-bg:#f4e7c8;--tile-dot:#1c1a16;--tile-edge:#a8874e;--tile-text:#282014}
+.domino.skin-wood{--tile-bg:#9c6233;--tile-dot:#120b07;--tile-edge:#d5a565;--tile-text:#1d1009;background-image:repeating-linear-gradient(7deg,transparent 0 5px,#3e1e0a16 6px,#fff1 7px),linear-gradient(135deg,#bd8b52,#70411e)}
+.domino.skin-gold{--tile-bg:#161514;--tile-dot:#f1c45f;--tile-edge:#be9145;--tile-text:#f9df9c;background-image:linear-gradient(135deg,#30261a,#0d0b09)}
+.domino.skin-jade{--tile-bg:#c2d8bd;--tile-dot:#0c4531;--tile-edge:#bd9a54;--tile-text:#153d2c;background-image:linear-gradient(135deg,#e2edcf,#7fab8e)}
+.domino.skin-slate{--tile-bg:#2b3034;--tile-dot:#f3eee0;--tile-edge:#9da6a5;--tile-text:#efeee8;background-image:linear-gradient(135deg,#505a60,#15191d)}
+.domino.skin-color{--tile-bg:#fff0cc;--tile-dot:#a2222a;--tile-edge:#d6ae55;--tile-text:#222}
+.domino.skin-color .half:first-child .dot:nth-of-type(odd){background:#155e96}
+.domino.skin-color .half:last-child .dot:nth-of-type(even){background:#a2222a}
+
 </style>
 </head>
 <body data-skin="ivory">
@@ -203,6 +364,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #ffe18d;outline-offse
    <span class="status-pill" id="connectionStatus">محلي 🟢</span>
    <button class="icon-btn top-action" title="صوت اللعبة" onclick="openModal('soundModal')"><span>🔊</span><small>الصوت</small></button>
    <button class="icon-btn top-action" title="راديو القهوة" onclick="openMusic()"><span>📻</span><small>الراديو</small></button>
+   <button class="icon-btn top-action hide-mobile chat-toggle" id="chatToggleBtn" title="فتح أو إخفاء شات القعدة" onclick="toggleChatPanel()"><span>💬</span><small>الشات</small><b id="chatTopUnread" class="badge-count hidden">0</b></button>
    <button class="icon-btn top-action" title="مشاركة القعدة" onclick="shareRoom()"><span>↗</span><small>مشاركة</small></button>
    <button class="icon-btn top-action hide-mobile" title="اختيار شكل الدومينو" onclick="openModal('skinsModal')"><span>🎨</span><small>القطع</small></button>
    <button class="icon-btn top-action" title="الإعدادات" onclick="openModal('mobileMenuModal')"><span>⚙</span><small>الإعدادات</small><span id="mobileUnread" class="badge-count hidden">0</span></button>
@@ -244,38 +406,40 @@ button:focus-visible,input:focus-visible{outline:2px solid #ffe18d;outline-offse
     </div>
    </div>
    <div class="skin-strip" aria-label="اختيار شكل قطع الدومينو"><strong>اختار شكل الدومينو</strong><div class="skin-strip-options">
-    <button class="skin-chip skin-chip-ivory" onclick="setSkin('ivory')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>كلاسيك أبيض</small></button>
-    <button class="skin-chip skin-chip-wood" onclick="setSkin('wood')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>خشب فاخر</small></button>
-    <button class="skin-chip skin-chip-gold" onclick="setSkin('gold')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>أسود وذهبي</small></button>
-    <button class="skin-chip skin-chip-jade" onclick="setSkin('jade')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>أخضر زمردي</small></button>
-    <button class="skin-chip skin-chip-slate" onclick="setSkin('slate')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>فحمي</small></button>
-    <button class="skin-chip skin-chip-color" onclick="setSkin('color')"><span class="tile-preview"><b>••</b><i></i><b>•••</b></span><small>ملون</small></button>
+    <button class="skin-chip skin-chip-ivory" onclick="setSkin('ivory')"><span class="tile-preview" data-preview-skin="ivory"></span><small>كلاسيك أبيض</small></button>
+    <button class="skin-chip skin-chip-wood" onclick="setSkin('wood')"><span class="tile-preview" data-preview-skin="wood"></span><small>خشب فاخر</small></button>
+    <button class="skin-chip skin-chip-gold" onclick="setSkin('gold')"><span class="tile-preview" data-preview-skin="gold"></span><small>أسود وذهبي</small></button>
+    <button class="skin-chip skin-chip-jade" onclick="setSkin('jade')"><span class="tile-preview" data-preview-skin="jade"></span><small>أخضر زمردي</small></button>
+    <button class="skin-chip skin-chip-slate" onclick="setSkin('slate')"><span class="tile-preview" data-preview-skin="slate"></span><small>فحمي</small></button>
+    <button class="skin-chip skin-chip-color" onclick="setSkin('color')"><span class="tile-preview" data-preview-skin="color"></span><small>ملون</small></button>
    </div></div>
   </section>
   <aside class="side-panel" id="sidePanel">
    <section class="side-card chat-card" id="chatCard"><div class="side-title"><span>دردشة القعدة <span class="badge-count" id="unreadCount">0</span></span><button style="padding:3px 8px;font-size:10px" onclick="toggleChatSound()" id="chatSoundBtn">🔔 التنبيه شغال</button></div><div class="chat-tools"><button onclick="sendQuick('حظ سعيد يا معلم!')">حظ سعيد</button><button onclick="sendQuick('دبل يا كبير!')">دبل يا كبير</button><button onclick="sendQuick('يا سلام على اللعب!')">يا سلام</button><button onclick="sendQuick('تحية من القهوة ☕')">تحية ☕</button></div><div class="chat-messages" id="chatMessages" aria-live="polite"></div><div class="chat-compose"><input id="chatInput" maxlength="120" placeholder="اكتب رسالة قصيرة..." autocomplete="off"><button class="primary" onclick="sendChat()" title="إرسال">➤</button></div><div class="tiny-note" id="chatNote">الرسائل تخضع لفلتر أولي؛ بلّغ عن أي إساءة.</div></section>
-   <section class="side-card"><div class="side-title"><span>قعدة الدومينو البلدي</span><span id="roomCodeLabel" class="muted small">بدون كود</span></div><div class="mode-buttons"><button class="primary" onclick="newLocalGame()">🎮 العب ضد المعلم</button><button onclick="openModal('onlineModal')">🌐 قعدة أونلاين</button><button onclick="openModal('skinsModal')">🎨 شكل القطع</button><button onclick="openModal('rulesModal')">📜 القواعد</button></div></section>
+   <section class="side-card"><div class="side-title"><span>قعدة الدومينو البلدي</span><span id="roomCodeLabel" class="muted small">بدون كود</span></div><div class="mode-buttons"><button class="primary" onclick="newLocalGame()">🎮 العب ضد المعلم</button><button onclick="openModal('onlineModal')">🌐 قعدة أونلاين</button><button onclick="openModal('skinsModal')">🎨 شكل القطع</button><button onclick="openModal('tableSkinsModal')">🪵 شكل الطاولة</button><button onclick="openModal('rulesModal')">📜 القواعد</button></div></section>
    <section class="side-card"><div class="side-title"><span>رصيد الجولة</span><span class="muted small">أول لاعب يصل للهدف يفوز</span></div><div class="score-row"><div class="score-box"><span id="scoreMeLabel">أنت</span><b id="scoreMe">0</b></div><div class="score-box"><span id="scoreOpLabel">المعلم</span><b id="scoreOp">0</b></div></div><div class="mode-buttons" style="margin-top:7px"><button onclick="nextRound()" id="nextRoundBtn" disabled>جولة جديدة ↻</button><button onclick="shareRoom()" id="shareBtn">مشاركة القعدة ↗</button></div></section>
 
    <section class="side-card"><div class="side-title"><span>إعدادات القعدة</span></div><div class="mode-buttons"><button onclick="openModal('soundModal')">🔊 الصوت</button><button onclick="openModal('skinsModal')">🎨 القطع</button><button onclick="setDifficulty('easy')">معلم هادي</button><button onclick="setDifficulty('hard')">معلم تقيل</button></div><div class="tiny-note">اختار شكل القطع ودرجة صعوبة المعلم. المؤثرات الصوتية تعمل بعد أول تفاعل منك.</div></section>
   </aside>
  </main>
- <footer class="upcoming-strip">
-  <div class="upcoming-title"><b>ألعاب مصرية جامدة جاية!</b><small>قريبًا على ع القهوة — حضّر نفسك للقعدة الجاية</small></div>
+ <footer class="upcoming-strip" aria-label="الألعاب القادمة قريبًا">
+  <div class="upcoming-title"><b>قعدة ألعاب مصرية جاية!</b><small>الشلة لسه هتتلم — استعد للتحدي اللي جاي</small></div>
   <div class="upcoming-items">
-   <div class="future-game"><span>♞</span><div><strong>شطرنج</strong><small>قريبًا</small></div></div>
-   <div class="future-game"><span>⚄</span><div><strong>دومينو</strong><small>تطوير مستمر</small></div></div>
-   <div class="future-game"><span>🎲</span><div><strong>طاولة</strong><small>قريبًا</small></div></div>
-   <div class="future-game"><span>🔴</span><div><strong>لودو</strong><small>قريبًا</small></div></div>
-   <div class="future-game"><span>🐍</span><div><strong>سلم وثعبان</strong><small>قريبًا</small></div></div>
+   <div class="future-game" title="الشطرنج قريبًا"><svg class="future-art chess-art" viewBox="0 0 72 48" aria-hidden="true"><rect x="5" y="3" width="42" height="42" rx="3" fill="#24150c" stroke="#d8ad62" stroke-width="2"/><g fill="#f1d6a0"><rect x="8" y="6" width="9" height="9"/><rect x="26" y="6" width="9" height="9"/><rect x="17" y="15" width="9" height="9"/><rect x="35" y="15" width="9" height="9"/><rect x="8" y="24" width="9" height="9"/><rect x="26" y="24" width="9" height="9"/><rect x="17" y="33" width="9" height="9"/><rect x="35" y="33" width="9" height="9"/></g><text x="58" y="27" font-size="27" text-anchor="middle" fill="#f8dfaa">♞</text></svg><strong>شطرنج</strong><small>قريبًا</small></div>
+   <div class="future-game" title="الطاولة قريبًا"><svg class="future-art backgammon-art" viewBox="0 0 72 48" aria-hidden="true"><rect x="4" y="3" width="64" height="42" rx="4" fill="#70401f" stroke="#e3ba70" stroke-width="2"/><path d="M8 7 L17 7 L12 24Z M19 7 L28 7 L23 24Z M30 7 L39 7 L34 24Z M41 7 L50 7 L45 24Z M52 7 L61 7 L56 24Z M8 41 L17 41 L12 25Z M19 41 L28 41 L23 25Z M30 41 L39 41 L34 25Z M41 41 L50 41 L45 25Z M52 41 L61 41 L56 25Z" fill="#d0a25d"/><g fill="#f6e6c2" stroke="#352013"><circle cx="14" cy="16" r="4"/><circle cx="25" cy="31" r="4"/><circle cx="47" cy="15" r="4"/></g><g fill="#211813" stroke="#e7c47b"><circle cx="58" cy="32" r="4"/><circle cx="36" cy="31" r="4"/></g></svg><strong>طاولة</strong><small>قريبًا</small></div>
+   <div class="future-game" title="اللودو قريبًا"><svg class="future-art ludo-art" viewBox="0 0 72 48" aria-hidden="true"><rect x="7" y="2" width="44" height="44" rx="4" fill="#f6e4bf" stroke="#e2b866" stroke-width="2"/><path d="M9 4H27V22H9Z" fill="#ba292b"/><path d="M29 4H49V22H29Z" fill="#2476b7"/><path d="M9 24H27V44H9Z" fill="#28935a"/><path d="M29 24H49V44H29Z" fill="#dcb335"/><path d="M27 22H29V24H27Z" fill="#f9e9cf"/><g fill="#fff0d2" stroke="#fff"><circle cx="15" cy="10" r="2"/><circle cx="21" cy="16" r="2"/><circle cx="37" cy="10" r="2"/><circle cx="43" cy="16" r="2"/><circle cx="15" cy="31" r="2"/><circle cx="21" cy="38" r="2"/><circle cx="37" cy="31" r="2"/><circle cx="43" cy="38" r="2"/></g><circle cx="60" cy="16" r="6" fill="#c92b30"/><circle cx="60" cy="32" r="6" fill="#2d79be"/></svg><strong>لودو</strong><small>قريبًا</small></div>
+   <div class="future-game" title="السلم والثعبان قريبًا"><svg class="future-art snakes-art" viewBox="0 0 72 48" aria-hidden="true"><rect x="3" y="2" width="66" height="44" rx="3" fill="#ead8ad" stroke="#d7ae62" stroke-width="2"/><g stroke="#9b7744" stroke-width="1" fill="none"><path d="M16 3V45 M29 3V45 M42 3V45 M55 3V45 M3 13H69 M3 24H69 M3 35H69"/></g><path d="M12 38 C24 32 9 21 24 15 S39 8 37 30 S57 40 62 13" stroke="#32874b" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M13 5L13 23 M10 8L16 8 M10 14L16 14 M10 20L16 20" stroke="#b06a25" stroke-width="2.5"/><circle cx="62" cy="13" r="2" fill="#1c4027"/></svg><strong>سلم وثعبان</strong><small>قريبًا</small></div>
+   <div class="future-game" title="بنك الحظ قريبًا"><svg class="future-art luck-art" viewBox="0 0 72 48" aria-hidden="true"><rect x="4" y="2" width="64" height="44" rx="3" fill="#193326" stroke="#d9b56d" stroke-width="2"/><g fill="#f4e5c0" stroke="#8b7147" stroke-width="1"><rect x="8" y="6" width="10" height="8"/><rect x="20" y="6" width="10" height="8"/><rect x="32" y="6" width="10" height="8"/><rect x="44" y="6" width="10" height="8"/><rect x="56" y="6" width="8" height="8"/><rect x="8" y="34" width="10" height="8"/><rect x="20" y="34" width="10" height="8"/><rect x="32" y="34" width="10" height="8"/><rect x="44" y="34" width="10" height="8"/><rect x="56" y="34" width="8" height="8"/></g><rect x="20" y="16" width="32" height="16" rx="3" fill="#75401d" stroke="#deb65e"/><text x="36" y="26" font-size="8" text-anchor="middle" fill="#ffe5a3" font-weight="bold">بنك الحظ</text><circle cx="60" cy="23" r="4" fill="#e6b740"/><text x="60" y="26" font-size="7" fill="#62410d" text-anchor="middle">ج</text></svg><strong>بنك الحظ</strong><small>قريبًا</small></div>
+   <div class="future-game" title="سكرو قريبًا"><svg class="future-art scro-art" viewBox="0 0 72 48" aria-hidden="true"><g transform="rotate(-12 25 24)"><rect x="7" y="5" width="31" height="40" rx="4" fill="#173d5b" stroke="#dfb76c" stroke-width="2"/><rect x="11" y="9" width="23" height="32" rx="2" fill="none" stroke="#dbb15a" stroke-width="1.5"/><path d="M13 13L32 37 M32 13L13 37" stroke="#dbb15a" stroke-width="1.3"/></g><g transform="rotate(10 47 24)"><rect x="32" y="4" width="31" height="40" rx="4" fill="#f5e6c5" stroke="#d5a75b" stroke-width="2"/><text x="47" y="19" font-size="8" text-anchor="middle" fill="#a1282b" font-weight="bold">SKRO</text><text x="47" y="33" font-size="12" text-anchor="middle" fill="#1b2937">7♠</text></g></svg><strong>سكرو</strong><small>قريبًا</small></div>
   </div>
   <div class="footer-credit">تصميم وتطوير<b>ملاهي</b></div>
  </footer>
 </div>
 
 <div id="onlineModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>قعدة دومينو أونلاين</h2><p>اعمل قعدة وابعث الكود لصاحبك، أو ادخل بكود قعدة موجودة؛ اللعب ضد المعلم متاح من غير اتصال.</p><div class="field"><label for="onlineName">اسمك في القعدة</label><input id="onlineName" maxlength="20" value="محمد"></div><div class="field"><label for="onlineCode">كود القعدة (للانضمام)</label><input id="onlineCode" maxlength="14" placeholder="مثال: DOM-AB4KQ7"></div><div class="modal-actions"><button class="primary" onclick="createOnlineRoom()">إنشاء قعدة جديدة</button><button onclick="joinOnlineRoom()">انضمام بالكود</button><button onclick="closeModal('onlineModal')">رجوع</button></div><p id="onlineMessage" aria-live="polite"></p></div></div>
-<div id="mobileMenuModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختيارات القعدة</h2><p>كل أدوات الدومينو في مكان واحد.</p><div class="mode-buttons"><button class="primary" onclick="mobileMenuAction('chat')">💬 شات القعدة <span id="mobileMenuUnread" class="badge-count hidden">0</span></button><button onclick="mobileMenuAction('online')">🌐 قعدة أونلاين</button><button onclick="mobileMenuAction('skins')">🎨 شكل القطع</button><button onclick="mobileMenuAction('sound')">🔊 الصوت</button><button onclick="mobileMenuAction('rules')">📜 قواعد اللعب</button><button onclick="mobileMenuAction('share')">↗ مشاركة القعدة</button><button onclick="mobileMenuAction('chatSound')">🔔 كتم/تشغيل تنبيه الشات</button><button onclick="mobileMenuAction('new')">↻ مباراة جديدة</button></div><div class="modal-actions"><button onclick="closeModal('mobileMenuModal')">رجوع للطاولة</button></div></div></div>
+<div id="mobileMenuModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختيارات القعدة</h2><p>كل أدوات الدومينو في مكان واحد.</p><div class="mode-buttons"><button class="primary" onclick="mobileMenuAction('chat')">💬 شات القعدة <span id="mobileMenuUnread" class="badge-count hidden">0</span></button><button onclick="mobileMenuAction('online')">🌐 قعدة أونلاين</button><button onclick="mobileMenuAction('skins')">🎨 شكل القطع</button><button onclick="openModal('tableSkinsModal');closeModal('mobileMenuModal')">🪵 شكل الطاولة</button><button onclick="mobileMenuAction('sound')">🔊 الصوت</button><button onclick="mobileMenuAction('rules')">📜 قواعد اللعب</button><button onclick="mobileMenuAction('share')">↗ مشاركة القعدة</button><button onclick="mobileMenuAction('chatSound')">🔔 كتم/تشغيل تنبيه الشات</button><button onclick="mobileMenuAction('new')">↻ مباراة جديدة</button></div><div class="modal-actions"><button onclick="closeModal('mobileMenuModal')">رجوع للطاولة</button></div></div></div>
 <div id="skinsModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختار شكل الدومينو</h2><p>اختيارك بيتحفظ على جهازك وتقدر تغيّره في أي وقت.</p><div class="skins-grid" id="skinsGrid"></div><div class="modal-actions"><button onclick="closeModal('skinsModal')">تم</button></div></div></div>
+<div id="tableSkinsModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختار شكل الطاولة</h2><p>اختار لون سطح اللعب اللي يريح عينك؛ الاختيار هيتحفظ على جهازك.</p><div class="table-skins-grid" id="tableSkinsGrid"></div><div class="modal-actions"><button onclick="closeModal('tableSkinsModal')">تم</button></div></div></div>
 <div id="soundModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>صوت القهوة والدومينو</h2><p>الأصوات مصممة خصيصًا للعبة: خبطة قطعة خشب، سحب قطعة، تمرير الدور، ونغمة الفوز، بالإضافة إلى خلفية صوتية هادئة للقهوة.</p><div class="field"><label><input id="fxEnabled" type="checkbox" checked> أصوات قطع الدومينو</label></div><div class="field"><label><input id="ambienceEnabled" type="checkbox"> أجواء القهوة الخلفية</label></div><div class="field"><label><input id="calloutEnabled" type="checkbox"> نداءات مصرية قصيرة (حسب الأصوات المتاحة في جهازك)</label></div><div class="field"><label for="volumeSlider">مستوى الصوت <span id="volumeValue">65%</span></label><input id="volumeSlider" type="range" min="0" max="100" value="65"></div><div class="modal-actions"><button class="primary" onclick="testTileSound()">جرّب صوت القطعة</button><button onclick="testCallout()">جرّب نداء القهوة</button><button onclick="closeModal('soundModal')">إغلاق</button></div></div></div>
 <div id="rulesModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>قواعد الدومينو البلدي</h2><p>تلعب النسخة بمجموعة الدومينو المزدوجة ستة (28 قطعة). كل لاعب يأخذ 7 قطع، والباقي في السحب. ابدأ بأعلى دوبل موجود؛ وفي كل دور وصّل قطعة بأحد طرفَي السلسلة بحيث تتطابق الأرقام. لو ما عندكش قطعة مناسبة، اسحب إلى أن تجد قطعة صالحة أو يخلص السحب، وبعدها مرّر الدور. الجولة تنتهي عندما يخلص لاعب من قطعه أو تُغلق اللعبة على الطرفين، والفائز يحصل على نقاط من القطع المتبقية لدى الخصم؛ أول لاعب يصل إلى الهدف المحدد يفوز بالمباراة. هذه قواعد افتراضية قابلة للتعديل لاحقًا حسب قواعد قهوتكم.</p><div class="field"><label for="targetSelect">النقاط المطلوبة للفوز</label><select id="targetSelect" onchange="setTarget(Number(this.value))"><option value="50">50 نقطة</option><option value="100" selected>100 نقطة</option><option value="150">150 نقطة</option></select></div><div class="field"><label for="difficultySelect">مستوى المعلم</label><select id="difficultySelect" onchange="setDifficulty(this.value)"><option value="easy">معلم هادي</option><option value="normal" selected>معلم عادي</option><option value="hard">معلم تقيل</option></select></div><div class="modal-actions"><button class="primary" onclick="closeModal('rulesModal')">تمام</button></div></div></div>
 <div id="resultModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2 id="resultTitle">خلصت الجولة</h2><p id="resultBody"></p><div class="modal-actions"><button class="primary" onclick="nextRound();closeModal('resultModal')">جولة جديدة</button><button onclick="newLocalGame();closeModal('resultModal')">مباراة جديدة</button></div></div></div>
@@ -296,6 +460,14 @@ const SKINS=[
  {id:'slate',name:'فحمي معدني',desc:'مودرن'},
  {id:'color',name:'ألوان البهجة',desc:'ملون'}
 ];
+const TABLE_SKINS=[
+ {id:'wood',name:'خشب القهوة',desc:'خشب محفور',swatch:'wood'},
+ {id:'green',name:'لباد أخضر',desc:'قعدة كلاسيك',swatch:'green'},
+ {id:'maroon',name:'عنابي ملكي',desc:'فخم ودافي',swatch:'maroon'},
+ {id:'navy',name:'أزرق ليلي',desc:'هادئ ومميز',swatch:'navy'},
+ {id:'black',name:'أسود وذهبي',desc:'ستايل فاخر',swatch:'black'},
+ {id:'sand',name:'رملي شعبي',desc:'لون دافي',swatch:'sand'}
+];
 const safeAlphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null;
 let firebaseReady=false, db=null;
@@ -304,7 +476,7 @@ function normalizeText(s){return String(s||'').toLowerCase().normalize('NFKD').r
 function isClean(s){const n=normalizeText(s);return n.length>0&&!customBanned.some(w=>n.includes(normalizeText(w)));}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),2800);}
-function openModal(id){$(id).classList.remove('hidden');if(id==='skinsModal')renderSkins();if(id==='soundModal')syncSoundSettings();}
+function openModal(id){$(id).classList.remove('hidden');if(id==='skinsModal')renderSkins();if(id==='tableSkinsModal')renderTableSkins();if(id==='soundModal')syncSoundSettings();}
 function closeModal(id){$(id).classList.add('hidden');}
 function clone(obj){return JSON.parse(JSON.stringify(obj));}
 function randCode(){let out='';for(let i=0;i<6;i++)out+=safeAlphabet[Math.floor(Math.random()*safeAlphabet.length)];return out;}
@@ -351,26 +523,55 @@ function confirmNewGame(){if(confirm('تبدأ مباراة جديدة وتصف�
 function showRoundResult(g){playFx('win');$('resultTitle').textContent=g.status==='match-over'?'مبروك! كسبت الفورة 🎉':'خلصت الجولة';$('resultBody').textContent=g.roundMessage+(g.status==='match-over'?' وصل الفائز للهدف؛ تقدر تبدأ مباراة جديدة.':'');openModal('resultModal');}
 function pipPositions(v){return ({0:[],1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]})[Number(v)]||[];}
 function halfHtml(v){const pos=new Set(pipPositions(v));let html='<div class="half">';for(let i=0;i<9;i++)html+=`<span class="pip-cell">${pos.has(i)?'<i class="dot"></i>':''}</span>`;return html+'</div>';}
-function tileHtml(t,kind='table',extra=''){const skin=localStorage.getItem('aq-domino-skin')||'ivory';const interactive=kind==='hand'?`role="button" tabindex="0" aria-label="قطعة ${t.a} و${t.b}" onclick="selectTile('${esc(t.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectTile('${esc(t.id)}');}"`:'';return `<div class="domino skin-${skin} ${kind==='hand'?'hand-tile':'table-tile'} ${extra}" data-tile="${esc(t.id)}" ${interactive}>${halfHtml(t.a)}<span class="divider"></span>${halfHtml(t.b)}</div>`;}
+function tileHtml(t,kind='table',extra='',skinOverride=''){
+ const skin=skinOverride||localStorage.getItem('aq-domino-skin')||'ivory';
+ const interactive=kind==='hand'?`role="button" tabindex="0" aria-label="قطعة ${t.a} و${t.b}" onclick="selectTile('${esc(t.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectTile('${esc(t.id)}');}"`:'';
+ const typeClass=kind==='hand'?'hand-tile':kind==='table'?'table-tile':'skin-preview-domino';
+ return `<div class="domino skin-${skin} ${typeClass} ${extra}" data-tile="${esc(t.id)}" data-a="${Number(t.a)}" data-b="${Number(t.b)}" ${interactive}>${halfHtml(t.a)}<span class="divider"></span>${halfHtml(t.b)}</div>`;
+}
+function renderChain(g){
+ const track=$('chainTrack'),view=$('chainViewport'),chain=Array.isArray(g?.chain)?g.chain:[];
+ track.innerHTML='';track.style.width='';track.style.height='';track.style.position='relative';track.style.flex='0 0 auto';
+ if(!chain.length){track.style.minHeight='0';track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';return;}
+ const totalCells=chain.length*2,availW=Math.max(100,view.clientWidth-18),availH=Math.max(80,view.clientHeight-16);
+ let best={unit:0,cols:Math.min(totalCells,7),rows:Math.ceil(totalCells/Math.min(totalCells,7))};
+ const maxCols=Math.max(2,Math.min(totalCells,Math.floor((availW-2)/17),38));
+ const candidates=totalCells>=6?Array.from({length:Math.max(0,Math.floor((maxCols-5)/2)+1)},(_,i)=>5+i*2).filter(c=>c<=maxCols):[Math.min(totalCells,maxCols)];
+ for(const cols of candidates){if(cols<2)continue;const rows=Math.ceil(totalCells/cols);const unit=Math.floor(Math.min((availW-4)/cols,(availH-4)/rows,38));if(unit>best.unit||(unit===best.unit&&cols>best.cols)){best={unit,cols,rows};}}
+ const unit=Math.max(14,best.unit||20),cols=best.cols,rows=Math.ceil(totalCells/cols),trackW=cols*unit,trackH=rows*unit;
+ track.style.setProperty('width',trackW+'px','important');track.style.setProperty('height',trackH+'px','important');track.style.setProperty('min-height',trackH+'px','important');
+ const cells=[];for(let y=0;cells.length<totalCells;y++){if(y%2===0){for(let x=0;x<cols&&cells.length<totalCells;x++)cells.push({x,y});}else{for(let x=cols-1;x>=0&&cells.length<totalCells;x--)cells.push({x,y});}}
+ track.innerHTML=chain.map(t=>tileHtml(t,'table','chain-piece')).join('');
+ const pieces=track.querySelectorAll('.table-tile');
+ pieces.forEach((el,i)=>{const p1=cells[i*2],p2=cells[i*2+1];if(!p1||!p2)return;const horizontal=p1.y===p2.y;el.classList.add(horizontal?'tile-horizontal':'tile-vertical');if(horizontal&&p2.x<p1.x)el.classList.add('tile-reverse');if(!horizontal&&p2.y<p1.y)el.classList.add('tile-reverse');el.style.setProperty('position','absolute','important');el.style.setProperty('left',(Math.min(p1.x,p2.x)*unit)+'px','important');el.style.setProperty('top',(Math.min(p1.y,p2.y)*unit)+'px','important');el.style.setProperty('width',(horizontal?unit*2:unit)+'px','important');el.style.setProperty('height',(horizontal?unit:unit*2)+'px','important');el.style.setProperty('transform','none','important');el.style.setProperty('margin','0','important');el.title=`${el.dataset.a} | ${el.dataset.b}`;});
+}
 function updateButtonState(g,me,acts){const myTurn=g?.status==='playing'&&g.current===myId();const chosen=acts.filter(a=>a.tileId===selectedTileId);const sides=new Set(chosen.map(x=>x.side));$('playLeftBtn').disabled=!myTurn||!sides.has('left');$('playRightBtn').disabled=!myTurn||!sides.has('right');$('playCenterBtn').disabled=!myTurn||!sides.has('center');$('drawBtn').disabled=!myTurn||acts.length>0||!g.boneyard.length;$('passBtn').disabled=!myTurn||acts.length>0||g.boneyard.length>0;$('nextRoundBtn').disabled=!g||!['round-over','match-over'].includes(g.status);$('drawBtn').textContent=g?.boneyard?.length?`＋ اسحب قطعة (${g.boneyard.length})`:'السحب خلص';const hint=$('handHelp');if(!myTurn)hint.textContent=g.status==='playing'?'استنى دورك يا معلم':'الجولة انتهت';else if(!g.chain.length)hint.textContent=`ابدأ بأعلى دوبل: ${g.requiredOpeningId?.replace('-',' | ')||'—'}`;else if(acts.length)hint.textContent='اختار قطعة وحدّد الطرف';else if(g.boneyard.length)hint.textContent='مفيش قطعة راكبة — اسحب من الرصيد';else hint.textContent='مفيش حركة صالحة — مرّر الدور';}
 function render(){const g=currentGame();if(!g)return;const me=mePlayer(g),op=opPlayer(g);if(!me){$('turnBanner').textContent='في انتظار دخول اللاعب الثاني...';$('modeLabel').textContent='أونلاين';$('connectionStatus').textContent='في انتظار لاعب';$('roomCodeLabel').textContent=myRoomCode?`DOM-${myRoomCode}`:'—';$('chainTrack').innerHTML='<div class="empty-table">مستنيين صاحبك يدخل القعدة<small>شارك الكود لبدء اللعب</small></div>';return;}
  $('meName').textContent=me.name||'أنت';if($('topProfileName'))$('topProfileName').textContent=me.name||'ضيف القهوة';$('meAvatar').textContent=me.avatar||'😎';$('opName').textContent=op?.name||(mode==='online'?'في انتظار لاعب':'المعلم زكي');$('opAvatar').textContent=op?.avatar||(mode==='online'?'👤':'👳🏻‍♂️');$('meCount').textContent=`${me.hand?.length??0} قطعة`;if(op)$('opCount').textContent=`${op.hand?.length??0} قطعة`;
  $('scoreMeLabel').textContent=me.name||'أنت';$('scoreMe').textContent=me.score||0;$('scoreOpLabel').textContent=op?.name||'الخصم';$('scoreOp').textContent=op?.score||0;$('targetLabel').textContent=`${g.targetScore||targetScore} نقطة`;$('roundLabel').textContent=g.round||1;$('modeLabel').textContent=mode==='online'?'أونلاين':'ضد المعلم';$('connectionStatus').textContent=mode==='online'?(g.status==='waiting'?'في انتظار لاعب 🟡':'أونلاين 🟢'):'محلي 🟢';$('roomCodeLabel').textContent=mode==='online'&&myRoomCode?`DOM-${myRoomCode}`:'مع المعلم';$('stockCount').textContent=`🁢 القطع المتبقية: ${g.boneyard?.length??0}`;$('leftEnd').textContent=g.chain?.length?g.openLeft:'—';$('rightEnd').textContent=g.chain?.length?g.openRight:'—';$('handCount').textContent=me.hand?.length??0;
  const isMyTurn=g.status==='playing'&&g.current===myId();$('turnBanner').textContent=g.status==='waiting'?'مستنيين اللاعب الثاني يدخل القعدة...':g.status==='match-over'?'خلصت الفورة — مبروك للفائز!':g.status==='round-over'?'الجولة خلصت — جاهزين لجولة جديدة':isMyTurn?'دورك يا معلم — اختار قطعة من إيدك':`دور ${currentPlayer(g)?.name||'الخصم'} — استعد`; $('meStatus').textContent=`${me.score||0} نقطة • ${isMyTurn?'دورك الآن':g.status==='playing'?'مستني دورك':'الجولة انتهت'}`;$('opStatus').textContent=`${op?.score||0} نقطة • ${g.status==='playing'&&g.current===op?.id?'بيفكر في الحركة...':mode==='online'?'متصل بالقعدة':'المعلم بيتابعك'}`;
- const track=$('chainTrack');if(!g.chain?.length)track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';else track.innerHTML=g.chain.map((t,i)=>tileHtml(t,'table',i===g.chain.length-1?'last-tile':'')).join('');
+ renderChain(g);
  const myActs=legalActions(g,myId());const handTrack=$('handTrack');handTrack.innerHTML=(me.hand||[]).slice().sort((a,b)=>(a.a+a.b)-(b.a+b.b)||a.a-b.a).map(t=>tileHtml(t,'hand',selectedTileId===t.id?'selected':'')).join('');
  updateButtonState(g,me,myActs);$('shareBtn').disabled=mode!=='online';$('shareBtn').textContent=mode==='online'?'مشاركة القعدة ↗':'المشاركة للأونلاين';renderChat(g);if(g.status==='round-over'||g.status==='match-over')$('nextRoundBtn').textContent=g.status==='match-over'?'مباراة جديدة':'جولة جديدة ↻';else $('nextRoundBtn').textContent='جولة جديدة ↻';}
-function renderChat(g){const list=$('chatMessages');const messages=Array.isArray(g.chat)?g.chat:[];list.innerHTML=messages.slice(-35).map(m=>{if(m.playerId&&mutedIds.has(m.playerId))return'';return `<div class="chat-msg ${m.playerId===myId()?'mine':''}"><span class="who">${esc(m.avatar||'☕')} ${esc(m.player||'ضيف')}</span><span class="time">${new Date(m.at||Date.now()).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span><div>${esc(m.text)}</div>${mode==='online'&&m.playerId&&m.playerId!==myId()?`<button style="font-size:9px;padding:2px 5px;margin-top:3px" onclick="mutePlayer('${esc(m.playerId)}')">كتم</button>`:''}</div>`;}).join('')||'<div class="tiny-note">لسه مفيش رسايل. ابعت تحية للي معاك.</div>';if(chatOpen)list.scrollTop=list.scrollHeight;$('unreadCount').textContent=unread;$('unreadCount').classList.toggle('hidden',unread===0);$('mobileUnread').textContent=unread;$('mobileUnread').classList.toggle('hidden',unread===0);if($('mobileMenuUnread')){$('mobileMenuUnread').textContent=unread;$('mobileMenuUnread').classList.toggle('hidden',unread===0);}}
+function renderChat(g){const list=$('chatMessages');const messages=Array.isArray(g.chat)?g.chat:[];list.innerHTML=messages.slice(-35).map(m=>{if(m.playerId&&mutedIds.has(m.playerId))return'';return `<div class="chat-msg ${m.playerId===myId()?'mine':''}"><span class="who">${esc(m.avatar||'☕')} ${esc(m.player||'ضيف')}</span><span class="time">${new Date(m.at||Date.now()).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span><div>${esc(m.text)}</div>${mode==='online'&&m.playerId&&m.playerId!==myId()?`<button style="font-size:9px;padding:2px 5px;margin-top:3px" onclick="mutePlayer('${esc(m.playerId)}')">كتم</button>`:''}</div>`;}).join('')||'<div class="tiny-note">لسه مفيش رسايل. ابعت تحية للي معاك.</div>';if(chatOpen)list.scrollTop=list.scrollHeight;$('unreadCount').textContent=unread;$('unreadCount').classList.toggle('hidden',unread===0);$('mobileUnread').textContent=unread;$('mobileUnread').classList.toggle('hidden',unread===0);if($('chatTopUnread')){$('chatTopUnread').textContent=unread;$('chatTopUnread').classList.toggle('hidden',unread===0);}if($('mobileMenuUnread')){$('mobileMenuUnread').textContent=unread;$('mobileMenuUnread').classList.toggle('hidden',unread===0);}}
 function appendLocalChat(player,avatar,text){if(!localGame)return;localGame.chat=localGame.chat||[];localGame.chat.push({id:`c${Date.now()}${Math.random()}`,player,avatar,text,at:Date.now()});localGame.chat=localGame.chat.slice(-35);renderChat(localGame);}
 function sendQuick(text){if(mode==='local'){appendLocalChat(localGame.players.me.name,localGame.players.me.avatar,text);playFx('place',.35);return;}sendChat(text);}
 function sendChat(textOverride){const input=$('chatInput');const text=String(textOverride??input.value).trim();if(!text)return;if(text.length>120){toast('الرسالة طويلة؛ الحد 120 حرف.');return;}if(!isClean(text)){toast('الرسالة فيها ألفاظ غير مناسبة. خلّي القعدة محترمة يا معلم.');return;}if(Date.now()-lastSentAt<1600){toast('استنى لحظة قبل الرسالة التالية.');return;}lastSentAt=Date.now();if(input)input.value='';const g=currentGame();const me=mePlayer(g);const msg={id:`c${Date.now()}${Math.random().toString(36).slice(2,5)}`,player:me?.name||'ضيف',avatar:me?.avatar||'☕',playerId:myId(),text,at:Date.now()};if(mode==='local'){appendLocalChat(msg.player,msg.avatar,msg.text);return;}if(mode==='online'&&onlineRef){const cRef=onlineRef.child('chat');cRef.transaction(curr=>{let arr=Array.isArray(curr)?curr:[];arr.push(msg);return arr.slice(-35);},(err,committed)=>{if(err||!committed)toast('تعذر إرسال الرسالة؛ تحقق من الاتصال.');});}}
 function mutePlayer(id){mutedIds.add(id);toast('تم كتم رسائل اللاعب على جهازك.');renderChat(currentGame());}
 function toggleChatSound(){chatSoundOn=!chatSoundOn;$('chatSoundBtn').textContent=chatSoundOn?'🔔 التنبيه شغال':'🔕 التنبيه مكتوم';try{localStorage.setItem('aq-domino-chat-sound',chatSoundOn?'1':'0')}catch{}toast(chatSoundOn?'تم تشغيل تنبيه الرسائل':'تم كتم تنبيه الرسائل');}
-function mobileMenuAction(action){closeModal('mobileMenuModal');if(action==='chat'){if(!chatOpen)toggleMobileChat();else{chatOpen=false;$('sidePanel').classList.remove('mobile-open');}}else if(action==='online')openModal('onlineModal');else if(action==='skins')openModal('skinsModal');else if(action==='sound')openModal('soundModal');else if(action==='rules')openModal('rulesModal');else if(action==='share')shareRoom();else if(action==='chatSound')toggleChatSound();else if(action==='new')confirmNewGame();}
+function mobileMenuAction(action){closeModal('mobileMenuModal');if(action==='chat'){if(!chatOpen)toggleMobileChat();else{chatOpen=false;$('sidePanel').classList.remove('mobile-open');}}else if(action==='online')openModal('onlineModal');else if(action==='skins')openModal('skinsModal');else if(action==='tableSkins')openModal('tableSkinsModal');else if(action==='sound')openModal('soundModal');else if(action==='rules')openModal('rulesModal');else if(action==='share')shareRoom();else if(action==='chatSound')toggleChatSound();else if(action==='new')confirmNewGame();}
 function toggleMobileChat(){chatOpen=!chatOpen;$('sidePanel').classList.toggle('mobile-open',chatOpen);if(chatOpen){unread=0;renderChat(currentGame());}}
+function toggleChatPanel(){if(window.matchMedia('(max-width:760px)').matches){toggleMobileChat();return;}const card=$('chatCard'),panel=$('sidePanel');const willHide=!card.classList.contains('chat-hidden');card.classList.toggle('chat-hidden',willHide);panel.classList.toggle('chat-collapsed',willHide);chatOpen=!willHide;if(chatOpen){unread=0;renderChat(currentGame());}else renderChat(currentGame());toast(chatOpen?'الشات مفتوح يا معلم':'تم إخفاء الشات؛ تقدر تفتحه من الزر فوق.');}
 function receiveOnlineChat(g){const arr=Array.isArray(g.chat)?g.chat:[];if(arr.length>lastChatCount&&mode==='online'){const fresh=arr.slice(lastChatCount).filter(m=>m.playerId!==myId());if(fresh.length){if(!chatOpen||window.matchMedia('(max-width:760px)').matches&&!chatOpen){unread+=fresh.length;if(chatSoundOn)playFx('pass',.45);}else if(chatSoundOn)playFx('pass',.28);} }lastChatCount=arr.length;}
-function renderSkins(){const grid=$('skinsGrid');const current=localStorage.getItem('aq-domino-skin')||'ivory';grid.innerHTML=SKINS.map(s=>`<button class="skin-option ${s.id===current?'active':''}" onclick="setSkin('${s.id}')"><div class="skin-preview">${tileHtml({id:'4-6',a:4,b:6},'table')}</div><strong>${s.name}</strong><small class="muted">${s.desc}</small></button>`).join('');}
+function renderSkins(){
+ const grid=$('skinsGrid'),current=localStorage.getItem('aq-domino-skin')||'ivory';
+ grid.innerHTML=SKINS.map(s=>`<button class="skin-option ${s.id===current?'active':''}" onclick="setSkin('${s.id}')"><div class="skin-preview">${tileHtml({id:'preview-'+s.id,a:4,b:6},'preview','',s.id)}</div><strong>${s.name}</strong><small class="muted">${s.desc}</small></button>`).join('');
+ renderSkinStrip();
+}
+function renderSkinStrip(){document.querySelectorAll('.skin-chip').forEach(btn=>{const match=btn.className.match(/skin-chip-(ivory|wood|gold|jade|slate|color)/);if(!match)return;const preview=btn.querySelector('.tile-preview');if(preview)preview.outerHTML=tileHtml({id:'strip-'+match[1],a:4,b:6},'preview','',match[1]);btn.classList.toggle('selected-skin',match[1]===(localStorage.getItem('aq-domino-skin')||'ivory'));});}
 function setSkin(id){if(!SKINS.some(s=>s.id===id))return;document.body.dataset.skin=id;localStorage.setItem('aq-domino-skin',id);renderSkins();render();playFx('place',.35);}
+function renderTableSkins(){const grid=$('tableSkinsGrid'),current=localStorage.getItem('aq-domino-table-skin')||'wood';grid.innerHTML=TABLE_SKINS.map(s=>`<button class="table-skin-option ${s.id===current?'active':''}" onclick="setTableSkin('${s.id}')"><div class="table-preview table-preview-${s.id}"><span>ع القهوة</span><i></i></div><strong>${s.name}</strong><small class="muted">${s.desc}</small></button>`).join('');}
+function setTableSkin(id){if(!TABLE_SKINS.some(s=>s.id===id))return;document.body.dataset.tableSkin=id;localStorage.setItem('aq-domino-table-skin',id);renderTableSkins();toast('تم تغيير شكل الطاولة.');renderChain(currentGame());}
 function setTarget(n){if(![50,100,150].includes(n))return;targetScore=n;const g=currentGame();if(g)g.targetScore=n;localStorage.setItem('aq-domino-target',String(n));$('targetLabel').textContent=n+' نقطة';toast(`هدف المباراة ${n} نقطة.`);}
 function setDifficulty(v){if(!['easy','normal','hard'].includes(v))return;difficulty=v;localStorage.setItem('aq-domino-difficulty',v);if($('difficultySelect'))$('difficultySelect').value=v;toast('تم تحديث مستوى المعلم.');}
 function playFx(which,scale=1){if(!fxEnabled)return;const el=$({place:'placeAudio',draw:'drawAudio',pass:'passAudio',win:'winAudio'}[which]);if(!el)return;try{el.pause();el.currentTime=0;el.volume=Math.max(0,Math.min(1,volume*scale));const p=el.play();if(p&&p.catch)p.catch(()=>{});}catch{}}
@@ -393,7 +594,7 @@ function loadOnlineFromQuery(){const params=new URLSearchParams(location.search)
 function bindEvents(){ $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.overlay:not(.hidden)').forEach(x=>x.classList.add('hidden'));}});document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.add('hidden')}));window.addEventListener('beforeunload',()=>{if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);});}
 function showComingSoon(name){toast(`${name} قريبًا على ع القهوة — بنجهّزها لك!`);}
 function editProfileName(){const current=localStorage.getItem('aq-domino-name')||mePlayer(currentGame())?.name||'محمد';const name=prompt('اكتب اسمك على ع القهوة',current);if(name===null)return;const clean=String(name).trim().slice(0,20);if(!clean){toast('اكتب اسمًا صالحًا.');return;}localStorage.setItem('aq-domino-name',clean);if(mode==='local'&&localGame?.players?.me)localGame.players.me.name=clean;render();toast('اتحدّث اسمك على القهوة.');}
-function init(){const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();createLocalGame(true);$('sidePanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();}
+function init(){const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';document.body.dataset.tableSkin=localStorage.getItem('aq-domino-table-skin')||'wood';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();renderSkinStrip();createLocalGame(true);$('sidePanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();}
 window.addEventListener('DOMContentLoaded',init);
 </script>
 </body></html>
