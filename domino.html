@@ -988,4 +988,5 @@ function editProfileName(){const current=localStorage.getItem('aq-domino-name')|
 function init(){if(!localStorage.getItem('aq-domino-avatar'))localStorage.setItem('aq-domino-avatar','curly-man');const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';document.body.dataset.tableSkin=localStorage.getItem('aq-domino-table-skin')||'wood';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();renderSkinStrip();createLocalGame(true);$('leftPanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();}
 window.addEventListener('DOMContentLoaded',init);
 </script>
+<script src="./landscape-mode.js"></script>
 </body></html>
