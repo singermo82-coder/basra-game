@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://webisso.github.io" crossorigin>
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <meta name="theme-color" content="#1a0f08">
-  <title>ع القهوة | ألعاب مصرية أونلاين — v7.5</title>
+  <title>ع القهوة | ألعاب مصرية أونلاين — v7.6.1</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -844,7 +846,7 @@
     .game-board .coming-games-inplay .mini-game-card strong { font-size:.39rem; }
   }
 
-  /* v7.5 — layout fit, opponent portrait, chat alerts, deck styles */
+  /* v7.6 — complete mobile cards, reliable radio playback, landscape-first */
   .game-topbar .info-card h3,
   .section-title h3,
   .game-actions-panel h3,
@@ -973,6 +975,251 @@
     body.game-active .opponent-panel { flex-basis:103px; max-height:103px; }
   }
 
+
+  /* v7.6 critical fixes: card faces stay whole; landscape-only play viewport; usable mobile radio. */
+  .card.asset-card { overflow:hidden!important; aspect-ratio:5/7; }
+  .card-full-art { display:block!important; width:100%!important; height:100%!important; max-width:100%; max-height:100%; object-fit:contain!important; object-position:center center!important; border-radius:inherit; }
+  body.game-active .hand-panel { overflow:visible!important; min-width:0; }
+  body.game-active .hand-cards { box-sizing:border-box; height:clamp(88px,13vh,126px)!important; min-height:88px!important; max-height:none!important; flex:0 0 auto; align-items:center; justify-content:flex-start!important; gap:0!important; padding:5px 7px 7px!important; overflow-x:auto!important; overflow-y:hidden!important; overscroll-behavior-x:contain; scrollbar-width:thin; scrollbar-color:#b88940 #1a0c06; }
+  body.game-active .hand-cards .card { flex:0 0 auto!important; max-height:100%; object-fit:contain; margin-inline:clamp(-5px,-.35vw,-2px)!important; }
+  .radio-modal-card { z-index:1; max-height:calc(100dvh - 16px)!important; overflow-x:hidden!important; overflow-y:auto!important; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+  .radio-modal-card .station-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .radio-frame-wrap.radio-native-mode { display:flex; align-items:center; justify-content:center; min-height:76px; padding:9px; }
+  .radio-native-player { display:block; width:100%; max-width:100%; min-height:44px; border-radius:12px; background:#f5e8ce; }
+  .radio-native-player.hidden { display:none!important; }
+  #radioFrame.hidden { display:none!important; }
+  #radioFramePlaceholder { z-index:2; }
+  #radioOfficialLink { flex:0 0 auto; min-height:38px; display:inline-flex; align-items:center; justify-content:center; touch-action:manipulation; }
+  .station-button, .modal-close, #radioOpenBtn { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  @media (pointer:coarse) and (orientation:landscape) and (max-height:520px) {
+    body.game-active .container { height:100dvh!important; max-height:100dvh!important; min-height:0!important; padding:2px 4px!important; gap:2px!important; overflow:hidden!important; }
+    body.game-active .header { height:28px!important; min-height:28px!important; flex-basis:28px!important; }
+    body.game-active .header-actions { height:28px!important; gap:3px!important; }
+    body.game-active .header-actions .btn { width:30px!important; min-width:30px!important; height:27px!important; min-height:27px!important; padding:2px!important; }
+    body.game-active .game-board { min-height:0!important; gap:2px!important; }
+    body.game-active .game-topbar { flex:0 0 54px!important; height:54px!important; min-height:54px!important; grid-template-columns:minmax(116px,19vw) minmax(0,1fr)!important; gap:3px!important; }
+    body.game-active .game-brand-plaque { min-height:54px!important; padding:2px 4px!important; }
+    body.game-active .game-brand-plaque strong { font-size:clamp(.78rem,1.8vw,1rem)!important; }
+    body.game-active .game-brand-plaque small { font-size:.43rem!important; }
+    body.game-active .game-topbar .info-card { min-height:54px!important; padding:3px 2px!important; }
+    body.game-active .game-topbar .info-card h3 { font-size:.46rem!important; margin-bottom:1px!important; }
+    body.game-active .game-topbar .info-card p { font-size:.68rem!important; }
+    body.game-active #gameNotice { flex-basis:20px!important; height:20px!important; min-height:20px!important; max-height:20px!important; padding:2px 5px!important; font-size:.53rem!important; }
+    body.game-active .game-stage { flex:1 1 0!important; min-height:0!important; grid-template-columns:minmax(125px,20vw) minmax(0,1fr) minmax(145px,21vw)!important; gap:3px!important; }
+    body.game-active .game-side-rail, body.game-active .game-main-column, body.game-active .game-chat-rail { gap:3px!important; min-height:0!important; }
+    body.game-active .game-side-rail .panel { padding:4px!important; border-radius:8px!important; }
+    body.game-active .players-panel .section-title h3, body.game-active .game-actions-panel h3 { font-size:.57rem!important; }
+    body.game-active .players-list .player-item { padding:3px!important; gap:3px!important; }
+    body.game-active .player-avatar { width:22px!important; height:22px!important; flex-basis:22px!important; }
+    body.game-active .player-name { font-size:.54rem!important; }
+    body.game-active .player-meta { font-size:.46rem!important; }
+    body.game-active .opponent-panel { flex:0 0 46px!important; max-height:46px!important; padding:3px!important; }
+    body.game-active .opponent-panel .back-cards { min-height:23px!important; height:23px!important; }
+    body.game-active .opponent-panel .back-card { width:15px!important; height:23px!important; margin-inline:-2px!important; }
+    body.game-active .game-action { min-height:23px!important; padding:3px!important; font-size:.5rem!important; }
+    body.game-active .game-main-column { gap:3px!important; }
+    body.game-active .table-panel { flex:1 1 auto!important; min-height:0!important; padding:2px!important; border-radius:10px!important; }
+    body.game-active .table-surface { padding:3px 2px!important; border-radius:24% / 12%!important; }
+    body.game-active .table-surface:before { inset:3px!important; border-radius:24% / 12%!important; }
+    body.game-active .table-label { font-size:.47rem!important; margin:0!important; }
+    body.game-active .table-label span:last-child { font-size:.4rem!important; }
+    body.game-active .table-area { gap:2px!important; padding:2px!important; }
+    body.game-active .table-area .card { --card-w:clamp(34px,4.6vw,43px)!important; --card-h:clamp(51px,15vh,61px)!important; border-radius:4px!important; }
+    body.game-active .table-caption { font-size:.42rem!important; }
+    body.game-active .hand-panel { flex:0 0 91px!important; height:91px!important; min-height:91px!important; padding:3px 4px!important; border-radius:8px!important; }
+    body.game-active .hand-panel .section-title { margin:0!important; }
+    body.game-active .hand-panel .section-title h3 { font-size:.6rem!important; }
+    body.game-active .hand-panel .section-hint { display:none!important; }
+    body.game-active .hand-cards { height:68px!important; min-height:68px!important; max-height:68px!important; padding:3px 5px 4px!important; overflow-x:auto!important; overflow-y:hidden!important; }
+    body.game-active .hand-cards .card { --card-w:clamp(35px,4.6vw,43px)!important; --card-h:clamp(52px,15vh,60px)!important; margin-inline:-2px!important; border-radius:4px!important; }
+    body.game-active .hand-cards .card .corner { font-size:.42rem!important; }
+    body.game-active .hand-cards .card .corner-suit { font-size:.38rem!important; }
+    body.game-active .hand-cards .card .court-center { inset:6px 2px!important; }
+    body.game-active .coming-games-inplay { flex:0 0 30px!important; height:30px!important; min-height:30px!important; max-height:30px!important; padding:2px 4px!important; gap:3px!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-icon, body.game-active .game-board .coming-games-inplay .coming-games-pill, body.game-active .game-board .coming-games-inplay .coming-games-copy span, body.game-active .coming-games-creator { display:none!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy { min-width:70px!important; flex:0 0 auto!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.48rem!important; }
+    .radio-modal-card { width:calc(100vw - 12px)!important; max-height:calc(100dvh - 8px)!important; padding:10px!important; border-radius:12px!important; }
+    .radio-modal-card h2 { font-size:1rem!important; margin:2px 0!important; }
+    .radio-modal-card .modal-subtitle { font-size:.65rem!important; line-height:1.35!important; margin:0 0 5px!important; }
+    .radio-modal-card .station-grid { grid-template-columns:repeat(5,minmax(0,1fr))!important; gap:3px!important; margin:4px 0!important; }
+    .radio-modal-card .station-button { min-height:46px!important; padding:4px 2px!important; gap:2px!important; border-radius:6px!important; }
+    .radio-modal-card .station-button strong { font-size:.54rem!important; }
+    .radio-modal-card .station-button small { display:none!important; }
+    .radio-modal-card .station-frequency { font-size:.54rem!important; }
+    .radio-modal-card .radio-now-row { flex-direction:row!important; align-items:center!important; gap:5px!important; padding:5px!important; margin:4px 0!important; }
+    .radio-modal-card .radio-now-row p { font-size:.56rem!important; line-height:1.2!important; margin:1px 0 0!important; }
+    .radio-modal-card #radioOfficialLink { min-height:28px!important; padding:4px!important; font-size:.55rem!important; }
+    .radio-modal-card .radio-frame-wrap { min-height:50px!important; }
+    .radio-modal-card #radioFrame { height:80px!important; }
+    .radio-modal-card .radio-legal-note { font-size:.51rem!important; line-height:1.3!important; margin:4px 0!important; }
+  }
+  @media (max-width:760px) and (orientation:portrait) {
+    /* Portrait is intentionally gated by landscape-mode.js. If a browser blocks the gate, cards still remain uncut. */
+    body.game-active .hand-cards { height:auto!important; min-height:94px!important; max-height:none!important; padding:6px!important; overflow-x:auto!important; overflow-y:hidden!important; }
+    body.game-active .hand-cards .card { --card-w:clamp(47px,13vw,59px)!important; --card-h:clamp(70px,19vw,88px)!important; }
+  }
+  @media (prefers-reduced-motion:reduce) { .card-full-art { animation:none!important; } }
+
+
+  /* v7.6.1: full card faces on small touch screens + reliable radio fallbacks */
+  .card.asset-card { box-sizing:border-box!important; padding:0!important; aspect-ratio:5/7; }
+  .card-full-art { display:block!important; width:100%!important; height:100%!important; max-width:100%!important; max-height:100%!important; object-fit:contain!important; object-position:center!important; }
+  body.game-active .hand-panel { overflow:visible!important; min-width:0!important; flex-shrink:0!important; }
+  body.game-active .hand-cards { box-sizing:border-box!important; flex:0 0 auto!important; flex-wrap:nowrap!important; align-items:center!important; justify-content:flex-start!important; overflow-x:auto!important; overflow-y:hidden!important; overscroll-behavior-x:contain; scrollbar-width:thin; }
+  body.game-active .hand-cards .card { flex:0 0 auto!important; max-height:none!important; box-sizing:border-box!important; padding:0!important; aspect-ratio:5/7; }
+  .radio-modal-card { box-sizing:border-box!important; width:min(760px,calc(100vw - 20px))!important; max-height:calc(100dvh - 16px)!important; overflow-y:auto!important; overscroll-behavior:contain; }
+  .radio-frame-wrap { min-height:100px; position:relative; }
+  .radio-frame-wrap iframe { display:block; width:100%; border:0; }
+  .radio-native-player { width:100%; min-height:42px; display:block; margin:10px 0 4px; }
+  .radio-native-player.hidden { display:none!important; }
+  .radio-modal-card .station-button { min-height:70px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  @media (max-height:560px) and (orientation:landscape) and (pointer:coarse) {
+    body.game-active .container { padding:3px 5px 4px!important; gap:3px!important; }
+    body.game-active .header { height:30px!important; min-height:30px!important; flex-basis:30px!important; margin:0!important; }
+    body.game-active .header-actions { height:30px!important; }
+    body.game-active .header-actions .btn { height:28px!important; min-height:28px!important; }
+    body.game-active .game-topbar { flex-basis:53px!important; min-height:53px!important; grid-template-columns:95px minmax(0,1fr)!important; gap:3px!important; }
+    body.game-active .game-topbar .info-card { min-height:53px!important; padding:2px!important; }
+    body.game-active #gameNotice { min-height:18px!important; max-height:22px!important; padding:2px 6px!important; font-size:.52rem!important; }
+    body.game-active .game-stage { min-height:0!important; }
+    body.game-active .game-main-column { min-height:0!important; gap:3px!important; }
+    body.game-active .table-panel { min-height:0!important; flex:1 1 auto!important; padding:3px!important; overflow:hidden!important; }
+    body.game-active .table-surface { min-height:0!important; height:100%!important; padding:3px!important; }
+    body.game-active .table-area { min-height:0!important; padding:2px!important; gap:2px!important; }
+    body.game-active .table-area .card { --card-w:clamp(34px,4.2vw,48px)!important; --card-h:clamp(49px,13vh,65px)!important; }
+    body.game-active .table-label { font-size:.48rem!important; margin:0!important; }
+    body.game-active .table-caption { font-size:.43rem!important; padding:0!important; }
+    body.game-active .hand-panel { flex:0 0 88px!important; height:88px!important; min-height:88px!important; max-height:88px!important; padding:3px 5px!important; }
+    body.game-active .hand-panel .section-title { margin:0!important; }
+    body.game-active .hand-panel .section-title h3 { font-size:.58rem!important; }
+    body.game-active .hand-panel .section-hint { display:none!important; }
+    body.game-active .hand-cards { height:66px!important; min-height:66px!important; max-height:none!important; padding:3px 5px 4px!important; gap:0!important; overflow-x:auto!important; overflow-y:hidden!important; }
+    body.game-active .hand-cards .card { width:clamp(38px,4.8vw,44px)!important; height:clamp(53px,14.5vh,58px)!important; max-height:none!important; margin-inline:-1px!important; border-radius:4px!important; }
+    body.game-active .game-board .coming-games-inplay { flex:0 0 25px!important; height:25px!important; min-height:25px!important; max-height:25px!important; padding:1px 4px!important; gap:2px!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-icon,
+    body.game-active .game-board .coming-games-inplay .coming-games-pill,
+    body.game-active .game-board .coming-games-inplay .coming-games-copy span,
+    body.game-active .coming-games-creator { display:none!important; }
+    .radio-modal-card { width:calc(100vw - 10px)!important; max-height:calc(100dvh - 8px)!important; padding:8px!important; }
+    .radio-modal-card .station-grid { grid-template-columns:repeat(5,minmax(0,1fr))!important; gap:3px!important; }
+    .radio-modal-card .station-button { min-height:43px!important; padding:3px 2px!important; }
+    .radio-modal-card .station-button strong { font-size:.53rem!important; }
+    .radio-modal-card .station-button small { display:none!important; }
+    .radio-modal-card .station-frequency { font-size:.52rem!important; }
+    .radio-modal-card #radioFrame { height:94px!important; }
+    .radio-modal-card .radio-native-player { height:38px!important; min-height:38px!important; }
+  }
+  @media (max-width:760px) and (orientation:portrait) {
+    body.game-active .hand-panel { height:auto!important; min-height:112px!important; max-height:none!important; }
+    body.game-active .hand-cards { height:auto!important; min-height:96px!important; max-height:none!important; padding:6px 4px 8px!important; overflow-x:auto!important; overflow-y:hidden!important; }
+    body.game-active .hand-cards .card { width:clamp(47px,13vw,59px)!important; height:clamp(70px,19vw,88px)!important; max-height:none!important; }
+  }
+
+
+  /* Mobile landscape refinement: keep the actual playing-card faces prominent, not the desktop sidebars. */
+  @media (pointer:coarse) and (orientation:landscape) and (max-height:650px) {
+    body.game-active .container {
+      height:100dvh!important; min-height:0!important; max-height:100dvh!important;
+      padding:3px 5px!important; gap:3px!important; overflow:hidden!important;
+    }
+    body.game-active .header { height:27px!important; min-height:27px!important; flex-basis:27px!important; margin:0!important; }
+    body.game-active .header-actions { height:27px!important; gap:4px!important; }
+    body.game-active .header-actions .btn { width:29px!important; min-width:29px!important; height:26px!important; min-height:26px!important; padding:2px!important; }
+    body.game-active .game-board { min-height:0!important; gap:3px!important; }
+    body.game-active .game-topbar {
+      flex:0 0 49px!important; height:49px!important; min-height:49px!important;
+      grid-template-columns:100px minmax(0,1fr)!important; gap:4px!important;
+    }
+    body.game-active .game-brand-plaque { min-height:49px!important; padding:2px 4px!important; }
+    body.game-active .game-brand-plaque strong { font-size:clamp(.82rem,1.8vw,1rem)!important; }
+    body.game-active .game-brand-plaque small { font-size:.43rem!important; }
+    body.game-active .game-topbar .info-grid { gap:3px!important; }
+    body.game-active .game-topbar .info-card { min-height:49px!important; padding:2px!important; border-radius:7px!important; }
+    body.game-active .game-topbar .info-card h3 { font-size:.48rem!important; margin:0 0 2px!important; }
+    body.game-active .game-topbar .info-card p { font-size:.72rem!important; }
+    body.game-active .game-topbar .info-card .btn { min-height:15px!important; font-size:.45rem!important; padding:1px 3px!important; margin-top:2px!important; }
+    body.game-active #gameNotice { flex:0 0 19px!important; height:19px!important; min-height:19px!important; max-height:19px!important; padding:2px 5px!important; font-size:.52rem!important; }
+
+    /* A narrow icon rail preserves every action, while table and hand receive the width. */
+    body.game-active .game-stage {
+      flex:1 1 0!important; min-height:0!important; overflow:hidden!important;
+      grid-template-columns:62px minmax(0,1fr)!important; gap:4px!important; direction:rtl!important;
+    }
+    body.game-active .game-chat-rail { display:none!important; }
+    body.game-active .game-side-rail { display:flex!important; width:62px!important; min-width:62px!important; height:100%!important; }
+    body.game-active .game-side-rail .players-panel,
+    body.game-active .game-side-rail .opponent-panel { display:none!important; }
+    body.game-active .game-side-rail .game-actions-panel {
+      display:grid!important; flex:1 1 auto!important; min-height:0!important;
+      grid-template-columns:minmax(0,1fr)!important; align-content:center!important;
+      gap:4px!important; padding:4px!important; overflow:hidden!important;
+    }
+    body.game-active .game-actions-panel h3 { display:none!important; }
+    body.game-active .game-action {
+      display:flex!important; justify-content:center!important; align-items:center!important;
+      min-width:0!important; min-height:30px!important; height:30px!important;
+      padding:2px!important; font-size:.95rem!important; gap:0!important; border-radius:6px!important;
+    }
+    body.game-active .game-action span { display:none!important; }
+    body.game-active .game-action-leave { min-height:30px!important; }
+    body.game-active .game-main-column { min-width:0!important; min-height:0!important; height:100%!important; gap:3px!important; }
+    body.game-active .table-panel { flex:1 1 0!important; min-height:0!important; padding:3px!important; border-radius:10px!important; }
+    body.game-active .table-surface { height:100%!important; min-height:0!important; padding:4px 3px!important; border-radius:22% / 12%!important; }
+    body.game-active .table-surface:before { inset:4px!important; border-radius:22% / 12%!important; }
+    body.game-active .table-label { flex:0 0 auto!important; margin:0!important; padding:0 3px!important; font-size:.5rem!important; }
+    body.game-active .table-label span:last-child { font-size:.43rem!important; }
+    body.game-active .table-area {
+      flex:1 1 auto!important; min-height:0!important; max-height:100%!important;
+      display:flex!important; flex-wrap:nowrap!important; align-items:center!important; justify-content:center!important;
+      gap:clamp(2px,.55vw,6px)!important; padding:3px 4px!important;
+      overflow-x:auto!important; overflow-y:hidden!important; overscroll-behavior-x:contain!important;
+      scrollbar-width:thin!important; scrollbar-color:#b88940 #123b2d!important;
+    }
+    body.game-active .table-area .card {
+      --card-h:clamp(58px,16vh,76px)!important;
+      --card-w:calc(var(--card-h) * .714)!important;
+      width:var(--card-w)!important; height:var(--card-h)!important;
+      flex:0 0 auto!important; aspect-ratio:5/7!important; border-radius:5px!important;
+    }
+    body.game-active .table-caption { flex:0 0 auto!important; font-size:.44rem!important; line-height:1.1!important; padding:0 0 1px!important; }
+    body.game-active .hand-panel {
+      flex:0 0 104px!important; height:104px!important; min-height:104px!important; max-height:104px!important;
+      padding:4px 5px!important; overflow:hidden!important; border-radius:8px!important;
+    }
+    body.game-active .hand-panel .section-title { margin:0!important; }
+    body.game-active .hand-panel .section-title h3 { font-size:.62rem!important; }
+    body.game-active .hand-panel .section-hint { display:none!important; }
+    body.game-active .hand-cards {
+      height:82px!important; min-height:82px!important; max-height:82px!important; box-sizing:border-box!important;
+      flex:0 0 auto!important; padding:3px 5px 4px!important; gap:2px!important;
+      align-items:center!important; justify-content:flex-start!important;
+      overflow-x:auto!important; overflow-y:hidden!important; overscroll-behavior-x:contain!important;
+      scrollbar-width:thin!important; scrollbar-color:#b88940 #1a0c06!important;
+    }
+    body.game-active .hand-cards .card {
+      --card-h:clamp(70px,19vh,82px)!important;
+      --card-w:calc(var(--card-h) * .714)!important;
+      width:var(--card-w)!important; height:var(--card-h)!important; max-height:none!important;
+      flex:0 0 auto!important; aspect-ratio:5/7!important; margin-inline:-1px!important; border-radius:5px!important;
+    }
+    body.game-active .hand-cards .card .corner { font-size:.5rem!important; }
+    body.game-active .hand-cards .card .corner-suit { font-size:.44rem!important; }
+    body.game-active .hand-cards .card .court-center { inset:7px 2px!important; }
+    body.game-active .game-board .coming-games-inplay {
+      flex:0 0 26px!important; height:26px!important; min-height:26px!important; max-height:26px!important;
+      margin:0!important; padding:2px 4px!important; gap:3px!important; border-radius:6px!important;
+    }
+    body.game-active .game-board .coming-games-inplay .coming-games-icon,
+    body.game-active .game-board .coming-games-inplay .coming-games-pill,
+    body.game-active .game-board .coming-games-inplay .coming-games-copy span,
+    body.game-active .coming-games-creator { display:none!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy { min-width:0!important; flex:1 1 auto!important; padding:0 2px!important; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.49rem!important; line-height:1.1!important; }
+    .card.asset-card { overflow:hidden!important; aspect-ratio:5/7!important; }
+    .card-full-art { width:100%!important; height:100%!important; object-fit:contain!important; object-position:center!important; }
+  }
+
 </style>
 </head>
 <body>
@@ -981,7 +1228,7 @@
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
         <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
-        <span class="version-tag">BUILD 7.5</span>
+        <span class="version-tag">BUILD 7.6.1</span>
       </div>
       <h1>ع القهوة</h1>
       <p>من ملاهي | ألعاب مصرية أونلاين</p>
@@ -1158,7 +1405,7 @@
       </aside>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.5</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.6.1</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -1178,9 +1425,9 @@
         <button type="button" class="station-button" data-station="aghani" onclick="selectRadioStation('aghani')"><span class="station-frequency">105.8 FM</span><strong>إذاعة الأغاني</strong><small>أصل الطرب المصري</small></button>
       </div>
       <div class="radio-now-row"><div><span class="radio-live-dot"></span><strong id="radioNowLabel">اختار محطة للبدء</strong><p id="radioNowHint">اضغط تشغيل داخل مشغل المحطة إذا طلب منك ذلك.</p></div><a id="radioOfficialLink" class="btn btn-secondary btn-small" href="https://www.naghamfm1053.com/ar" target="_blank" rel="noopener noreferrer">فتح موقع نغم FM ↗</a></div>
-      <div class="radio-frame-wrap"><iframe id="radioFrame" title="مشغل محطة الراديو الرسمية" src="about:blank" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><div id="radioFramePlaceholder" class="radio-frame-placeholder"><span>📻</span><strong>الراديو مستني اختيارك</strong><small>اختار واحدة من المحطات فوق</small></div></div>
+      <div class="radio-frame-wrap" id="radioFrameWrap"><iframe id="radioFrame" title="مشغل محطة الراديو الرسمية" src="about:blank" loading="eager" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><audio id="radioAudio" class="radio-native-player hidden" controls playsinline webkit-playsinline preload="none" aria-label="مشغل بث الراديو"></audio><div id="radioFramePlaceholder" class="radio-frame-placeholder"><span>📻</span><strong>الراديو مستني اختيارك</strong><small>اختار واحدة من المحطات فوق</small></div></div>
       <div class="radio-modal-actions"><button class="btn btn-danger btn-small" type="button" onclick="stopRadio()">■ إيقاف الراديو</button><span class="section-hint">لو المشغل لم يظهر داخل اللعبة، استخدم زر الموقع الرسمي.</span></div>
-      <p class="radio-legal-note">تفتح اللعبة المشغلات الرسمية أو صفحات الاستماع الخاصة بالمحطات، ولا تستضيف البث أو تعيد توزيعه. قد تمنع بعض المحطات التضمين داخل مواقع أخرى؛ عندها افتح الموقع الرسمي.</p>
+      <p class="radio-legal-note">تشغّل اللعبة البث المباشر داخل مشغل HTML5 للمحطات التي توفر رابط صوت، وباقي المحطات تفتح مشغلها الرسمي كبديل. لا تستضيف اللعبة البث ولا تعيد توزيعه. قد تتعطل بعض الروابط مؤقتًا أو تمنع التضمين، لذا يوجد رابط رسمي للمحطة.</p>
     </section>
   </div>
 
@@ -1196,7 +1443,7 @@
         <button class="deck-style-option" type="button" data-deck-style="vintage" onclick="setDeckStyle('vintage')"><span class="deck-preview deck-preview-vintage"><i>♠</i><i>♥</i><i>♦</i></span><strong>ورق معتّق</strong><small>لون تراثي دافئ</small></button>
         <button class="deck-style-option" type="button" data-deck-style="green" onclick="setDeckStyle('green')"><span class="deck-preview deck-preview-green"><i>♠</i><i>♥</i><i>♦</i></span><strong>أخضر وذهبي</strong><small>ستايل قهوة فاخر</small></button>
       </div>
-      <p class="radio-legal-note">وجوه الولد والبنت والشايب والأرقام تستخدم رسومات كوتشينة كلاسيكية من حزمة مفتوحة المصدر؛ يلزم الإنترنت لتحميل الصور، مع وجود بديل مرسوم عند تعذّر التحميل.</p>
+      <p class="radio-legal-note">صور الولد J والبنت Q والشايب K تستخدم وجوه كوتشينة تقليدية من مجموعة مفتوحة المصدر؛ تُحمّل صور اليد فورًا وتُعرض كاملة دون قص. يلزم الإنترنت لتحميل الصور، مع وجود بديل عند تعذّر التحميل.</p>
     </section>
   </div>
 
@@ -1243,7 +1490,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '7.5';
+    const APP_VERSION = '7.6.1';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -1273,12 +1520,11 @@
     let effectsVolume = 0.55;
     let currentRadioStation = null;
     const RADIO_STATIONS = {
-      // اختيرت نغم وإنرجي بدل 9090 وراديو مصر حسب طلب صاحب اللعبة.
-      // روابط البث المباشر أدناه معروضة عبر مزودي بث خارجيين؛ صفحة المحطة الأصلية متاحة دائمًا كخيار بديل.
-      'nagham': { name: 'نغم FM 105.3', subtitle: 'أغاني مصرية وكلاسيكيات من التسعينيات والألفينات', embed: 'https://ahmsamir.radioca.st/stream', official: 'https://www.naghamfm1053.com/ar', officialLabel: 'فتح موقع نغم FM ↗' },
+      // يُفضّل البث المباشر داخل مشغل HTML5 على الهواتف، مع رابط رسمي بديل دائمًا.
+      'nagham': { name: 'نغم FM 105.3', subtitle: 'أغاني مصرية وكلاسيكيات من التسعينيات والألفينات', stream: 'https://ahmsamir.radioca.st/stream', embed: 'https://ahmsamir.radioca.st/stream', official: 'https://naghamfm1053.com/ar', officialLabel: 'فتح موقع نغم FM ↗' },
       'nogoum': { name: 'نجوم إف إم 100.6', subtitle: 'برامج وأغاني مصرية', embed: 'https://www.nogoumfm.net/live-radio-stream/', official: 'https://www.nogoumfm.net/live-radio-stream/', officialLabel: 'فتح مشغل نجوم إف إم ↗' },
       'nile': { name: 'Nile FM 104.2', subtitle: 'English music & shows', embed: 'https://audio.nrpstream.com/public/nile_fm/embed', official: 'https://nilefm.com/listen-live', officialLabel: 'فتح مشغل Nile FM ↗' },
-      'nrj': { name: 'إنرجي مصر NRJ 92.1', subtitle: 'المزيكا لعبتها — موسيقى وبرامج شبابية', embed: 'https://nrjstreaming.ahmed-melege.com/nrjegypt', official: 'https://www.facebook.com/NRJEgypt/', officialLabel: 'فتح صفحة إنرجي مصر الرسمية ↗' },
+      'nrj': { name: 'إنرجي مصر NRJ 92.1', subtitle: 'المزيكا لعبتها — موسيقى وبرامج شبابية', stream: 'https://nrjstreaming.ahmed-melege.com/nrjegypt', embed: 'https://nrjstreaming.ahmed-melege.com/nrjegypt', official: 'https://www.facebook.com/NRJEgypt/', officialLabel: 'فتح صفحة إنرجي مصر الرسمية ↗' },
       'aghani': { name: 'إذاعة الأغاني 105.8', subtitle: 'أصل الطرب المصري — ماسبيرو', embed: 'https://www.maspero.eg/stream/13', official: 'https://www.maspero.eg/stream/13', officialLabel: 'فتح بث إذاعة الأغاني ↗' }
     };
     const FEATURE_FLAGS = { sponsorSlotsEnabled: false };
@@ -2244,11 +2490,10 @@
       const rank = cardRankAssetName(card.val);
       return `https://webisso.github.io/playing-cards/png/${rank}_of_${suitNames[card.suit]}.png`;
     }
-    function getLegacySvgCardAssetUrl(card) {
+    function getWebissoSvgCardAssetUrl(card) {
       const suitNames = { '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs', '♠': 'spades' };
       if (!card || !suitNames[card.suit] || !['A','2','3','4','5','6','7','8','9','10','J','Q','K'].includes(String(card.val))) return '';
-      const rank = cardRankAssetName(card.val);
-      return 'https://raw.githubusercontent.com/AustinGabriel/Public-Domain-and-CC0-Playing-Cards/main/svg%20cards/' + encodeURIComponent(`${rank} of ${suitNames[card.suit]}.svg`);
+      return `https://webisso.github.io/playing-cards/svg/${cardRankAssetName(card.val)}_of_${suitNames[card.suit]}.svg`;
     }
 
     function getPipPositions(val) {
@@ -2374,22 +2619,22 @@
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       img.decoding = 'async';
-      img.loading = 'lazy';
+      // Cards in the hand must load immediately on mobile; lazy-loading often clipped or delayed face cards.
+      img.loading = 'eager';
+      try { img.fetchPriority = interactive ? 'high' : 'auto'; } catch (_) {}
       img.referrerPolicy = 'no-referrer';
+      const sources = [getClassicCardAssetUrl(card), getWebissoSvgCardAssetUrl(card)].filter(Boolean);
+      let sourceIndex = 0;
       img.onerror = () => {
         if (!el.classList.contains('asset-card')) return;
-        if (!img.dataset.legacyTried) {
-          img.dataset.legacyTried = '1';
-          const legacy = getLegacySvgCardAssetUrl(card);
-          if (legacy) { img.src = legacy; return; }
-        }
+        sourceIndex += 1;
+        if (sourceIndex < sources.length) { img.src = sources[sourceIndex]; return; }
         el.replaceChildren();
         el.classList.remove('asset-card');
         renderFallbackCardContent(el, card);
       };
       el.appendChild(img);
-      const src = getClassicCardAssetUrl(card);
-      if (src) img.src = src;
+      if (sources.length) img.src = sources[0];
       else {
         el.replaceChildren();
         el.classList.remove('asset-card');
@@ -3150,38 +3395,101 @@
 
     function openRadioModal() {
       const modal = document.getElementById('radioModal');
-      if (modal) modal.classList.remove('hidden');
+      if (!modal) { showAppToast('نافذة الراديو غير متاحة؛ حدّث الصفحة وحاول مرة أخرى.', ''); return; }
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      modal.style.display = 'grid';
+      modal.style.visibility = 'visible';
+      modal.style.zIndex = '2147483000';
+      const card = modal.querySelector('.radio-modal-card');
+      if (card) card.scrollTop = 0;
       if (!currentRadioStation) {
         const hint = document.getElementById('radioNowHint');
-        if (hint) hint.textContent = 'اختار محطة من القائمة. الراديو يعمل على جهازك فقط.';
+        if (hint) hint.textContent = 'اختار محطة. البث المباشر يعمل داخل مشغل الصوت إن توفر؛ والمحطات الأخرى يظهر مشغلها الرسمي داخل النافذة مع رابط بديل.';
       }
     }
-    function closeRadioModal() { const modal = document.getElementById('radioModal'); if (modal) modal.classList.add('hidden'); }
+    function closeRadioModal() {
+      const modal = document.getElementById('radioModal');
+      if (modal) { modal.classList.add('hidden'); modal.setAttribute('aria-hidden', 'true'); }
+    }
     function selectRadioStation(key) {
       const station = RADIO_STATIONS[key];
       if (!station) return;
       currentRadioStation = key;
       const frame = document.getElementById('radioFrame');
+      const frameWrap = document.getElementById('radioFrameWrap');
+      const player = document.getElementById('radioAudio');
       const placeholder = document.getElementById('radioFramePlaceholder');
       const label = document.getElementById('radioNowLabel');
       const hint = document.getElementById('radioNowHint');
       const link = document.getElementById('radioOfficialLink');
-      if (frame) { frame.src = station.embed; }
-      if (placeholder) placeholder.classList.add('hidden');
+      const mobile = Boolean((window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || navigator.maxTouchPoints > 0);
+      if (player) {
+        player.pause();
+        player.classList.add('hidden');
+        player.removeAttribute('src');
+        player.load();
+      }
+      if (frame) { frame.classList.remove('hidden'); frame.src = 'about:blank'; }
+      if (frameWrap) frameWrap.classList.remove('radio-native-mode');
       if (label) label.textContent = station.name;
-      if (hint) hint.textContent = station.subtitle + ' — لو المشغل منع التضمين، افتح الموقع الرسمي.';
       if (link) { link.href = station.official; link.textContent = station.officialLabel || 'فتح الموقع الرسمي ↗'; }
       document.querySelectorAll('.station-button').forEach(button => button.classList.toggle('active', button.dataset.station === key));
-      // Stop the short local music sample when a live station is selected to avoid competing audio.
+      if (station.stream && player) {
+        if (frame) frame.classList.add('hidden');
+        if (frameWrap) frameWrap.classList.add('radio-native-mode');
+        if (placeholder) placeholder.classList.add('hidden');
+        player.classList.remove('hidden');
+        player.src = station.stream;
+        player.preload = 'none';
+        player.volume = 0.9;
+        player.load();
+        if (hint) hint.textContent = 'جاري الاتصال بالبث المباشر… لو لم يبدأ تلقائيًا اضغط ▶ داخل مشغل الصوت.';
+        // play() is called directly from the station button's user gesture for iOS Safari support.
+        const playAttempt = player.play();
+        if (playAttempt && typeof playAttempt.then === 'function') {
+          playAttempt.then(() => { if (hint) hint.textContent = station.subtitle + ' — البث يعمل على جهازك.'; })
+            .catch(() => { if (hint) hint.textContent = 'المتصفح لم يبدأ الصوت تلقائيًا. اضغط ▶ داخل المشغل؛ لو فشل البث افتح الموقع الرسمي.'; });
+        }
+      } else {
+        if (player) player.classList.add('hidden');
+        if (frame) {
+          if (station.embed) {
+            frame.src = station.embed;
+            frame.title = 'مشغل ' + station.name;
+            if (placeholder) placeholder.classList.add('hidden');
+          } else {
+            frame.src = 'about:blank';
+            if (placeholder) placeholder.classList.remove('hidden');
+          }
+        }
+        if (placeholder && !station.embed) placeholder.classList.remove('hidden');
+        if (frameWrap) frameWrap.classList.remove('radio-native-mode');
+        if (hint) hint.textContent = station.subtitle + ' — اضغط تشغيل داخل المشغل الرسمي. لو منع المتصفح تشغيله داخل اللعبة، استخدم زر فتح الموقع الرسمي.';
+      }
+      // Stop the short local music sample when live radio is selected, to avoid competing audio.
       if (musicOn) { const audio = document.getElementById('cafeMusicAudio'); if (audio) audio.pause(); musicOn = false; const btn=document.getElementById('musicToggle'); if(btn)btn.textContent='♫ موسيقى القعدة'; }
     }
     function stopRadio() {
       currentRadioStation = null;
-      const frame = document.getElementById('radioFrame'); if (frame) frame.src = 'about:blank';
-      const placeholder = document.getElementById('radioFramePlaceholder'); if (placeholder) placeholder.classList.remove('hidden');
+      const frame = document.getElementById('radioFrame'); if (frame) { frame.src = 'about:blank'; frame.classList.remove('hidden'); }
+      const player = document.getElementById('radioAudio'); if (player) { player.pause(); player.removeAttribute('src'); player.load(); player.classList.add('hidden'); }
+      const frameWrap = document.getElementById('radioFrameWrap'); if (frameWrap) frameWrap.classList.remove('radio-native-mode');
+      const placeholder = document.getElementById('radioFramePlaceholder'); if (placeholder) { placeholder.classList.remove('hidden'); const strong=placeholder.querySelector('strong'); const small=placeholder.querySelector('small'); if(strong)strong.textContent='الراديو مستني اختيارك'; if(small)small.textContent='اختار واحدة من المحطات فوق'; }
       const label = document.getElementById('radioNowLabel'); if (label) label.textContent = 'اختار محطة للبدء';
-      const hint = document.getElementById('radioNowHint'); if (hint) hint.textContent = 'اضغط على محطة ثم تشغيل داخل المشغل.';
+      const hint = document.getElementById('radioNowHint'); if (hint) hint.textContent = 'اختار محطة ثم شغّل الصوت من المشغل. المحطات التي تمنع التضمين تفتح في موقعها الرسمي.';
       document.querySelectorAll('.station-button').forEach(button => button.classList.remove('active'));
+    }
+    const radioAudioElement = document.getElementById('radioAudio');
+    if (radioAudioElement) {
+      radioAudioElement.addEventListener('error', () => {
+        const hint = document.getElementById('radioNowHint');
+        if (hint) hint.textContent = 'تعذّر تشغيل رابط البث داخل المتصفح. افتح الموقع الرسمي للمحطة أو جرّب محطة أخرى؛ بعض الروابط تتوقف مؤقتًا.';
+      });
+      radioAudioElement.addEventListener('playing', () => {
+        const hint = document.getElementById('radioNowHint');
+        if (hint && currentRadioStation && RADIO_STATIONS[currentRadioStation]) hint.textContent = RADIO_STATIONS[currentRadioStation].subtitle + ' — البث يعمل الآن.';
+      });
     }
 
     ['cafeAmbienceAudio','teaPourAudio','cafeMusicAudio'].forEach(id => {
