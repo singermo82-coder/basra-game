@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>ع القهوة | ألعاب مصرية أونلاين — v7.4</title>
+  <title>ع القهوة | ألعاب مصرية أونلاين — v7.5</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -843,6 +843,136 @@
     body.game-active .game-topbar .info-card p { font-size:.64rem; }
     .game-board .coming-games-inplay .mini-game-card strong { font-size:.39rem; }
   }
+
+  /* v7.5 — layout fit, opponent portrait, chat alerts, deck styles */
+  .game-topbar .info-card h3,
+  .section-title h3,
+  .game-actions-panel h3,
+  .chat-header-row h3,
+  .coming-games-copy strong { font-family:'Cairo','Tajawal',sans-serif; font-weight:900; letter-spacing:0; }
+  .game-topbar .info-card { overflow:visible; }
+  body.game-active .game-topbar { flex:0 0 80px; height:80px; min-height:80px; overflow:visible; margin:0; }
+  body.game-active .game-topbar .info-card { height:100%; min-height:0; max-height:none; padding:5px 4px; justify-content:center; }
+  body.game-active .game-topbar .info-card h3 { font-size:clamp(.55rem,.65vw,.72rem); line-height:1.2; margin:0 0 5px; }
+  body.game-active .game-topbar .info-card p { font-size:clamp(.8rem,1.2vw,1.18rem); line-height:1.2; margin:0; overflow-wrap:anywhere; }
+  body.game-active .game-topbar .info-card .btn { min-height:20px; font-size:.56rem; padding:2px 5px; margin-top:4px; }
+  body.game-active #gameNotice { flex:0 0 24px; height:24px; min-height:24px; max-height:24px; padding:3px 8px; line-height:1.25; margin:0; font-size:clamp(.58rem,.72vw,.72rem); }
+  body.game-active .game-board { display:flex!important; flex-direction:column; min-height:0; height:100%; overflow:hidden; gap:4px; }
+  body.game-active .game-stage { flex:1 1 0; min-height:0; overflow:hidden; align-items:stretch; gap:6px; grid-template-columns:minmax(205px,22vw) minmax(0,1fr) minmax(215px,23vw); }
+  body.game-active .game-side-rail, body.game-active .game-main-column, body.game-active .game-chat-rail { min-height:0; height:100%; overflow:hidden; gap:5px; }
+  body.game-active .game-main-column { display:flex; flex-direction:column; }
+  body.game-active .table-panel { flex:1 1 0; min-height:0; overflow:hidden; }
+  body.game-active .table-surface { min-height:0; height:100%; padding:7px 6px; }
+  body.game-active .table-area { min-height:0; flex:1 1 auto; align-content:center; overflow:hidden; padding:4px 2px; }
+  body.game-active .table-area .card { --card-w:clamp(48px,5.1vw,78px); --card-h:clamp(71px,10.4vh,105px); }
+  body.game-active .hand-panel { flex:0 0 clamp(98px,16vh,128px); min-height:0; padding:6px 8px; overflow:hidden; }
+  body.game-active .hand-panel .section-title { margin-bottom:0; gap:6px; }
+  body.game-active .hand-panel .section-title h3 { font-size:.76rem; }
+  body.game-active .hand-panel .section-hint { font-size:.56rem; }
+  body.game-active .hand-cards { height:clamp(68px,11.5vh,91px); max-height:91px; min-height:0; padding:4px 0 2px; overflow-x:auto; overflow-y:hidden; }
+  body.game-active .hand-cards .card { --card-w:clamp(42px,4.85vw,69px); --card-h:clamp(63px,9.2vh,88px); }
+  body.game-active .players-panel { flex:1 1 0; min-height:0; overflow:hidden; }
+  body.game-active .opponent-panel { flex:0 0 118px; min-height:0; max-height:118px; overflow:hidden; }
+  body.game-active .opponent-panel .section-title { margin-bottom:4px; }
+  body.game-active .opponent-panel .back-cards { min-height:40px; padding:3px 0 0; }
+  body.game-active .opponent-panel .back-card { width:25px; height:37px; margin-inline:-4px; }
+  body.game-active .game-actions-panel { flex:0 0 auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:7px!important; }
+  body.game-active .game-actions-panel h3 { grid-column:1/-1; margin:0; font-size:.69rem; }
+  body.game-active .game-action { min-height:27px; padding:4px 5px; font-size:.58rem; gap:4px; border-radius:7px; }
+  body.game-active .game-action span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  body.game-active .game-action-leave { min-height:27px; }
+  body.game-active .coming-games-inplay { display:flex!important; flex:0 0 54px; height:54px; min-height:54px; max-height:54px; margin:0; padding:4px 7px; gap:7px; overflow:hidden; }
+  body.game-active .game-board .coming-games-inplay .coming-games-copy { display:flex!important; flex:0 1 185px; min-width:125px; padding:0 3px; }
+  body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.76rem; line-height:1.25; }
+  body.game-active .game-board .coming-games-inplay .coming-games-copy span { font-size:.57rem; line-height:1.25; }
+  body.game-active .game-board .coming-games-inplay .coming-games-icon { display:grid!important; width:28px; height:28px; flex-basis:28px; font-size:.9rem; }
+  body.game-active .game-board .coming-games-inplay .coming-games-tiles { display:flex!important; flex:1 1 0; gap:3px; min-width:0; justify-content:space-around; overflow:hidden; }
+  body.game-active .game-board .coming-games-inplay .mini-game-card { display:flex!important; flex:1 1 0; min-width:0; max-width:68px; padding:2px; gap:1px; border-radius:6px; }
+  body.game-active .game-board .coming-games-inplay .mini-game-art { width:22px; height:20px; }
+  body.game-active .game-board .coming-games-inplay .mini-game-card strong { font-size:.45rem; }
+  body.game-active .game-board .coming-games-inplay .coming-games-creator { display:none!important; }
+
+  .opponent-profile { display:flex; align-items:center; gap:8px; min-width:0; padding:6px 8px; margin:2px 0 3px; border:1px solid #e1bc6b66; border-radius:11px; background:linear-gradient(100deg,#5b372123,#d6b15d12); box-shadow:inset 0 1px #fff1; }
+  .opponent-profile-avatar { flex:0 0 40px; width:40px; height:40px; border:2px solid #e0bd70; border-radius:50%; background:radial-gradient(circle at 30% 20%,#d4b888,#352016); display:grid; place-items:center; overflow:hidden; font-size:1.45rem; box-shadow:0 0 0 3px #e8c77812; }
+  .opponent-profile-avatar svg { width:100%; height:100%; display:block; }
+  .opponent-profile-details { flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .opponent-profile-details strong { font-size:.76rem; line-height:1.25; color:#ffe2a0; overflow-wrap:anywhere; }
+  .opponent-profile-details small { font-size:.59rem; color:#cfb58a; line-height:1.35; }
+  .opponent-status-dot { flex:0 0 8px; width:8px; height:8px; border-radius:50%; background:#78d891; box-shadow:0 0 9px #78d89199; }
+  .opponent-profile.waiting .opponent-status-dot { background:#a18c6a; box-shadow:none; }
+  body.game-active .opponent-profile { padding:4px 6px; gap:6px; margin:1px 0 2px; }
+  body.game-active .opponent-profile-avatar { flex-basis:31px; width:31px; height:31px; font-size:1.05rem; border-width:1px; }
+  body.game-active .opponent-profile-details strong { font-size:.65rem; }
+  body.game-active .opponent-profile-details small { font-size:.52rem; }
+
+  .chat-open-button { position:relative; }
+  .chat-unread-badge,.chat-panel-unread { display:inline-grid; place-items:center; min-width:19px; height:19px; padding:0 5px; border-radius:999px; border:1px solid #fff0bd; background:linear-gradient(145deg,#ffdc70,#bb4c27); color:#2b1107; font:900 .68rem/1 'Cairo',sans-serif; box-shadow:0 0 0 2px #5b281c80,0 0 12px #ef9b3199; vertical-align:middle; }
+  .chat-unread-badge.hidden,.chat-panel-unread.hidden { display:none!important; }
+  .chat-header-actions { display:flex; align-items:center; gap:5px; flex:0 0 auto; }
+  .chat-notify-toggle { border:1px solid #d8b56d73; border-radius:8px; background:#150c08; color:#ffe1a0; padding:5px 7px; font:800 .62rem 'Cairo',sans-serif; cursor:pointer; white-space:nowrap; }
+  .chat-notify-toggle.muted { color:#c3ad8d; border-color:#99836b55; background:#0a0706; }
+  .chat-panel-unread { margin-inline-start:4px; min-width:17px; height:17px; font-size:.59rem; }
+  .chat-heading-copy { min-width:0; }
+  .chat-header-row h3 { display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+  .deck-style-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:15px; }
+  .deck-style-option { display:flex; min-width:0; align-items:center; flex-direction:column; gap:5px; border:1px solid #d8b56d55; border-radius:13px; padding:12px 8px; background:linear-gradient(145deg,#24160d,#0b0705); color:#ffe5a6; cursor:pointer; }
+  .deck-style-option.active { border-color:#ffdc7a; box-shadow:0 0 0 2px #e7b64c33,inset 0 0 0 1px #ffdb7644; background:linear-gradient(145deg,#483019,#211108); }
+  .deck-style-option strong { font-size:.88rem; }
+  .deck-style-option small { color:#c8b18a; font-size:.68rem; }
+  .deck-preview { width:72px; height:91px; display:flex; align-items:center; justify-content:center; gap:3px; border-radius:7px; border:2px solid #efd9a5; box-shadow:0 6px 15px #0008,inset 0 0 0 3px #fff3; color:#fff0cf; font:900 1.3rem Georgia,serif; transform:rotate(-3deg); background-color:#8e1727; background-image:repeating-linear-gradient(45deg,#f5d89b19 0 2px,transparent 2px 7px),radial-gradient(ellipse at 50% 45%,#c92f3d,#570714); }
+  .deck-preview i { font-style:normal; text-shadow:0 1px 2px #0008; }
+  .deck-preview-blue { background-color:#1d467a; background-image:repeating-linear-gradient(45deg,#f5d89b19 0 2px,transparent 2px 7px),radial-gradient(ellipse at 50% 45%,#3870b8,#0b2349); }
+  .deck-preview-vintage { background-color:#6e4724; border-color:#d4b77c; color:#f2ddaf; background-image:repeating-linear-gradient(45deg,#f5d89b18 0 2px,transparent 2px 7px),radial-gradient(ellipse at 50% 45%,#8c5a2e,#342010); }
+  .deck-preview-green { background-color:#0d593f; background-image:repeating-linear-gradient(45deg,#f5d89b1b 0 2px,transparent 2px 7px),radial-gradient(ellipse at 50% 45%,#16845d,#023525); }
+  body[data-deck-style="blue"] .card-back { background-color:#164276; background-image:radial-gradient(ellipse at 50% 45%,rgba(60,119,184,.7),rgba(7,28,63,.95) 78%),repeating-linear-gradient(45deg,#ffe4ad18 0 2px,transparent 2px 7px); border-color:#d8c28b; box-shadow:0 9px 18px #0008,inset 0 0 0 2px #102c5a,inset 0 0 0 5px #f4d18b42; }
+  body[data-deck-style="blue"] .card-back:after { color:#f8e4b6; text-shadow:0 1px #0c2a53,0 0 10px #edca7650; }
+  body[data-deck-style="vintage"] .card-back { background-color:#6c4523; background-image:radial-gradient(ellipse at 50% 45%,#a9773c,#342010 80%),repeating-linear-gradient(45deg,#ffe5b815 0 2px,transparent 2px 7px); border-color:#d5b779; box-shadow:0 9px 18px #0008,inset 0 0 0 2px #402816,inset 0 0 0 5px #e3c78a33; }
+  body[data-deck-style="vintage"] .card-full-art { filter:sepia(.12) saturate(.9) contrast(1.02); }
+  body[data-deck-style="green"] .card-back { background-color:#07513d; background-image:radial-gradient(ellipse at 50% 45%,#16845b,#022c20 80%),repeating-linear-gradient(45deg,#f4d58b1b 0 2px,transparent 2px 7px); border-color:#e7c677; box-shadow:0 9px 18px #0008,inset 0 0 0 2px #073c2a,inset 0 0 0 5px #f4d18b42; }
+  body[data-deck-style="green"] .card-back:after { color:#f5d991; text-shadow:0 1px #073827,0 0 10px #edca7650; }
+  body[data-deck-style="red"] .deck-style-option[data-deck-style="red"],
+  body[data-deck-style="blue"] .deck-style-option[data-deck-style="blue"],
+  body[data-deck-style="vintage"] .deck-style-option[data-deck-style="vintage"],
+  body[data-deck-style="green"] .deck-style-option[data-deck-style="green"] { border-color:#ffdc7a; box-shadow:0 0 0 2px #e7b64c33,inset 0 0 0 1px #ffdb7644; }
+  .card.asset-card { cursor:default; }
+  .hand-cards .card.asset-card { cursor:pointer; }
+  .card-full-art { object-fit:contain; background:#f7ecd7; border-radius:9px; }
+  @media(max-width:760px) {
+    body.game-active .game-topbar { flex:0 0 70px; height:70px; min-height:70px; grid-template-columns:88px minmax(0,1fr); gap:4px; }
+    body.game-active .game-topbar .info-card h3 { font-size:.45rem; }
+    body.game-active .game-topbar .info-card p { font-size:.68rem; }
+    body.game-active .game-topbar .info-card .btn { font-size:.43rem; }
+    body.game-active .game-stage { grid-template-columns:minmax(0,1fr); gap:4px; direction:rtl; }
+    body.game-active .game-main-column { order:1; }
+    body.game-active .game-side-rail { order:2; display:none!important; }
+    body.game-active .game-chat-rail { display:none!important; }
+    body.chat-open .game-chat-rail { display:flex!important; position:fixed; inset:42px 5px 5px 5px; height:auto; z-index:5000; filter:drop-shadow(0 18px 48px #000d); }
+    body.game-active .table-area .card { --card-w:clamp(44px,10.3vw,63px); --card-h:clamp(66px,15.4vw,95px); }
+    body.game-active .hand-panel { flex-basis:clamp(88px,13vh,106px); }
+    body.game-active .hand-cards { height:clamp(60px,9vh,74px); max-height:74px; }
+    body.game-active .hand-cards .card { --card-w:clamp(38px,9.7vw,58px); --card-h:clamp(57px,14.6vw,86px); }
+    body.game-active .game-board .coming-games-inplay { flex-basis:47px; height:47px; min-height:47px; max-height:47px; gap:3px; padding:2px 4px; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy { flex:0 1 86px; min-width:72px; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.54rem; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy span { display:none; }
+    body.game-active .game-board .coming-games-inplay .coming-games-icon { display:none!important; }
+    body.game-active .game-board .coming-games-inplay .mini-game-art { width:18px; height:17px; }
+    body.game-active .game-board .coming-games-inplay .mini-game-card strong { font-size:.42rem; }
+    body.game-active .game-board .coming-games-inplay .coming-games-pill { display:none; }
+    body.game-active .game-board .coming-games-inplay .coming-games-creator { display:none!important; }
+    .chat-header-actions { gap:4px; }
+    .chat-notify-toggle { font-size:.57rem; padding:4px 6px; }
+    .deck-style-grid { gap:7px; }
+  }
+  @media(max-height:680px) and (min-width:761px) {
+    body.game-active .header { flex-basis:30px; height:30px; min-height:30px; }
+    body.game-active .game-topbar { flex-basis:72px; height:72px; min-height:72px; }
+    body.game-active .game-board .coming-games-inplay { flex-basis:46px; height:46px; min-height:46px; max-height:46px; }
+    body.game-active .hand-panel { flex-basis:92px; }
+    body.game-active .hand-cards { height:64px; max-height:64px; }
+    body.game-active .opponent-panel { flex-basis:103px; max-height:103px; }
+  }
+
 </style>
 </head>
 <body>
@@ -851,7 +981,7 @@
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
         <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
-        <span class="version-tag">BUILD 7.4</span>
+        <span class="version-tag">BUILD 7.5</span>
       </div>
       <h1>ع القهوة</h1>
       <p>من ملاهي | ألعاب مصرية أونلاين</p>
@@ -861,7 +991,7 @@
         <button class="btn btn-secondary btn-small" id="musicToggle" type="button" onclick="toggleCafeMusic()">♫ موسيقى القعدة</button>
         <button class="btn btn-radio btn-small" id="radioOpenBtn" type="button" onclick="openRadioModal()">📻 راديو القهوة</button>
         <button class="btn btn-secondary btn-small" id="settingsOpenBtn" type="button" onclick="openSoundSettings()" aria-label="ضبط الصوت">⚙ ضبط الصوت</button>
-        <button class="btn btn-secondary btn-small" id="chatOpenBtn" type="button" onclick="toggleChatPanel()" aria-label="فتح شات القعدة">💬 شات القعدة</button>
+        <button class="btn btn-secondary btn-small chat-open-button" id="chatOpenBtn" type="button" onclick="toggleChatPanel()" aria-label="فتح شات القعدة">💬 شات القعدة <span class="chat-unread-badge hidden" id="chatUnreadBadge" aria-label="رسائل غير مقروءة">0</span></button>
         <button class="btn btn-secondary btn-small" id="shareTopBtn" type="button" onclick="shareGame()" aria-label="مشاركة اللعبة مع الأصدقاء">↗ مشاركة اللعبة</button>
       </div>
     </header>
@@ -954,7 +1084,8 @@
             <div class="players-list" id="playersList"></div>
           </section>
           <section class="panel opponent-panel">
-            <div class="section-title"><h3>🎴 ورق الخصم</h3><span class="section-hint" id="opponentCount">بانتظار اللاعب الثاني</span></div>
+            <div class="section-title"><h3>🎴 خصمك على القهوة</h3><span class="section-hint" id="opponentCount">بانتظار اللاعب الثاني</span></div>
+            <div class="opponent-profile" id="opponentProfile"><span class="opponent-profile-avatar" id="opponentAvatar" aria-hidden="true">🧓🏻</span><span class="opponent-profile-details"><strong id="opponentName">المعلّم أبو شنب</strong><small id="opponentState">خصمك جاهز للقعدة</small></span><span class="opponent-status-dot" aria-hidden="true"></span></div>
             <div class="back-cards" id="opponentCards"></div>
           </section>
           <section class="panel game-actions-panel">
@@ -962,6 +1093,7 @@
             <button class="btn game-action game-action-share" type="button" onclick="shareGame()">⤴ <span>مشاركة اللعبة</span></button>
             <button class="btn game-action" type="button" onclick="copyRoomCode()">▣ <span>كود القعدة</span></button>
             <button class="btn game-action" type="button" onclick="copyInviteLink()">♙ <span>دعوة صديق</span></button>
+            <button class="btn game-action" type="button" onclick="openDeckModal()">🂠 <span>شكل الكوتشينة</span></button>
             <button class="btn game-action" type="button" onclick="openRadioModal()">📻 <span>راديو القهوة</span></button>
             <button class="btn game-action" type="button" onclick="openSoundSettings()">♫ <span>الصوت والإعدادات</span></button>
             <button class="btn game-action game-action-new" type="button" onclick="location.reload()">↻ <span>لعبة جديدة</span></button>
@@ -989,8 +1121,8 @@
         <aside class="game-chat-rail" id="chatRail" aria-label="شات القعدة">
           <section class="panel chat-panel">
             <div class="chat-header-row">
-              <div><h3>💬 شات القعدة</h3><small>كلام محترم ولمّة حلوة</small></div>
-              <button class="chat-close-mobile" type="button" onclick="toggleChatPanel(true)" aria-label="إغلاق الشات">×</button>
+              <div class="chat-heading-copy"><h3>💬 شات القعدة <span class="chat-panel-unread hidden" id="chatPanelUnread">0</span></h3><small>كلام محترم ولمّة حلوة</small></div>
+              <div class="chat-header-actions"><button class="chat-notify-toggle" id="chatNotifyToggle" type="button" onclick="toggleChatNotificationSound()" aria-pressed="true" title="تشغيل أو كتم تنبيه الرسائل">🔔 تنبيه شغال</button><button class="chat-close-mobile" type="button" onclick="toggleChatPanel(true)" aria-label="إغلاق الشات">×</button></div>
             </div>
             <div class="chat-safety-note">🛡️ فلتر ألفاظ + كتم وإبلاغ • ممنوع الشتيمة</div>
             <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-label="رسائل اللاعبين">
@@ -1026,7 +1158,7 @@
       </aside>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.4</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.5</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -1049,6 +1181,22 @@
       <div class="radio-frame-wrap"><iframe id="radioFrame" title="مشغل محطة الراديو الرسمية" src="about:blank" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><div id="radioFramePlaceholder" class="radio-frame-placeholder"><span>📻</span><strong>الراديو مستني اختيارك</strong><small>اختار واحدة من المحطات فوق</small></div></div>
       <div class="radio-modal-actions"><button class="btn btn-danger btn-small" type="button" onclick="stopRadio()">■ إيقاف الراديو</button><span class="section-hint">لو المشغل لم يظهر داخل اللعبة، استخدم زر الموقع الرسمي.</span></div>
       <p class="radio-legal-note">تفتح اللعبة المشغلات الرسمية أو صفحات الاستماع الخاصة بالمحطات، ولا تستضيف البث أو تعيد توزيعه. قد تمنع بعض المحطات التضمين داخل مواقع أخرى؛ عندها افتح الموقع الرسمي.</p>
+    </section>
+  </div>
+
+  <div class="modal-shell hidden" id="deckModal" role="dialog" aria-modal="true" aria-labelledby="deckTitle">
+    <button class="modal-backdrop" aria-label="إغلاق اختيار الكوتشينة" onclick="closeDeckModal()"></button>
+    <section class="modal-card deck-modal-card">
+      <div class="modal-topline"><span class="mini-lamp"></span><span class="modal-kicker">اختار شكل الشدة</span><button class="modal-close" onclick="closeDeckModal()" aria-label="إغلاق">×</button></div>
+      <h2 id="deckTitle">🂠 كوتشينتك على مزاجك</h2>
+      <p class="modal-subtitle">اختيارك بيتحفظ على جهازك، وبيغيّر ظهر الورق وشكل الطباعة من غير ما يغيّر قواعد اللعب.</p>
+      <div class="deck-style-grid" id="deckStyleGrid">
+        <button class="deck-style-option" type="button" data-deck-style="red" onclick="setDeckStyle('red')"><span class="deck-preview deck-preview-red"><i>♠</i><i>♥</i><i>♦</i></span><strong>كلاسيك أحمر</strong><small>ظهر أحمر مزخرف</small></button>
+        <button class="deck-style-option" type="button" data-deck-style="blue" onclick="setDeckStyle('blue')"><span class="deck-preview deck-preview-blue"><i>♠</i><i>♥</i><i>♦</i></span><strong>كلاسيك أزرق</strong><small>ظهر أزرق ملكي</small></button>
+        <button class="deck-style-option" type="button" data-deck-style="vintage" onclick="setDeckStyle('vintage')"><span class="deck-preview deck-preview-vintage"><i>♠</i><i>♥</i><i>♦</i></span><strong>ورق معتّق</strong><small>لون تراثي دافئ</small></button>
+        <button class="deck-style-option" type="button" data-deck-style="green" onclick="setDeckStyle('green')"><span class="deck-preview deck-preview-green"><i>♠</i><i>♥</i><i>♦</i></span><strong>أخضر وذهبي</strong><small>ستايل قهوة فاخر</small></button>
+      </div>
+      <p class="radio-legal-note">وجوه الولد والبنت والشايب والأرقام تستخدم رسومات كوتشينة كلاسيكية من حزمة مفتوحة المصدر؛ يلزم الإنترنت لتحميل الصور، مع وجود بديل مرسوم عند تعذّر التحميل.</p>
     </section>
   </div>
 
@@ -1095,7 +1243,7 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '7.4';
+    const APP_VERSION = '7.5';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
@@ -1107,6 +1255,13 @@
     let mutedChatPlayers = new Set();
     try { mutedChatPlayers = new Set(JSON.parse(localStorage.getItem('aqahwa-muted-chat-players') || '[]')); } catch (_) { mutedChatPlayers = new Set(); }
     let lastRenderedChatRoom = '';
+    let knownChatMessageIds = new Set();
+    let chatUnreadCount = 0;
+    let chatNotificationSoundEnabled = localStorage.getItem('aqahwa-chat-notification-sound') !== 'false';
+    const DECK_STYLES = { red: 'أحمر كلاسيكي', blue: 'أزرق كلاسيكي', vintage: 'ورق معتّق', green: 'أخضر وذهبي' };
+    let selectedDeckStyle = localStorage.getItem('aqahwa-deck-style') || 'red';
+    if (!DECK_STYLES[selectedDeckStyle]) selectedDeckStyle = 'red';
+    document.body.dataset.deckStyle = selectedDeckStyle;
     let ambienceNodes = [];
     let ambienceTimer = null;
     let musicOn = false;
@@ -2001,8 +2156,25 @@
       opponentCardsContainer.replaceChildren();
       const opponentIds = order.filter(id => id !== myId);
       const opponent = opponentIds.length ? game.players[opponentIds[0]] : null;
-      const opponentHandCount = opponent ? (opponent.hand || []).length : 0;
-      document.getElementById('opponentCount').textContent = opponent ? `${opponent.name} · ${opponentHandCount} ورقات` : 'لسه مستنيين صاحبك';
+      const opponentHandCount = opponent ? cardsArray(opponent.hand).length : 0;
+      document.getElementById('opponentCount').textContent = opponent ? `${opponentHandCount} ورقات` : 'بانتظار اللاعب الثاني';
+      const opponentProfile = document.getElementById('opponentProfile');
+      const opponentAvatar = document.getElementById('opponentAvatar');
+      const opponentName = document.getElementById('opponentName');
+      const opponentState = document.getElementById('opponentState');
+      if (opponent) {
+        opponentProfile.classList.remove('waiting');
+        opponentName.textContent = String(opponent.name || (opponent.isAI ? 'المعلّم أبو شنب' : 'اللاعب الآخر')).slice(0, 20);
+        opponentState.textContent = `${Number(opponent.score)||0} نقطة · ${opponentHandCount} ورقات${curId === opponentIds[0] && game.status === 'playing' ? ' · دوره' : ''}`;
+        opponentAvatar.replaceChildren();
+        if (opponent.isAI === true) opponentAvatar.innerHTML = teacherAvatarSvg();
+        else opponentAvatar.textContent = (AVATAR_OPTIONS[opponent.avatar] && AVATAR_OPTIONS[opponent.avatar].glyph) || '🧑🏻';
+      } else {
+        opponentProfile.classList.add('waiting');
+        opponentName.textContent = 'مستنيين صاحب القعدة';
+        opponentState.textContent = 'شارك الكود عشان صاحبك ينضم';
+        opponentAvatar.textContent = '🪑';
+      }
       for (let i = 0; i < Math.min(opponentHandCount, 12); i++) {
         const back = document.createElement('div');
         back.className = 'card card-back back-card';
@@ -2012,7 +2184,7 @@
         opponentCardsContainer.appendChild(back);
       }
       if (!opponent) {
-        const wait = document.createElement('span'); wait.className = 'section-hint'; wait.textContent = 'ابعث كود القعدة لصاحبك عشان ينضم';
+        const wait = document.createElement('span'); wait.className = 'section-hint'; wait.textContent = 'لا توجد أوراق خصم حتى ينضم لاعب';
         opponentCardsContainer.appendChild(wait);
       }
 
@@ -2061,15 +2233,22 @@
       }
     }
 
-    // The selected deck uses the traditional red-backed card style. Face artwork uses a public-domain/CC0 deck
-    // hosted on GitHub; if the external SVG is blocked or offline, the local fallback below remains playable.
+    // Use conventional court-card illustrations from an open-source deck. If PNG loading fails,
+    // try the existing CC0 SVG source; the built-in renderer remains the final offline fallback.
+    function cardRankAssetName(value) {
+      return ({ A: 'ace', J: 'jack', Q: 'queen', K: 'king' })[String(value)] || String(value);
+    }
     function getClassicCardAssetUrl(card) {
-      const rankNames = { A: 'ace', J: 'jack', Q: 'queen', K: 'king' };
       const suitNames = { '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs', '♠': 'spades' };
       if (!card || !suitNames[card.suit] || !['A','2','3','4','5','6','7','8','9','10','J','Q','K'].includes(String(card.val))) return '';
-      const rank = rankNames[card.val] || String(card.val);
-      const filename = `${rank} of ${suitNames[card.suit]}.svg`;
-      return 'https://raw.githubusercontent.com/AustinGabriel/Public-Domain-and-CC0-Playing-Cards/main/svg%20cards/' + encodeURIComponent(filename);
+      const rank = cardRankAssetName(card.val);
+      return `https://webisso.github.io/playing-cards/png/${rank}_of_${suitNames[card.suit]}.png`;
+    }
+    function getLegacySvgCardAssetUrl(card) {
+      const suitNames = { '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs', '♠': 'spades' };
+      if (!card || !suitNames[card.suit] || !['A','2','3','4','5','6','7','8','9','10','J','Q','K'].includes(String(card.val))) return '';
+      const rank = cardRankAssetName(card.val);
+      return 'https://raw.githubusercontent.com/AustinGabriel/Public-Domain-and-CC0-Playing-Cards/main/svg%20cards/' + encodeURIComponent(`${rank} of ${suitNames[card.suit]}.svg`);
     }
 
     function getPipPositions(val) {
@@ -2188,16 +2367,22 @@
 
     function makeCardElement(card, interactive) {
       const el = document.createElement('div');
-      el.className = 'card asset-card' + (interactive ? ' hand-card' : '');
+      el.className = 'card asset-card deck-face-' + selectedDeckStyle + (interactive ? ' hand-card' : '');
       el.setAttribute('aria-label', card.val + ' ' + card.suit);
       const img = document.createElement('img');
       img.className = 'card-full-art';
       img.alt = '';
       img.setAttribute('aria-hidden', 'true');
       img.decoding = 'async';
+      img.loading = 'lazy';
       img.referrerPolicy = 'no-referrer';
       img.onerror = () => {
         if (!el.classList.contains('asset-card')) return;
+        if (!img.dataset.legacyTried) {
+          img.dataset.legacyTried = '1';
+          const legacy = getLegacySvgCardAssetUrl(card);
+          if (legacy) { img.src = legacy; return; }
+        }
         el.replaceChildren();
         el.classList.remove('asset-card');
         renderFallbackCardContent(el, card);
@@ -2257,6 +2442,63 @@
     function currentRoomIsOnline(game) {
       return Boolean(game && myPlayMode === 'online' && myRoom && (game.playMode === 'online' || (!game.playMode && activeOrder(game).every(id => !game.players[id]?.isAI))));
     }
+    function chatMessageKey(message) {
+      if (!message) return '';
+      return String(message.id || `${message.senderId || ''}:${message.createdAt || ''}:${message.text || ''}`);
+    }
+    function isChatActivelyVisible(wasAtBottom = true) {
+      const mobile = window.matchMedia && window.matchMedia('(max-width:1050px)').matches;
+      if (mobile && !document.body.classList.contains('chat-open')) return false;
+      return Boolean(wasAtBottom);
+    }
+    function updateChatUnreadUI() {
+      const badge = document.getElementById('chatUnreadBadge');
+      const panelBadge = document.getElementById('chatPanelUnread');
+      for (const el of [badge, panelBadge]) {
+        if (!el) continue;
+        el.textContent = chatUnreadCount > 99 ? '99+' : String(chatUnreadCount);
+        el.classList.toggle('hidden', chatUnreadCount <= 0);
+      }
+      const toggle = document.getElementById('chatNotifyToggle');
+      if (toggle) {
+        toggle.textContent = chatNotificationSoundEnabled ? '🔔 تنبيه شغال' : '🔕 التنبيه مكتوم';
+        toggle.classList.toggle('muted', !chatNotificationSoundEnabled);
+        toggle.setAttribute('aria-pressed', chatNotificationSoundEnabled ? 'true' : 'false');
+      }
+    }
+    function markChatAsRead() {
+      chatUnreadCount = 0;
+      const game = window.currentRenderedGame;
+      const messages = game ? (Array.isArray(game.chatMessages) ? game.chatMessages : (game.chatMessages && typeof game.chatMessages === 'object' ? Object.values(game.chatMessages) : [])) : [];
+      knownChatMessageIds = new Set(messages.filter(m => m && m.text != null).map(chatMessageKey));
+      updateChatUnreadUI();
+      const box = document.getElementById('chatMessages');
+      if (box) { box.scrollTop = box.scrollHeight; box.dataset.userScrolled = ''; }
+    }
+    function playChatPing() {
+      if (!chatNotificationSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        const now = ctx.currentTime;
+        [[880,0],[1174.66,.075]].forEach(([frequency,delay]) => {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(frequency, now + delay);
+          gain.gain.setValueAtTime(.0001, now + delay);
+          gain.gain.exponentialRampToValueAtTime(.065, now + delay + .012);
+          gain.gain.exponentialRampToValueAtTime(.0001, now + delay + .16);
+          osc.connect(gain).connect(ctx.destination); osc.start(now + delay); osc.stop(now + delay + .18);
+        });
+      } catch (error) { console.debug('[Aqahwa chat notification sound]', error); }
+    }
+    function toggleChatNotificationSound() {
+      chatNotificationSoundEnabled = !chatNotificationSoundEnabled;
+      try { localStorage.setItem('aqahwa-chat-notification-sound', String(chatNotificationSoundEnabled)); } catch (_) {}
+      updateChatUnreadUI();
+      if (chatNotificationSoundEnabled) playChatPing();
+      showAppToast(chatNotificationSoundEnabled ? 'تم تشغيل تنبيه رسائل الشات.' : 'تم كتم صوت تنبيه الرسائل؛ عدّاد الرسائل سيظل ظاهرًا.', 'good');
+    }
+
     function renderChat(game) {
       const box = document.getElementById('chatMessages');
       const input = document.getElementById('chatInput');
@@ -2268,8 +2510,33 @@
       document.querySelectorAll('.chat-chip').forEach(btn => { btn.disabled = !online; });
       const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 90;
       const roomKey = String(game.room || myRoom || '');
-      if (lastRenderedChatRoom && lastRenderedChatRoom !== roomKey) box.replaceChildren();
-      lastRenderedChatRoom = roomKey;
+      let messages = Array.isArray(game.chatMessages) ? game.chatMessages : (game.chatMessages && typeof game.chatMessages === 'object' ? Object.values(game.chatMessages) : []);
+      messages = messages.filter(m => m && typeof m === 'object' && m.text != null).slice(-40);
+      const roomChanged = lastRenderedChatRoom !== roomKey;
+      if (roomChanged) {
+        box.replaceChildren();
+        lastRenderedChatRoom = roomKey;
+        knownChatMessageIds = new Set(messages.map(chatMessageKey));
+        chatUnreadCount = 0;
+        updateChatUnreadUI();
+      } else {
+        const activelyReading = isChatActivelyVisible(wasAtBottom);
+        let incomingWhileAway = 0;
+        for (const message of messages) {
+          const key = chatMessageKey(message);
+          if (knownChatMessageIds.has(key)) continue;
+          knownChatMessageIds.add(key);
+          if (message.senderId && String(message.senderId) !== String(myId) && !activelyReading) {
+            chatUnreadCount += 1;
+            incomingWhileAway += 1;
+          }
+        }
+        const validKeys = new Set(messages.map(chatMessageKey));
+        knownChatMessageIds = new Set([...knownChatMessageIds].filter(key => validKeys.has(key)));
+        if (activelyReading) chatUnreadCount = 0;
+        updateChatUnreadUI();
+        if (incomingWhileAway > 0 && chatNotificationSoundEnabled) playChatPing();
+      }
       box.replaceChildren();
       if (!online) {
         const empty = document.createElement('div');
@@ -2278,8 +2545,6 @@
         box.appendChild(empty);
         return;
       }
-      let messages = Array.isArray(game.chatMessages) ? game.chatMessages : (game.chatMessages && typeof game.chatMessages === 'object' ? Object.values(game.chatMessages) : []);
-      messages = messages.filter(m => m && typeof m === 'object' && m.text != null).slice(-40);
       const visible = messages.filter(m => !m.senderId || !mutedChatPlayers.has(String(m.senderId)));
       if (!visible.length) {
         const empty = document.createElement('div');
@@ -2375,8 +2640,12 @@
       if (mobile) {
         if (closeOnly) document.body.classList.remove('chat-open');
         else document.body.classList.toggle('chat-open');
-        if (document.body.classList.contains('chat-open')) setTimeout(() => document.getElementById('chatInput')?.focus({preventScroll:true}), 100);
+        if (document.body.classList.contains('chat-open')) {
+          markChatAsRead();
+          setTimeout(() => { markChatAsRead(); document.getElementById('chatInput')?.focus({preventScroll:true}); }, 100);
+        }
       } else {
+        markChatAsRead();
         document.getElementById('chatInput')?.focus({preventScroll:true});
       }
     }
@@ -2847,6 +3116,32 @@
       if (kind === 'callouts') cafeCalloutVolume = normalized;
     }
 
+    function openDeckModal() {
+      const modal = document.getElementById('deckModal');
+      if (modal) modal.classList.remove('hidden');
+      updateDeckStyleChoices();
+    }
+    function closeDeckModal() { const modal = document.getElementById('deckModal'); if (modal) modal.classList.add('hidden'); }
+    function updateDeckStyleChoices() {
+      document.querySelectorAll('[data-deck-style]').forEach(button => {
+        const selected = button.dataset.deckStyle === selectedDeckStyle;
+        button.classList.toggle('active', selected);
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+    }
+    function setDeckStyle(style) {
+      if (!DECK_STYLES[style]) return;
+      selectedDeckStyle = style;
+      document.body.dataset.deckStyle = style;
+      try { localStorage.setItem('aqahwa-deck-style', style); } catch (_) {}
+      updateDeckStyleChoices();
+      closeDeckModal();
+      if (window.currentRenderedGame && myRoom) renderGame(window.currentRenderedGame);
+      showAppToast('تم اختيار كوتشينة ' + DECK_STYLES[style] + '.', 'good');
+    }
+    updateDeckStyleChoices();
+    updateChatUnreadUI();
+
     function openSoundSettings() {
       const modal = document.getElementById('soundModal');
       if (modal) modal.classList.remove('hidden');
@@ -2904,8 +3199,8 @@
 
     // Sound starts only after an intentional tap/click. This is required by mobile browsers.
     document.addEventListener('pointerdown', () => { try { if (!audioContext) getAudioContext(); } catch (_) {} }, { once: true, passive: true });
-    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => { if (event.target === backdrop) { closeRadioModal(); closeSoundSettings(); } }));
-    document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeRadioModal(); closeSoundSettings(); } });
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => { if (event.target === backdrop) { closeRadioModal(); closeSoundSettings(); closeDeckModal(); } }));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeRadioModal(); closeSoundSettings(); closeDeckModal(); } });
 
     document.getElementById('roomCode').addEventListener('input', event => {
       event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
@@ -2929,5 +3224,6 @@
     }
     applyInviteFromUrl();
   </script>
+<script src="./landscape-mode.js"></script>
 </body>
 </html>
