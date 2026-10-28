@@ -129,6 +129,56 @@ button:focus-visible,input:focus-visible{outline:2px solid #ffe18d;outline-offse
 }
 @media(max-width:390px){.header{grid-template-columns:103px minmax(0,1fr) auto}.brand-title{font-size:13px}.brand-sub{font-size:6px}.top-action{width:27px}.status-pill{display:none}.player-details span{display:none}.count-badge{font-size:7px}.hand-tile{width:28px;height:47px}.table-tile{width:45px;height:26px}.skin-strip{grid-template-columns:66px minmax(0,1fr)}.skin-chip small{font-size:5.5px}}
 
+
+/* v2.1 — إصلاح ظهور طاولة اللعب في النوافذ القصيرة */
+@media (min-width:761px){
+  #app{grid-template-rows:clamp(58px,12vh,76px) minmax(0,1fr) clamp(56px,12vh,76px)!important;gap:4px!important;padding:4px!important}
+  .arena{grid-template-rows:clamp(38px,8vh,58px) minmax(105px,1fr) clamp(68px,14vh,104px) clamp(42px,8vh,58px)!important;gap:4px!important}
+  .table-shell{padding:8px 16px 10px!important;background-image:linear-gradient(180deg,rgba(8,4,2,.04),rgba(7,3,1,.18)),url('./wood-table.webp')!important;background-position:center center!important;background-size:cover!important;background-repeat:no-repeat!important;border:4px double #d9b268!important;border-radius:20px!important;box-shadow:0 8px 18px #0008!important;min-height:0!important}
+  .felt{background:linear-gradient(180deg,rgba(16,7,3,.10),rgba(18,8,3,.16))!important;border:1px solid rgba(228,183,100,.38)!important;border-radius:12px!important;min-height:0!important}
+  .felt-top{padding:4px 8px!important}
+  .chain-viewport{min-height:0!important;padding:6px!important}
+}
+@media (min-width:761px) and (max-width:1260px){
+  #app{grid-template-rows:60px minmax(0,1fr) 60px!important}
+  .arena{grid-template-rows:40px minmax(100px,1fr) 76px 44px!important}
+  .player-card{height:38px!important;min-width:132px!important;padding:3px 6px!important}
+  .avatar{width:30px!important;height:30px!important;flex-basis:30px!important}
+  .player-details strong{font-size:11px!important}
+  .player-details span{font-size:8px!important}
+  .count-badge{font-size:9px!important;padding:3px 5px!important}
+  .table-shell{padding:5px 12px 7px!important;border-radius:14px!important;background-size:cover!important}
+  .hand-zone{grid-template-rows:16px minmax(0,1fr) 23px!important;gap:2px!important;padding:3px 5px!important}
+  .hand-heading{font-size:10px!important}.hand-heading small{font-size:8px!important}
+  .hand-tile{width:42px!important;height:48px!important}
+  .actions-row button{min-width:0!important;padding:4px 5px!important;font-size:9px!important}
+  .skin-strip{grid-template-columns:86px minmax(0,1fr)!important;padding:2px 4px!important}
+  .skin-strip>strong{font-size:8px!important}
+  .skin-chip .tile-preview{height:21px!important;flex-basis:21px!important;width:18px!important}
+  .skin-chip small{font-size:6.5px!important}
+  .upcoming-strip{grid-template-columns:150px minmax(0,1fr) 82px!important;gap:4px!important;padding:3px 5px!important}
+  .upcoming-title,.upcoming-title b{font-size:10px!important}.upcoming-title small{font-size:8px!important}
+  .future-game{height:42px!important;min-height:40px!important}.future-game span:first-child{font-size:15px!important}.future-game strong{font-size:7px!important}.future-game small{font-size:6px!important}
+  .footer-credit{font-size:8px!important;padding-left:4px!important}.footer-credit b{font-size:14px!important}
+}
+@media (min-width:761px) and (max-height:720px){
+  #app{grid-template-rows:56px minmax(0,1fr) 56px!important;gap:3px!important;padding:3px!important}
+  .header{padding:1px 5px!important;gap:4px!important}.brand{height:50px!important}
+  .header-actions{gap:3px!important}.icon-btn{height:38px!important;width:36px!important}
+  .arena{grid-template-rows:36px minmax(90px,1fr) 64px 38px!important;gap:3px!important}
+  .table-shell{padding:4px 10px 6px!important}
+  .hand-zone{grid-template-rows:14px minmax(0,1fr) 20px!important;padding:2px 4px!important}
+  .hand-tile{height:41px!important;width:45px!important}
+  .skin-strip{padding:1px 3px!important}
+  .skin-chip .tile-preview{height:18px!important;flex-basis:18px!important}
+  .skin-chip small{font-size:6px!important}
+  .upcoming-strip{padding:2px 4px!important}
+}
+@media (max-width:760px){
+  .table-shell{padding:7px 10px 8px!important;background-image:linear-gradient(180deg,rgba(8,4,2,.06),rgba(7,3,1,.20)),url('./wood-table.webp')!important;background-position:center center!important;background-size:cover!important;border:3px double #d9b268!important;border-radius:14px!important;min-height:0!important}
+  .felt{background:linear-gradient(180deg,rgba(16,7,3,.08),rgba(18,8,3,.18))!important;border:1px solid rgba(228,183,100,.38)!important;border-radius:8px!important}
+}
+
 </style>
 </head>
 <body data-skin="ivory">
