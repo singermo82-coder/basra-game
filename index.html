@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a0f08">
-  <title>ع القهوة | ألعاب مصرية أونلاين — v7.2</title>
+  <title>ع القهوة | ألعاب مصرية أونلاين — v7.3</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -462,6 +462,277 @@
   @media(max-width:760px){.avatar-picker{gap:5px}.avatar-choice{min-height:59px;font-size:1.35rem;padding:5px 2px}.avatar-choice small{font-size:.54rem}.player-item{gap:5px}.player-mainline{gap:6px}.capture-row{font-size:.58rem;gap:5px}.capture-mini-back{width:12px;height:18px;margin-inline:-2px}.capture-mini-back:after{font-size:7px}.basra-marker-card{--card-w:18px!important;--card-h:28px!important;width:18px!important;height:28px!important}}
 
 </style>
+
+<style id="v73-fullscreen-chat">
+  /* v7.3: keep the app inside the viewport; only the message list may scroll internally. */
+  html, body { width:100%; height:100%; min-height:0; }
+  body { overflow:hidden; }
+  .container { width:100%; max-width:none; height:100dvh; min-height:0; max-height:100dvh; overflow:hidden; display:flex; flex-direction:column; gap:7px; padding:8px clamp(7px,1vw,16px); }
+  body:not(.game-active) .header { flex:0 0 auto; width:100%; max-width:none; margin:0; padding:8px 14px; min-height:78px; }
+  body:not(.game-active) .header h1 { font-size:clamp(1.55rem,2.2vw,2.2rem); }
+  body:not(.game-active) .header p { font-size:.8rem; margin:3px 0 0; }
+  body:not(.game-active) .header-actions { gap:5px; }
+  body:not(.game-active) .header-actions .btn { min-height:33px; padding:6px 9px; font-size:.72rem; }
+  body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) { flex:0 0 auto; min-height:42px; margin:0; padding:6px 12px; gap:8px; border-radius:12px; }
+  body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-icon { width:31px; height:31px; flex-basis:31px; font-size:1rem; }
+  body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-copy strong { font-size:.78rem; }
+  body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-copy span { font-size:.68rem; }
+  body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-pill { padding:4px 8px; font-size:.66rem; }
+  body:not(.game-active) .home-layout { flex:1 1 auto; min-height:0; height:100%; margin:0; gap:9px; grid-template-columns:minmax(0,1.08fr) minmax(330px,.92fr); }
+  body:not(.game-active) .home-showcase { min-height:0; overflow:hidden; padding:clamp(12px,1.4vw,22px); }
+  body:not(.game-active) .home-emblem { padding:9px 14px; gap:8px; }
+  body:not(.game-active) .home-emblem-cup { font-size:2rem; }
+  body:not(.game-active) .home-emblem strong { font-size:clamp(1.8rem,3.1vw,3rem); }
+  body:not(.game-active) .home-emblem small { font-size:.72rem; letter-spacing:.1em; }
+  body:not(.game-active) .home-tagline { margin-top:10px; font-size:.88rem; }
+  body:not(.game-active) .home-card-fan { height:clamp(84px,15vh,130px); margin:4px auto; }
+  body:not(.game-active) .hero-card { width:clamp(55px,5.2vw,80px); height:clamp(82px,13vh,115px); left:calc(50% - 40px); padding:5px; }
+  body:not(.game-active) .hero-card b { font-size:2.8rem; }
+  body:not(.game-active) .home-cafe-chips { gap:5px; }
+  body:not(.game-active) .home-cafe-chips span { padding:5px 8px; font-size:.68rem; }
+  body:not(.game-active) .home-coming-stamp { margin-top:auto; padding-top:7px; }
+  body:not(.game-active) .home-coming-stamp strong { font-size:.9rem; }
+  body:not(.game-active) .home-coming-stamp small { font-size:.65rem; }
+  body:not(.game-active) .setup { min-height:0; max-height:100%; overflow:auto; padding:clamp(10px,1.15vw,16px); border-radius:17px; }
+  body:not(.game-active) .setup h2 { font-size:1.28rem; margin-bottom:4px; }
+  body:not(.game-active) .setup-subtitle { font-size:.72rem; line-height:1.55; margin-bottom:8px; }
+  body:not(.game-active) .setup .input-group { margin-bottom:7px; }
+  body:not(.game-active) .setup label { font-size:.72rem; margin-bottom:4px; }
+  body:not(.game-active) .setup input, body:not(.game-active) .setup select { min-height:34px; padding:6px 9px; font-size:.8rem; border-radius:9px; }
+  body:not(.game-active) .setup .avatar-picker { grid-template-columns:repeat(8,minmax(0,1fr)); gap:3px; margin-top:4px; }
+  body:not(.game-active) .setup .avatar-choice { min-height:44px; padding:3px 1px; font-size:1.18rem; border-radius:7px; }
+  body:not(.game-active) .setup .avatar-choice small { font-size:.45rem; }
+  body:not(.game-active) .setup .mode-hint { font-size:.59rem; line-height:1.4; margin-top:3px; }
+  body:not(.game-active) .setup .primary-wide { min-height:40px; font-size:.85rem; margin-top:0; }
+  body:not(.game-active) .setup .setup-foot { margin-top:5px; gap:5px; font-size:.61rem; }
+  body:not(.game-active) .setup .footer-note { margin-top:5px; font-size:.59rem; line-height:1.45; }
+  body:not(.game-active) .footer-line { display:none; }
+
+  body.game-active .container { height:100dvh; min-height:0; max-height:100dvh; padding:4px clamp(5px,.8vw,12px) 5px; gap:4px; overflow:hidden; }
+  body.game-active .header { flex:0 0 auto; width:100%; height:34px; min-height:34px; padding:0; margin:0; overflow:visible; }
+  body.game-active .header-actions { height:34px; display:flex; flex-wrap:nowrap; gap:5px; justify-content:flex-start; overflow:hidden; }
+  body.game-active .header-actions .btn { min-height:30px; height:30px; padding:4px 8px; font-size:.68rem; border-radius:9px; white-space:nowrap; }
+  body.game-active .header-actions #soundToggle, body.game-active .header-actions #musicToggle { display:none!important; }
+  body.game-active .game-board { flex:1 1 auto; min-height:0; margin:0; gap:5px; overflow:hidden; }
+  body.game-active .game-topbar { flex:0 0 72px; min-height:72px; grid-template-columns:minmax(185px,.7fr) minmax(0,1.9fr); gap:7px; }
+  body.game-active .game-brand-plaque { padding:6px 10px; border-radius:12px; gap:7px; }
+  body.game-active .game-brand-cup { font-size:1.85rem; }
+  body.game-active .game-brand-plaque strong { font-size:clamp(1.05rem,1.6vw,1.55rem); }
+  body.game-active .game-brand-plaque small { font-size:.56rem; letter-spacing:0; }
+  body.game-active .game-topbar .info-grid { gap:5px; }
+  body.game-active .game-topbar .info-card { min-height:72px; padding:5px 4px; }
+  body.game-active .game-topbar .info-card h3 { font-size:.62rem; margin-bottom:3px; }
+  body.game-active .game-topbar .info-card p { font-size:clamp(.85rem,1.15vw,1.12rem); }
+  body.game-active .game-topbar .info-card .btn { min-height:21px; font-size:.56rem; padding:2px 5px; }
+  body.game-active #gameNotice { flex:0 0 auto; min-height:25px; max-height:32px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:5px 10px; font-size:.72rem; line-height:1.4; }
+  body.game-active .game-stage { flex:1 1 auto; min-height:0; grid-template-columns:minmax(205px,225px) minmax(0,1fr) minmax(218px,260px); gap:7px; align-items:stretch; overflow:hidden; }
+  body.game-active .game-side-rail, body.game-active .game-main-column, body.game-active .game-chat-rail { min-height:0; height:100%; overflow:hidden; gap:6px; }
+  body.game-active .game-side-rail .panel { padding:8px; border-radius:12px; }
+  body.game-active .players-panel { flex:1 1 44%; min-height:0; overflow:hidden; }
+  body.game-active .players-panel .section-title { margin-bottom:4px; }
+  body.game-active .players-panel .section-title h3 { font-size:.76rem; }
+  body.game-active .players-panel .section-hint { font-size:.56rem; }
+  body.game-active .players-list { gap:4px; overflow:hidden; }
+  body.game-active .players-list .player-item { padding:5px; gap:4px; border-radius:8px; }
+  body.game-active .player-avatar { width:30px; height:30px; flex-basis:30px; font-size:.93rem; }
+  body.game-active .player-mainline { gap:5px; }
+  body.game-active .player-name { font-size:.68rem; }
+  body.game-active .player-meta { font-size:.57rem; }
+  body.game-active .capture-row { gap:3px; padding-top:3px; font-size:.52rem; }
+  body.game-active .capture-count { font-size:.52rem; }
+  body.game-active .capture-mini-back { width:11px; height:16px; }
+  body.game-active .capture-row .basra-marker-card { --card-w:15px!important; --card-h:22px!important; width:15px!important; height:22px!important; }
+  body.game-active .opponent-panel { flex:0 0 82px; min-height:0; max-height:82px; overflow:hidden; }
+  body.game-active .opponent-panel .section-title { margin-bottom:0; }
+  body.game-active .opponent-panel .section-title h3 { font-size:.73rem; }
+  body.game-active .opponent-panel .section-hint { font-size:.55rem; }
+  body.game-active .opponent-panel .back-cards { min-height:44px; padding:2px 0 0; }
+  body.game-active .opponent-panel .back-card { width:28px; height:42px; margin-inline:-4px; }
+  body.game-active .game-actions-panel { flex:0 0 auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:7px!important; }
+  body.game-active .game-actions-panel h3 { grid-column:1/-1; margin:0; font-size:.72rem; }
+  body.game-active .game-action { min-height:31px; padding:5px 6px; font-size:.61rem; gap:4px; border-radius:8px; }
+  body.game-active .game-action span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  body.game-active .game-action-share { font-size:.65rem; }
+  body.game-active .game-action-leave { min-height:30px; }
+  body.game-active .game-main-column { gap:6px; }
+  body.game-active .game-main-column .panel { margin:0; }
+  body.game-active .table-panel { flex:1 1 auto; min-height:0; padding:5px; border-width:2px; border-radius:19px; overflow:hidden; }
+  body.game-active .table-surface { height:100%; min-height:0; display:flex; flex-direction:column; padding:8px 7px; border-radius:30% / 18%; }
+  body.game-active .table-surface:before { inset:8px; border-radius:30% / 18%; }
+  body.game-active .table-label { flex:0 0 auto; font-size:.65rem; margin:0 2px 3px; padding:0 5px; }
+  body.game-active .table-label span:last-child { text-align:left; font-size:.58rem; }
+  body.game-active .table-area { flex:1 1 auto; min-height:0; max-height:100%; overflow:hidden; align-content:center; padding:5px 3px; gap:clamp(3px,.55vw,8px); }
+  body.game-active .table-area .card { --card-w:clamp(50px,5.4vw,83px); --card-h:clamp(76px,10.8vh,112px); }
+  body.game-active .table-caption { flex:0 0 auto; font-size:.57rem; line-height:1.2; padding:0 0 1px; }
+  body.game-active .hand-panel { flex:0 0 clamp(130px,20vh,158px); min-height:0; padding:7px 10px; overflow:hidden; }
+  body.game-active .hand-panel .section-title { margin-bottom:0; }
+  body.game-active .hand-panel .section-title h3 { font-size:.82rem; }
+  body.game-active .hand-panel .section-hint { font-size:.59rem; }
+  body.game-active .hand-cards { min-height:0; height:clamp(94px,15vh,126px); max-height:126px; padding:5px 1px 2px; gap:0; overflow:hidden; }
+  body.game-active .hand-cards .card { --card-w:clamp(49px,5.2vw,80px); --card-h:clamp(73px,10.4vh,108px); margin-inline:clamp(-8px,-.45vw,-3px); }
+  body.game-active .round-result-panel, body.game-active #roundResultPanel { max-height:36vh; overflow:auto; }
+  body.game-active .coming-games-inplay { flex:0 0 43px; min-height:43px; max-height:43px; margin:0; padding:4px 10px; gap:7px; border-radius:11px; overflow:hidden; }
+  body.game-active .game-board .coming-games-inplay .coming-games-icon { width:30px; height:30px; flex-basis:30px; font-size:1rem; }
+  body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.78rem; }
+  body.game-active .game-board .coming-games-inplay .coming-games-copy span { font-size:.61rem; line-height:1.25; }
+  body.game-active .coming-games-creator { min-width:74px; padding:3px 7px; border-radius:8px; }
+  body.game-active .coming-games-creator small { font-size:.51rem; }
+  body.game-active .coming-games-creator strong { font-size:.87rem; }
+
+  .game-chat-rail { min-width:0; min-height:0; display:flex; }
+  .chat-panel { width:100%; height:100%; min-height:0; margin:0!important; padding:9px!important; display:flex; flex-direction:column; gap:6px; overflow:hidden; border-radius:14px!important; background:linear-gradient(150deg,rgba(34,19,12,.98),rgba(9,6,4,.98)); }
+  .chat-header-row { display:flex; align-items:center; justify-content:space-between; gap:6px; flex:0 0 auto; }
+  .chat-header-row h3 { margin:0; font-size:.9rem; }
+  .chat-header-row small { color:#c7ae81; font-size:.61rem; }
+  .chat-close-mobile { display:none; border:1px solid #e1bb70; background:#230e0d; color:#ffe0a0; border-radius:8px; width:30px; height:30px; font-size:1.25rem; cursor:pointer; }
+  .chat-safety-note { flex:0 0 auto; color:#e8d3a8; border:1px solid #82a47a55; background:#22472c44; border-radius:8px; padding:5px 6px; font-size:.6rem; text-align:center; line-height:1.4; }
+  .chat-messages { flex:1 1 auto; min-height:70px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#a57939 #150b07; display:flex; flex-direction:column; gap:5px; padding:3px 2px; }
+  .chat-empty { margin:auto; max-width:96%; color:#b8a384; text-align:center; font-size:.68rem; line-height:1.7; }
+  .chat-message { padding:6px 7px; flex:0 0 auto; border:1px solid #d9b46a26; background:#ffffff08; border-radius:9px; min-width:0; }
+  .chat-message.mine { background:#c89a4320; border-color:#dfbd6a4d; }
+  .chat-message-meta { display:flex; align-items:center; justify-content:space-between; gap:5px; color:#ffe1a0; font-size:.61rem; }
+  .chat-message-meta time { color:#b7a17c; font-size:.52rem; direction:ltr; }
+  .chat-message-text { margin:3px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; font-size:.71rem; color:#f5e7d0; line-height:1.55; }
+  .chat-message-actions { display:flex; justify-content:flex-start; gap:5px; margin-top:4px; }
+  .chat-message-actions button { border:1px solid #d1b1703a; background:#0d0805; color:#cfbb91; padding:2px 6px; border-radius:5px; font-size:.52rem; cursor:pointer; }
+  .chat-quick-title { flex:0 0 auto; color:#cbb082; font-size:.58rem; }
+  .chat-quick-row { flex:0 0 auto; display:flex; flex-wrap:wrap; gap:4px; }
+  .chat-chip { border:1px solid #d8b46658; background:linear-gradient(145deg,#2a1a0f,#110906); color:#f3d69b; border-radius:999px; padding:4px 7px; font-size:.58rem; font-family:inherit; cursor:pointer; }
+  .chat-chip:disabled { opacity:.4; cursor:not-allowed; }
+  .chat-compose { flex:0 0 auto; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:5px; }
+  .chat-compose input { min-width:0; min-height:34px; padding:5px 8px; border-radius:8px; text-align:right; font-size:.68rem; }
+  .chat-send { min-height:34px; padding:5px 9px; border-radius:8px; font-size:.66rem; }
+  .chat-rules-hint { flex:0 0 auto; color:#b69e79; font-size:.55rem; line-height:1.45; }
+  .chat-compose input:disabled, .chat-send:disabled { opacity:.42; }
+
+  @media (max-width:1050px) and (min-width:761px) {
+    body.game-active .game-stage { grid-template-columns:minmax(210px,250px) minmax(0,1fr); }
+    body.game-active .game-chat-rail { display:none; }
+    body.chat-open .game-chat-rail { display:flex; position:fixed; inset:54px 12px 12px 12px; height:auto; z-index:5000; filter:drop-shadow(0 20px 60px #000b); }
+    body.chat-open .game-chat-rail:before { content:''; position:fixed; inset:0; background:#000b; z-index:-1; }
+    body.chat-open .chat-close-mobile { display:block; }
+    body.chat-open .chat-panel { max-width:520px; margin-inline-start:auto!important; }
+  }
+  @media (min-width:1051px) {
+    body.game-active .game-chat-rail { display:flex; }
+    body.game-active .chat-close-mobile { display:none; }
+  }
+  @media (max-height:760px) and (min-width:761px) {
+    body.game-active .game-topbar { flex-basis:62px; min-height:62px; }
+    body.game-active .game-topbar .info-card { min-height:62px; }
+    body.game-active .game-stage { gap:5px; }
+    body.game-active .game-side-rail, body.game-active .game-main-column, body.game-active .game-chat-rail { gap:4px; }
+    body.game-active .players-panel { flex-basis:39%; }
+    body.game-active .opponent-panel { flex-basis:69px; max-height:69px; }
+    body.game-active .game-action { min-height:27px; padding:3px 5px; }
+    body.game-active .hand-panel { flex-basis:124px; }
+    body.game-active .hand-cards { height:95px; }
+    body.game-active .game-board .coming-games-inplay { flex-basis:38px; min-height:38px; max-height:38px; }
+    body.game-active .coming-games-creator { display:none; }
+  }
+  @media (max-width:760px) {
+    body:not(.game-active) .container { padding:5px; gap:5px; }
+    body:not(.game-active) .header { grid-template-columns:1fr; grid-template-areas:"title" "sub" "actions"; gap:3px; padding:6px 8px; min-height:0; border-radius:12px; text-align:center; }
+    body:not(.game-active) .header h1 { width:100%; text-align:center; padding:3px 8px; font-size:1.38rem; line-height:1.2; }
+    body:not(.game-active) .header p { text-align:center; font-size:.62rem; margin:0; }
+    body:not(.game-active) .brand-row { display:none; }
+    body:not(.game-active) .header-actions { justify-content:center; gap:3px; }
+    body:not(.game-active) .header-actions .btn { min-height:26px; padding:3px 6px; font-size:.58rem; }
+    body:not(.game-active) .header-actions .status { font-size:.56rem; padding:3px 6px; }
+    body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) { min-height:34px; padding:4px 7px; gap:5px; }
+    body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-icon { width:25px; height:25px; flex-basis:25px; font-size:.8rem; }
+    body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-copy strong { font-size:.66rem; }
+    body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-copy span { font-size:.54rem; }
+    body:not(.game-active) .coming-games-banner:not(.coming-games-inplay) .coming-games-pill { font-size:.52rem; padding:3px 5px; }
+    body:not(.game-active) .home-layout { grid-template-columns:1fr; gap:0; }
+    body:not(.game-active) .home-showcase { display:none; }
+    body:not(.game-active) .setup { max-width:none; width:100%; padding:8px 10px; border-radius:13px; }
+    body:not(.game-active) .setup h2 { font-size:1.03rem; margin-bottom:2px; }
+    body:not(.game-active) .setup-subtitle { font-size:.59rem; line-height:1.35; margin-bottom:5px; }
+    body:not(.game-active) .setup .input-group { margin-bottom:4px; }
+    body:not(.game-active) .setup label { font-size:.6rem; margin-bottom:2px; }
+    body:not(.game-active) .setup input, body:not(.game-active) .setup select { min-height:29px; padding:4px 6px; font-size:.66rem; border-radius:7px; }
+    body:not(.game-active) .setup .avatar-picker { grid-template-columns:repeat(8,minmax(0,1fr)); gap:2px; }
+    body:not(.game-active) .setup .avatar-choice { min-height:36px; padding:2px 0; font-size:.9rem; border-radius:5px; }
+    body:not(.game-active) .setup .avatar-choice small { font-size:.38rem; }
+    body:not(.game-active) .setup .mode-hint { font-size:.5rem; line-height:1.25; }
+    body:not(.game-active) .setup .primary-wide { min-height:32px; padding:4px 6px; font-size:.72rem; }
+    body:not(.game-active) .setup .setup-foot { font-size:.5rem; margin-top:3px; gap:3px; }
+    body:not(.game-active) .setup .footer-note { font-size:.49rem; margin-top:2px; line-height:1.25; }
+
+    body.game-active .container { padding:3px 4px 4px; gap:3px; }
+    body.game-active .header { height:32px; min-height:32px; flex-basis:32px; margin:0; }
+    body.game-active .header-actions { height:32px; gap:4px; justify-content:flex-start; }
+    body.game-active .header-actions .btn { min-width:32px; width:32px; height:30px; min-height:30px; padding:3px; font-size:0; gap:0; }
+    body.game-active .header-actions .btn:before { font-size:15px; line-height:1; }
+    body.game-active .header-actions #radioOpenBtn:before { content:'📻'; }
+    body.game-active .header-actions #settingsOpenBtn:before { content:'⚙️'; }
+    body.game-active .header-actions #chatOpenBtn:before { content:'💬'; }
+    body.game-active .header-actions #shareTopBtn:before { content:'↗'; font-size:20px; }
+    body.game-active .header-actions #radioOpenBtn, body.game-active .header-actions #settingsOpenBtn, body.game-active .header-actions #chatOpenBtn, body.game-active .header-actions #shareTopBtn { display:inline-flex; }
+    body.game-active .header-actions .status { order:0; margin:0 auto 0 0; max-width:105px; overflow:hidden; text-overflow:ellipsis; font-size:.55rem; padding:4px 6px; }
+    body.game-active .game-topbar { flex:0 0 58px; min-height:58px; grid-template-columns:100px minmax(0,1fr); gap:4px; }
+    body.game-active .game-brand-plaque { padding:3px; border-radius:8px; gap:0; flex-direction:column; justify-content:center; }
+    body.game-active .game-brand-cup { display:none; }
+    body.game-active .game-brand-plaque strong { font-size:.9rem; text-align:center; white-space:normal; line-height:1.1; }
+    body.game-active .game-brand-plaque small { font-size:.43rem; line-height:1.2; text-align:center; }
+    body.game-active .game-topbar .info-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:3px; }
+    body.game-active .game-topbar .info-card { min-height:58px; padding:3px 2px; border-radius:7px; }
+    body.game-active .game-topbar .info-card h3 { font-size:.49rem; margin-bottom:2px; }
+    body.game-active .game-topbar .info-card p { font-size:.74rem; }
+    body.game-active .game-topbar .info-card .btn { min-height:17px; font-size:.46rem; padding:1px 2px; margin-top:2px; }
+    body.game-active #gameNotice { min-height:20px; max-height:23px; padding:3px 6px; font-size:.55rem; line-height:1.25; }
+    body.game-active .game-stage { grid-template-columns:minmax(0,1fr); gap:3px; direction:rtl; }
+    body.game-active .game-side-rail { display:none!important; }
+    body.game-active .game-chat-rail { display:none!important; }
+    body.chat-open .game-chat-rail { display:flex!important; position:fixed; inset:42px 5px 5px 5px; height:auto; z-index:5000; filter:drop-shadow(0 18px 48px #000d); }
+    body.chat-open .game-chat-rail:before { content:''; position:fixed; inset:0; background:#000c; z-index:-1; }
+    body.chat-open .chat-close-mobile { display:block; }
+    body.chat-open .chat-panel { max-width:none; padding:10px!important; }
+    body.chat-open .chat-header-row h3 { font-size:1rem; }
+    body.chat-open .chat-message-text { font-size:.82rem; }
+    body.chat-open .chat-input, body.chat-open .chat-compose input { font-size:.85rem; min-height:40px; }
+    body.chat-open .chat-chip { font-size:.7rem; padding:6px 9px; }
+    body.game-active .game-main-column { order:1; gap:3px; }
+    body.game-active .table-panel { padding:3px; border-radius:13px; }
+    body.game-active .table-surface { padding:4px 3px; border-radius:24% / 13%; }
+    body.game-active .table-surface:before { inset:4px; border-radius:24% / 13%; }
+    body.game-active .table-label { font-size:.53rem; margin:0; padding:0 3px; }
+    body.game-active .table-label span:last-child { font-size:.45rem; }
+    body.game-active .table-area { gap:2px; padding:2px 1px; }
+    body.game-active .table-area .card { --card-w:clamp(36px,10.8vw,54px); --card-h:clamp(53px,8.2vh,72px); }
+    body.game-active .table-caption { font-size:.46rem; }
+    body.game-active .hand-panel { flex-basis:clamp(96px,15vh,120px); padding:4px 4px; border-radius:9px; }
+    body.game-active .hand-panel .section-title h3 { font-size:.66rem; }
+    body.game-active .hand-panel .section-hint { font-size:.48rem; }
+    body.game-active .hand-cards { height:clamp(72px,11.5vh,92px); padding:2px 0; }
+    body.game-active .hand-cards .card { --card-w:clamp(37px,10.8vw,54px); --card-h:clamp(56px,8.8vh,78px); margin-inline:-3px; border-radius:4px; }
+    body.game-active .hand-cards .card-center.ace-center { font-size:1.45rem; }
+    body.game-active .hand-cards .pip-field .pip { font-size:8px; }
+    body.game-active .hand-cards .corner { font-size:.47rem; }
+    body.game-active .hand-cards .court-center { inset:7px 2px; }
+    body.game-active .round-result-panel, body.game-active #roundResultPanel { flex:0 1 27vh; padding:6px; overflow:auto; }
+    body.game-active .game-board .coming-games-inplay { flex:0 0 35px; min-height:35px; max-height:35px; margin:0; padding:3px 5px; gap:4px; border-radius:8px; }
+    body.game-active .game-board .coming-games-inplay .coming-games-icon { width:24px; height:24px; flex-basis:24px; font-size:.8rem; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy { padding:0; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy strong { font-size:.61rem; }
+    body.game-active .game-board .coming-games-inplay .coming-games-copy span { font-size:.45rem; line-height:1.1; }
+    body.game-active .coming-games-creator { min-width:52px; padding:2px 4px; border-radius:5px; }
+    body.game-active .coming-games-creator small { font-size:.36rem; }
+    body.game-active .coming-games-creator strong { font-size:.58rem; }
+  }
+  @media (max-height:650px) and (min-width:761px) {
+    body.game-active .header { height:28px; min-height:28px; }
+    body.game-active .header-actions { height:28px; }
+    body.game-active .header-actions .btn { min-height:25px; height:25px; padding:2px 6px; }
+    body.game-active .game-topbar { flex-basis:52px; min-height:52px; }
+    body.game-active .game-topbar .info-card { min-height:52px; }
+    body.game-active .game-board .coming-games-inplay { display:none; }
+    body.game-active .hand-panel { flex-basis:105px; }
+    body.game-active .hand-cards { height:78px; }
+  }
+</style>
+
 </head>
 <body>
   <main class="container">
@@ -469,7 +740,7 @@
       <div class="brand-row">
         <span class="brand-tag">☕ قعدة بلدي • ورق وطاولة</span>
         <span class="creator-credit creator-credit-top"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span>
-        <span class="version-tag">BUILD 7.2</span>
+        <span class="version-tag">BUILD 7.3</span>
       </div>
       <h1>ع القهوة</h1>
       <p>من ملاهي | ألعاب مصرية أونلاين</p>
@@ -478,8 +749,9 @@
         <button class="btn btn-secondary btn-small" id="soundToggle" type="button" onclick="toggleCafeAudio()">☕ أجواء القهوة</button>
         <button class="btn btn-secondary btn-small" id="musicToggle" type="button" onclick="toggleCafeMusic()">♫ موسيقى القعدة</button>
         <button class="btn btn-radio btn-small" id="radioOpenBtn" type="button" onclick="openRadioModal()">📻 راديو القهوة</button>
-        <button class="btn btn-secondary btn-small" type="button" onclick="openSoundSettings()">⚙ ضبط الصوت</button>
-        <button class="btn btn-secondary btn-small" type="button" onclick="shareGame()" aria-label="مشاركة اللعبة مع الأصدقاء">↗ مشاركة اللعبة</button>
+        <button class="btn btn-secondary btn-small" id="settingsOpenBtn" type="button" onclick="openSoundSettings()" aria-label="ضبط الصوت">⚙ ضبط الصوت</button>
+        <button class="btn btn-secondary btn-small" id="chatOpenBtn" type="button" onclick="toggleChatPanel()" aria-label="فتح شات القعدة">💬 شات القعدة</button>
+        <button class="btn btn-secondary btn-small" id="shareTopBtn" type="button" onclick="shareGame()" aria-label="مشاركة اللعبة مع الأصدقاء">↗ مشاركة اللعبة</button>
       </div>
     </header>
     <aside class="coming-games-banner" role="note" aria-label="تنويه واضح عن ألعاب جديدة قادمة">
@@ -597,6 +869,30 @@
             <div class="center"><button class="btn btn-primary" id="nextRoundBtn" onclick="startNextRound()">🔄 الجولة اللي بعدها</button></div>
           </section>
         </div>
+        <aside class="game-chat-rail" id="chatRail" aria-label="شات القعدة">
+          <section class="panel chat-panel">
+            <div class="chat-header-row">
+              <div><h3>💬 شات القعدة</h3><small>كلام محترم ولمّة حلوة</small></div>
+              <button class="chat-close-mobile" type="button" onclick="toggleChatPanel(true)" aria-label="إغلاق الشات">×</button>
+            </div>
+            <div class="chat-safety-note">🛡️ فلتر ألفاظ + كتم وإبلاغ • ممنوع الشتيمة</div>
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-label="رسائل اللاعبين">
+              <div class="chat-empty">رسائل القعدة هتظهر هنا.</div>
+            </div>
+            <div class="chat-quick-title">رسائل جاهزة</div>
+            <div class="chat-quick-row" aria-label="رسائل سريعة">
+              <button type="button" class="chat-chip" onclick="sendChatMessage('بصرة يا معلم!')">بصرة يا معلم!</button>
+              <button type="button" class="chat-chip" onclick="sendChatMessage('حركة حلوة 👏')">حركة حلوة</button>
+              <button type="button" class="chat-chip" onclick="sendChatMessage('الله ينور')">الله ينور</button>
+              <button type="button" class="chat-chip" onclick="sendChatMessage('دورك يا صاحبي')">دورك يا صاحبي</button>
+            </div>
+            <form class="chat-compose" id="chatForm" onsubmit="handleChatSubmit(event)">
+              <input id="chatInput" type="text" maxlength="120" autocomplete="off" placeholder="اكتب رسالة محترمة…" aria-label="اكتب رسالة الشات">
+              <button class="btn btn-primary chat-send" id="chatSendBtn" type="submit">إرسال</button>
+            </form>
+            <small class="chat-rules-hint">الرسالة المسيئة تُرفض قبل الإرسال. لو حد تجاوز، استخدم «كتم» أو «إبلاغ».</small>
+          </section>
+        </aside>
       </div>
       <aside class="coming-games-banner coming-games-inplay" role="note" aria-label="تنويه واضح عن ألعاب جديدة قادمة">
         <span class="coming-games-icon" aria-hidden="true">📣</span>
@@ -606,7 +902,7 @@
       </aside>
     </section>
     <div class="sponsor-slot hidden" id="sponsorLobbySlot" data-sponsor-slot="lobby" aria-hidden="true"></div>
-    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.2</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
+    <div class="footer-line"><span>ع القهوة · الباصرة المصرية · الفورة من 150 · الإصدار 7.3</span><span class="creator-credit"><span aria-hidden="true">✦</span> تصميم وتطوير: <strong>ملاهي</strong></span></div>
   </main>
 
   <div id="appToast" class="app-toast" role="status" aria-live="polite"></div>
@@ -641,8 +937,9 @@
       <div class="sound-setting"><div><strong>أجواء القهوة</strong><small>همهمة القعدة وصوت المكان</small></div><input id="ambienceVolume" class="volume-range" type="range" min="0" max="100" value="20" oninput="setAudioVolume('ambience',this.value)"></div>
       <div class="sound-setting"><div><strong>موسيقى القعدة</strong><small>عود وناي بإيقاع هادئ</small></div><input id="musicVolume" class="volume-range" type="range" min="0" max="100" value="18" oninput="setAudioVolume('music',this.value)"></div>
       <div class="sound-setting"><div><strong>صوت الكوتشينة والفنجان</strong><small>تقليب وسحب الورق ورنة الكوب</small></div><input id="effectsVolume" class="volume-range" type="range" min="0" max="100" value="55" oninput="setAudioVolume('effects',this.value)"></div>
-      <div class="sound-action-row"><button class="btn btn-primary" onclick="playTeaPour()">☕ صبّ الشاي</button><button class="btn btn-secondary" onclick="toggleCafeAudio()">أجواء القهوة تشغيل/إيقاف</button><button class="btn btn-secondary" onclick="toggleCafeMusic()">الموسيقى تشغيل/إيقاف</button></div>
-      <p class="radio-legal-note">الصوت لا يبدأ تلقائيًا؛ اضغط تشغيل بعد فتح اللعبة. يمكن أن يختلف تشغيل الصوت بالخلفية حسب المتصفح ونظام الهاتف.</p>
+      <div class="sound-setting"><div><strong>نداءات القهوجي</strong><small>شاي خمسين، قهوة ع الريحة، حلبة حصا، وحاجة ساقعة</small></div><input id="calloutVolume" class="volume-range" type="range" min="0" max="100" value="32" oninput="setAudioVolume('callouts',this.value)"></div>
+      <div class="sound-action-row"><button class="btn btn-primary" onclick="playTeaPour()">☕ صبّ الشاي</button><button class="btn btn-secondary" onclick="toggleCafeAudio()">أجواء القهوة تشغيل/إيقاف</button><button class="btn btn-secondary" onclick="toggleCafeMusic()">الموسيقى تشغيل/إيقاف</button><button class="btn btn-secondary" id="calloutToggleBtn" onclick="toggleCafeCallouts()">📣 نداءات القهوجي تشغيل</button><button class="btn btn-secondary" onclick="playCafeCallout()">اسمع نداء القهوجي</button></div>
+      <p class="radio-legal-note">أجواء القهوة والشاي والموسيقى تستخدم عينات صوتية. نداءات الطلب تُنطق بصوت عربي متوفر في جهازك؛ قد تختلف جودتها حسب المتصفح والأصوات المثبّتة. اضغط تشغيل يدويًا أولًا.</p>
     </section>
   </div>
 
@@ -674,10 +971,18 @@
     let aiTurnInProgress = false;
     let lastAiTurnSignature = '';
     let aiRetryCount = 0;
-    const APP_VERSION = '7.2';
+    const APP_VERSION = '7.3';
     const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let audioContext = null;
     let cafeAudioOn = false;
+    let cafeCalloutsOn = false;
+    let cafeCalloutTimer = null;
+    let cafeCalloutVolume = 0.32;
+    let lastCafeCalloutAt = 0;
+    let lastChatSentAt = 0;
+    let mutedChatPlayers = new Set();
+    try { mutedChatPlayers = new Set(JSON.parse(localStorage.getItem('aqahwa-muted-chat-players') || '[]')); } catch (_) { mutedChatPlayers = new Set(); }
+    let lastRenderedChatRoom = '';
     let ambienceNodes = [];
     let ambienceTimer = null;
     let musicOn = false;
@@ -1511,12 +1816,14 @@
     }
 
     function renderGame(game) {
+      window.currentRenderedGame = game;
       const order = activeOrder(game);
       const myPlayer = game.players && game.players[myId];
       if (!myPlayer) {
         showNotice('تم إخراجك من الغرفة أو انقطع اتصالك بها. أنشئ غرفة جديدة للمتابعة.', 'bad');
         return;
       }
+      renderChat(game);
       document.getElementById('scoreDisplay').textContent = Number(myPlayer.score) || 0;
       document.getElementById('deckDisplay').textContent = (game.deck || []).length;
       const curId = order.length ? order[(game.turnIndex || 0) % order.length] : null;
@@ -1801,6 +2108,148 @@
         showNotice('انتهت الجولة. ابدأ جولة جديدة للاحتفاظ بالنقاط ومتابعة المباراة.', 'good');
         result.textContent = (game.roundResults || []).map(r => `${r.name}: ${r.cardCount} ورقة (${r.pairs} جوز${r.oddCard ? ' + ورقة فردية' : ''})، ${r.basras} بصرة = ${r.basraPoints} نقطة إجماليًا + ${r.majorityPoints} نقطة للأكثر جمعًا = ${r.total} نقطة.\nالإجمالي: ${game.players[r.id].score} نقطة.`).join('\n\n');
         next.classList.remove('hidden');
+      }
+    }
+
+    // Moderated room chat: text is rendered only with textContent, capped and rate-limited.
+    const CHAT_QUICK_PHRASES = ['بصرة يا معلم!', 'حركة حلوة 👏', 'الله ينور', 'دورك يا صاحبي', 'صباح الفل', 'القعدة حلوة', 'الشاي على حسابك؟'];
+    const CHAT_BLOCKED_TERMS = [
+      'كسمك','كسامك','كسختك','كسم','شرموط','شرموطه','شرموطة','قحبه','قحبة','متناك','منيوك','خول','معرص','معرص','عرص','زبي','طيز','ابنكلب','ابنالكَلب','ابنالحرام','يلعن','خرا','خرا','fuck','fucker','fucking','shit','bitch','asshole','motherfucker','dickhead'
+    ];
+    function normalizeChatForModeration(value) {
+      return String(value || '').toLowerCase().normalize('NFKC')
+        .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+        .replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
+        .replace(/[^\p{L}\p{N}]+/gu, '');
+    }
+    function chatTextIsUnsafe(value) {
+      const normalized = normalizeChatForModeration(value);
+      return CHAT_BLOCKED_TERMS.some(term => normalized.includes(normalizeChatForModeration(term)));
+    }
+    function currentRoomIsOnline(game) {
+      return Boolean(game && myPlayMode === 'online' && myRoom && (game.playMode === 'online' || (!game.playMode && activeOrder(game).every(id => !game.players[id]?.isAI))));
+    }
+    function renderChat(game) {
+      const box = document.getElementById('chatMessages');
+      const input = document.getElementById('chatInput');
+      const send = document.getElementById('chatSendBtn');
+      if (!box) return;
+      const online = currentRoomIsOnline(game);
+      if (input) input.disabled = !online;
+      if (send) send.disabled = !online;
+      document.querySelectorAll('.chat-chip').forEach(btn => { btn.disabled = !online; });
+      const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 90;
+      const roomKey = String(game.room || myRoom || '');
+      if (lastRenderedChatRoom && lastRenderedChatRoom !== roomKey) box.replaceChildren();
+      lastRenderedChatRoom = roomKey;
+      box.replaceChildren();
+      if (!online) {
+        const empty = document.createElement('div');
+        empty.className = 'chat-empty';
+        empty.textContent = 'الشات متاح في القعدات الأونلاين مع لاعب تاني. ضد المعلم العب براحتك، ومن إعدادات الصوت تقدر تشغّل نداءات القهوجي.';
+        box.appendChild(empty);
+        return;
+      }
+      let messages = Array.isArray(game.chatMessages) ? game.chatMessages : (game.chatMessages && typeof game.chatMessages === 'object' ? Object.values(game.chatMessages) : []);
+      messages = messages.filter(m => m && typeof m === 'object' && m.text != null).slice(-40);
+      const visible = messages.filter(m => !m.senderId || !mutedChatPlayers.has(String(m.senderId)));
+      if (!visible.length) {
+        const empty = document.createElement('div');
+        empty.className = 'chat-empty';
+        empty.textContent = messages.length ? 'كل الرسائل الموجودة مكتومة عندك. تقدر تلغي الكتم من قائمة اللاعب.' : 'ابدأ السلام على صاحبك برسالة جاهزة أو اكتب رسالة قصيرة.';
+        box.appendChild(empty);
+      }
+      visible.forEach(message => {
+        const row = document.createElement('article');
+        row.className = 'chat-message' + (String(message.senderId) === String(myId) ? ' mine' : '');
+        const meta = document.createElement('div'); meta.className = 'chat-message-meta';
+        const who = document.createElement('strong'); who.textContent = String(message.name || 'لاعب').slice(0, 20);
+        const time = document.createElement('time');
+        const stamp = Number(message.createdAt) || Date.now();
+        time.textContent = new Date(stamp).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+        meta.append(who, time);
+        const text = document.createElement('p'); text.className = 'chat-message-text'; text.textContent = String(message.text || '').slice(0, 120);
+        row.append(meta, text);
+        if (message.senderId && String(message.senderId) !== String(myId)) {
+          const actions = document.createElement('div'); actions.className = 'chat-message-actions';
+          const mute = document.createElement('button'); mute.type = 'button'; mute.textContent = 'كتم'; mute.title = 'إخفاء رسائل هذا اللاعب عندك'; mute.addEventListener('click', () => muteChatPlayer(String(message.senderId), String(message.name || 'اللاعب')));
+          const report = document.createElement('button'); report.type = 'button'; report.textContent = 'إبلاغ'; report.title = 'الإبلاغ عن الرسالة'; report.addEventListener('click', () => reportChatMessage(String(message.id || ''), String(message.senderId)));
+          actions.append(mute, report); row.appendChild(actions);
+        }
+        box.appendChild(row);
+      });
+      if (wasAtBottom || !box.dataset.userScrolled) box.scrollTop = box.scrollHeight;
+    }
+    function handleChatSubmit(event) { if (event) event.preventDefault(); sendChatMessage(); return false; }
+    async function sendChatMessage(presetText = null) {
+      const input = document.getElementById('chatInput');
+      const raw = presetText == null ? (input ? input.value : '') : presetText;
+      const text = String(raw || '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().replace(/\s+/g, ' ').slice(0, 120);
+      if (!text) return;
+      if (!myRoom || myPlayMode !== 'online') { showAppToast('الشات متاح لما تختار قعدة أونلاين مع صاحبك.', 'bad'); return; }
+      if (chatTextIsUnsafe(text)) { showAppToast('الرسالة اترفضت لأنها تحتوي على ألفاظ غير لائقة. خلّي القعدة محترمة.', 'bad'); if (input && presetText == null) input.select(); return; }
+      if (Date.now() - lastChatSentAt < 1800) { showAppToast('استنى لحظة بين كل رسالة والتانية.', 'bad'); return; }
+      if (input && presetText == null) input.value = '';
+      lastChatSentAt = Date.now();
+      const message = { id: 'm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7), senderId: myId, text, createdAt: Date.now() };
+      const sendButton = document.getElementById('chatSendBtn');
+      if (sendButton) sendButton.disabled = true;
+      try {
+        const outcome = await mutateRoomWithETag(current => {
+          if (!current || !current.players || !current.players[myId]) return { reason: 'missing-room' };
+          if (current.playMode === 'ai' || activeOrder(current).some(id => current.players[id]?.isAI)) return { reason: 'not-online' };
+          const sender = current.players[myId];
+          const next = JSON.parse(JSON.stringify(current));
+          next.chatMessages = Array.isArray(next.chatMessages) ? next.chatMessages : (next.chatMessages && typeof next.chatMessages === 'object' ? Object.values(next.chatMessages) : []);
+          const safeMessage = { ...message, name: String(sender.name || joiningName || 'لاعب').slice(0,20), avatar: String(sender.avatar || selectedAvatar) };
+          next.chatMessages.push(safeMessage);
+          next.chatMessages = next.chatMessages.slice(-40);
+          return { game: next, result: 'chat-sent' };
+        }, 'chat-message');
+        if (!outcome.committed) {
+          const reasons = { 'missing-room':'الغرفة مش موجودة حاليًا.','not-online':'الشات متاح في القعدات الأونلاين فقط.','conflict':'فيه تحديث متزامن؛ جرّب إرسال الرسالة مرة أخرى.' };
+          showAppToast(reasons[outcome.reason] || 'تعذر إرسال الرسالة. تحقق من الاتصال.', 'bad');
+        }
+      } catch (error) {
+        console.warn('[Aqahwa chat]', error);
+        showAppToast('تعذر إرسال الرسالة. قد تكون صلاحيات Firebase أو الاتصال مانعة الكتابة.', 'bad');
+      } finally {
+        if (sendButton) sendButton.disabled = false;
+      }
+    }
+    function muteChatPlayer(playerId, playerName = 'اللاعب') {
+      if (!playerId || playerId === myId) return;
+      mutedChatPlayers.add(String(playerId));
+      try { localStorage.setItem('aqahwa-muted-chat-players', JSON.stringify([...mutedChatPlayers])); } catch (_) {}
+      if (window.currentRenderedGame) renderChat(window.currentRenderedGame);
+      showAppToast('تم كتم ' + playerName + ' عندك على الجهاز ده.', 'good');
+    }
+    async function reportChatMessage(messageId, senderId) {
+      if (!myRoom || !messageId || !senderId) return;
+      try {
+        const outcome = await mutateRoomWithETag(current => {
+          if (!current || !current.players || !current.players[myId]) return { reason: 'missing-room' };
+          const next = JSON.parse(JSON.stringify(current));
+          next.chatReports = Array.isArray(next.chatReports) ? next.chatReports : [];
+          if (next.chatReports.some(r => r && r.messageId === messageId && r.reporterId === myId)) return { reason: 'already-reported' };
+          next.chatReports.push({ messageId, senderId, reporterId: myId, createdAt: Date.now() });
+          next.chatReports = next.chatReports.slice(-60);
+          return { game: next, result: 'reported' };
+        }, 'chat-report');
+        showAppToast(outcome.committed ? 'وصل البلاغ، شكرًا للمساعدة في الحفاظ على القعدة.' : (outcome.reason === 'already-reported' ? 'أبلغت عن الرسالة دي بالفعل.' : 'تعذر إرسال البلاغ.'), outcome.committed ? 'good' : 'bad');
+      } catch (error) {
+        console.warn('[Aqahwa chat report]', error);
+        showAppToast('تعذر إرسال البلاغ. جرّب مرة أخرى عند استقرار الاتصال.', 'bad');
+      }
+    }
+    function toggleChatPanel(closeOnly = false) {
+      const mobile = window.matchMedia && window.matchMedia('(max-width: 1050px)').matches;
+      if (mobile) {
+        if (closeOnly) document.body.classList.remove('chat-open');
+        else document.body.classList.toggle('chat-open');
+        if (document.body.classList.contains('chat-open')) setTimeout(() => document.getElementById('chatInput')?.focus({preventScroll:true}), 100);
+      } else {
+        document.getElementById('chatInput')?.focus({preventScroll:true});
       }
     }
 
@@ -2118,11 +2567,86 @@
       } catch (_) { playSfx('cup'); }
     }
 
+    const CAFE_CALLOUT_PHRASES = [
+      'يا قهوجي، واحد شاي خمسين يا معلم!',
+      'قهوة عالريحة يا أسطى!',
+      'واحد شاي على بوسطة، تسلم إيدك!',
+      'حلبة حصا يا معلم!',
+      'هات حاجة ساقعة للترابيزة!',
+      'شاي على الفحم للترابيزة اللي جوه!',
+      'واحد قهوة مظبوط، والنعناع على جنب!',
+      'يا قهوجي، الحساب عندك يا باشا!'
+    ];
+    function getArabicSpeechVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices() || [];
+      return voices.find(v => /^ar-eg$/i.test(v.lang || '')) ||
+        voices.find(v => /^ar[-_]/i.test(v.lang || '') && /male|omar|maged|hamed|ahmed/i.test(v.name || '')) ||
+        voices.find(v => /^ar([-_]|$)/i.test(v.lang || '')) || null;
+    }
+    function playCafeCallout(phrase = '') {
+      if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+        showAppToast('الصوت المنطوق غير مدعوم في هذا المتصفح. جرّب Chrome أو Safari حديثًا.', 'bad');
+        return false;
+      }
+      const text = String(phrase || CAFE_CALLOUT_PHRASES[Math.floor(Math.random() * CAFE_CALLOUT_PHRASES.length)]);
+      try {
+        // Do not overlap two café callouts; speech is local to the player's device.
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voice = getArabicSpeechVoice();
+        utterance.lang = voice ? voice.lang : 'ar-EG';
+        if (voice) utterance.voice = voice;
+        utterance.rate = 0.86;
+        utterance.pitch = 0.82;
+        utterance.volume = Math.max(0, Math.min(1, cafeCalloutVolume));
+        utterance.onerror = () => showAppToast('الجهاز لم يجد صوتًا عربيًا مناسبًا؛ جرّب تنزيل صوت عربي من إعدادات النظام.', 'bad');
+        window.speechSynthesis.speak(utterance);
+        lastCafeCalloutAt = Date.now();
+        return true;
+      } catch (error) {
+        console.warn('Cafe callout unavailable', error);
+        showAppToast('تعذر تشغيل نداء القهوجي على هذا الجهاز.', 'bad');
+        return false;
+      }
+    }
+    function scheduleCafeCallout() {
+      if (cafeCalloutTimer) clearTimeout(cafeCalloutTimer);
+      cafeCalloutTimer = null;
+      if (!cafeCalloutsOn) return;
+      cafeCalloutTimer = setTimeout(() => {
+        if (!cafeCalloutsOn) return;
+        playCafeCallout();
+        scheduleCafeCallout();
+      }, 42000 + Math.random() * 43000);
+    }
+    function toggleCafeCallouts() {
+      if (!('speechSynthesis' in window)) {
+        showAppToast('متصفحك لا يدعم نداءات القهوجي المنطوقة. حدّث المتصفح أو استخدم Chrome/Safari.', 'bad');
+        return;
+      }
+      cafeCalloutsOn = !cafeCalloutsOn;
+      const button = document.getElementById('calloutToggleBtn');
+      if (cafeCalloutsOn) {
+        if (button) button.textContent = '📣 نداءات القهوجي شغالة';
+        playCafeCallout('يا قهوجي، واحد شاي خمسين يا معلم!');
+        scheduleCafeCallout();
+        showAppToast('نداءات القهوجي اتشغّلت على جهازك.', 'good');
+      } else {
+        if (cafeCalloutTimer) clearTimeout(cafeCalloutTimer);
+        cafeCalloutTimer = null;
+        if (button) button.textContent = '📣 نداءات القهوجي تشغيل';
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        showAppToast('نداءات القهوجي اتوقفت.', 'good');
+      }
+    }
+
     function setAudioVolume(kind, value) {
       const normalized = Math.max(0, Math.min(1, Number(value) / 100));
       if (kind === 'ambience') { ambienceVolume = normalized; const audio = document.getElementById('cafeAmbienceAudio'); if (audio) audio.volume = normalized; }
       if (kind === 'music') { musicVolume = normalized; const audio = document.getElementById('cafeMusicAudio'); if (audio) audio.volume = normalized; }
       if (kind === 'effects') effectsVolume = normalized;
+      if (kind === 'callouts') cafeCalloutVolume = normalized;
     }
 
     function openSoundSettings() {
