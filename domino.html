@@ -1229,12 +1229,12 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 <div class="field"><label for="onlineName">اسمك في القعدة</label><input id="onlineName" maxlength="20" value="محمد" autocomplete="nickname"></div>
 <div class="aq-quick-options">
 <button class="primary" onclick="createOnlineRoom()">🎮 إنشاء قعدة</button>
-<div class="aq-join-box"><label for="onlineCode">معاك كود صاحبك؟</label><div class="aq-join-line"><input id="onlineCode" maxlength="14" placeholder="اكتب كود القعدة" autocapitalize="characters"><button onclick="joinOnlineRoom()">✅ دخول بالكود</button></div></div>
+<div class="aq-join-box"><label for="onlineCode">كود القعدة اللي وصلك من صاحبك (مش كود قعدتك)</label><div class="aq-join-line"><input id="onlineCode" maxlength="14" placeholder="مثال: DOM-ABC123" autocapitalize="characters"><button onclick="joinOnlineRoom()">✅ دخول بالكود</button></div></div>
 </div>
 <div id="aqRoomReady" class="aq-room-ready hidden" aria-live="polite">
 <span>📨 ابعت الكود ده لصاحبك</span><strong id="aqInviteCode" dir="ltr"></strong>
 <div class="aq-ready-actions"><button class="primary" onclick="aqCopyCode()">📋 نسخ الكود</button><button onclick="aqCopyInvite()">🔗 نسخ رابط الدعوة</button></div>
-<small>⏳ مستنيين صاحبك يدخل القعدة. هتبدأ تلقائي لما ينضم.</small>
+<small>⏳ ابعت الكود لصاحبك على جهاز تاني. هتبدأ المباراة تلقائيًا بعد دخوله.</small>
 </div>
 <p id="onlineMessage" aria-live="polite"></p><div class="modal-actions"><button onclick="closeModal('onlineModal')">إغلاق</button></div>
 </div></div>
@@ -1673,8 +1673,59 @@ function ensureFirebase(){return new Promise((resolve,reject)=>{if(firebaseReady
 function aqOnlineError(e){const code=String(e?.code||'').toLowerCase(),msg=String(e?.message||'');if(code.includes('permission')||/permission.denied|permission denied/i.test(msg))return 'الخادم رفض الصلاحيات (PERMISSION_DENIED). لازم تحديث قواعد Firebase Realtime Database، مش إعدادات الجهاز.';if(/network|offline|failed to fetch/i.test(msg))return 'تعذر الوصول إلى خادم Firebase؛ تحقق من الاتصال والإنترنت.';return msg||'تعذر الاتصال بالخادم.';}
 function makeRoomKey(code){return 'games/domino_'+code;}
 function playerIdFor(code){try{const key='aq-domino-pid-'+code;let id=localStorage.getItem(key);if(!id){id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);localStorage.setItem(key,id);}return id;}catch{return 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);}}
-async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();aqShowInvite(code);toast('القعدة اتعملت! انسخ الكود وابعته لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+aqOnlineError(e);}}
-async function joinOnlineRoom(){const msg=$('onlineMessage');let code=$('onlineCode').value.trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'').slice(0,6);if(code.length<5){msg.textContent='اكتب كود القعدة كاملًا.';return;}msg.textContent='بدور على القعدة...';try{await ensureFirebase();const ref=db.ref(makeRoomKey(code));const snap=await ref.once('value');const room=snap.val();if(!room||room.gameType!=='domino'){msg.textContent='القعدة غير موجودة؛ تأكد من الكود.';return;}const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const id=playerIdFor(code);if(room.players?.[id]){onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(room.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast('رجعت للقعدة الموجودة على جهازك.');return;}let added=false;await new Promise((resolve,reject)=>ref.transaction(current=>{if(!current||current.gameType!=='domino')return;const next=clone(current);const ids=next.turnOrder||Object.keys(next.players||{});if(next.status!=='waiting'||ids.length>=2)return;next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};next.turnOrder=[...ids,id];dealRound(next);next.chat=Array.isArray(next.chat)?next.chat:[];next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} دخل القعدة. يلا نلعب!`,at:Date.now()});next.chat=next.chat.slice(-35);added=true;return next;},(err,ok)=>{if(err)reject(err);else resolve(!!ok);},false));const latest=(await ref.once('value')).val();if(!latest||!latest.players?.[id]){msg.textContent=latest?.status==='playing'?'القعدة بدأت بالفعل ومكتملة بلاعبين.':'تعذر الانضمام: القعدة قد تكون اكتملت أو صلاحيات Firebase تمنع ذلك.';return;}onlineRef=ref;onlineGame=latest;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(latest.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast(added?'✅ دخلت القعدة! المباراة بدأت.':'✅ تم الاتصال بالقعدة.');}catch(e){msg.textContent='تعذر الانضمام: '+aqOnlineError(e);}}
+async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';$('aqRoomReady')?.classList.add('hidden');try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();aqShowInvite(code);toast('القعدة اتعملت! انسخ الكود وابعته لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+aqOnlineError(e);}}
+async function joinOnlineRoom(){
+ const msg=$('onlineMessage'), input=$('onlineCode');
+ let raw=(input.value||'').trim().toUpperCase();
+ const parsed=raw.match(/(?:DOM[-_ ]?)?([A-Z0-9]{6})(?![A-Z0-9])/);
+ let code=parsed?parsed[1]:raw.replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'');
+ if(code.length!==6){msg.textContent='اكتب الكود المكوّن من 6 حروف وأرقام كما أرسله صاحبك.';return;}
+ if(myRoomCode===code&&mode==='online'&&onlineGame?.hostId===myOnlineId){
+  msg.textContent='ده كود قعدتك أنت! ابعته لجهاز صاحبك، وهو يضغط دخول بالكود من جهازه.';return;
+ }
+ input.value='DOM-'+code;
+ msg.textContent='جاري البحث عن القعدة وربط جهازك...';
+ try{
+  await ensureFirebase();
+  const ref=db.ref(makeRoomKey(code));
+  const name=($('onlineName').value.trim()||'ضيف').slice(0,20);
+  localStorage.setItem('aq-domino-name',name);
+  const id=playerIdFor(code);
+  const first=(await ref.once('value')).val();
+  if(!first||first.gameType!=='domino'){
+   msg.textContent='الكود غير موجود في Firebase. اطلب من صاحبك يعمل قعدة جديدة ويبعث الكود الظاهر تحت «ابعت الكود ده لصاحبك».';return;
+  }
+  if(first.players?.[id]){
+   onlineRef=ref;onlineGame=first;mode='online';myOnlineId=id;myRoomCode=code;
+   lastChatCount=(first.chat||[]).length;startOnlineListener();closeModal('onlineModal');
+   toast(first.status==='playing'?'✅ رجعت للمباراة':'✅ رجعت لقعدتك — في انتظار صاحبك');return;
+  }
+  if(first.status!=='waiting'||Object.keys(first.players||{}).length>=2){
+   msg.textContent='القعدة بدأت أو اكتملت. اطلب من صاحبك كود قعدة جديدة.';return;
+  }
+  // A single atomic transaction both adds the real guest and deals the first round.
+  const txn=await new Promise((resolve,reject)=>ref.transaction(current=>{
+   if(!current||current.gameType!=='domino'||current.status!=='waiting')return;
+   if(current.players?.[id])return;
+   const ids=Array.isArray(current.turnOrder)?current.turnOrder:Object.keys(current.players||{});
+   if(ids.length!==1||!current.players?.[ids[0]])return;
+   const next=clone(current);
+   next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};
+   next.turnOrder=[ids[0],id];dealRound(next);
+   next.chat=Array.isArray(next.chat)?next.chat:[];
+   next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} دخل القعدة. يلا نلعب!`,at:Date.now()});
+   next.chat=next.chat.slice(-35);
+   return next;
+  },(error,committed,snapshot)=>error?reject(error):resolve({committed,snapshot}),false));
+  const latest=txn.snapshot?.val()||(await ref.once('value')).val();
+  if(!latest?.players?.[id]){
+   msg.textContent='لم يتم تسجيل دخولك: القعدة قد تكون بدأت أو اكتملت. اعملوا قعدة جديدة ثم جرّبوا الكود الجديد.';return;
+  }
+  onlineRef=ref;onlineGame=latest;mode='online';myOnlineId=id;myRoomCode=code;
+  lastChatCount=(latest.chat||[]).length;startOnlineListener();closeModal('onlineModal');
+  toast(latest.status==='playing'?'✅ اتصلتوا! المباراة بدأت.':'✅ تم الانضمام للقعدة.');
+ }catch(e){msg.textContent='فشل الاتصال: '+aqOnlineError(e);}
+}
 function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+aqOnlineError(err)));$('onlineMessage').textContent='';render();}
 async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'لم تُحفظ الحركة؛ حاول مرة أخرى.');return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+aqOnlineError(e));}}
 function loadOnlineFromQuery(){const params=new URLSearchParams(location.search);const code=params.get('room');if(code){$('onlineCode').value='DOM-'+code.toUpperCase();$('onlineName').value=localStorage.getItem('aq-domino-name')||'ضيف';openModal('onlineModal');}}
@@ -1798,7 +1849,7 @@ function aqAutoJoinInvite(){
  document.getElementById('aqRoomReady')?.classList.add('hidden');
  document.getElementById('onlineModal')?.classList.remove('hidden');
  const msg=document.getElementById('onlineMessage');
- if(msg)msg.textContent='✅ كود الدعوة جاهز. اكتب اسمك واضغط «دخول بالكود».';
+ if(msg)msg.textContent='✅ كود صاحبك اتحط تلقائيًا. اكتب اسمك واضغط «دخول بالكود».';
 }
 document.addEventListener('DOMContentLoaded',aqAutoJoinInvite);
 
