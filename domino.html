@@ -1167,18 +1167,18 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 <div id="rulesModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>قواعد الدومينو البلدي</h2><p>تلعب النسخة بمجموعة الدومينو المزدوجة ستة (28 قطعة). كل لاعب يأخذ 7 قطع، والباقي في السحب. ابدأ بأعلى دوبل موجود؛ وفي كل دور وصّل قطعة بأحد طرفَي السلسلة بحيث تتطابق الأرقام. لو ما عندكش قطعة مناسبة، اسحب إلى أن تجد قطعة صالحة أو يخلص السحب، وبعدها مرّر الدور. الجولة تنتهي عندما يخلص لاعب من قطعه أو تُغلق اللعبة على الطرفين، والفائز يحصل على نقاط من القطع المتبقية لدى الخصم؛ أول لاعب يصل إلى الهدف المحدد يفوز بالمباراة. هذه قواعد افتراضية قابلة للتعديل لاحقًا حسب قواعد قهوتكم.</p><div class="field"><label for="targetSelect">النقاط المطلوبة للفوز</label><select id="targetSelect" onchange="setTarget(Number(this.value))"><option value="50">50 نقطة</option><option value="100" selected>100 نقطة</option><option value="150">150 نقطة</option></select></div><div class="field"><label for="difficultySelect">مستوى المعلم</label><select id="difficultySelect" onchange="setDifficulty(this.value)"><option value="easy">معلم هادي</option><option value="normal" selected>معلم عادي</option><option value="hard">معلم تقيل</option></select></div><div class="modal-actions"><button class="primary" onclick="closeModal('rulesModal')">تمام</button></div></div></div>
 <div id="resultModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2 id="resultTitle">خلصت الجولة</h2><p id="resultBody"></p><div class="modal-actions"><button class="primary" onclick="nextRound();closeModal('resultModal')">جولة جديدة</button><button onclick="newLocalGame();closeModal('resultModal')">مباراة جديدة</button></div></div></div>
 <div id="toast" class="toast hidden" role="status"></div>
-<audio id="ambienceAudio" src="./cafe-ambience.wav" loop preload="none"></audio>
-<audio id="cafeTalkAudio" src="https://cdn.freesound.org/previews/482/482990_8972317-lq.mp3" loop preload="none" crossorigin="anonymous"></audio>
-<audio id="teaStirAudio" src="https://sounddino.com/mp3/14/the-sound-of-tea-stirring-with-a-spoon-in-a-faceted-glass.mp3" preload="none"></audio>
-<audio id="teaPourAudio" src="https://sounddino.com/mp3/43/the-sound-of-pouring-coffee-into-a-cup.mp3" preload="none"></audio>
-<audio id="cupSaucerAudio" src="https://sounddino.com/mp3/13/sound-coffee-cup-placed-on-a-saucer.mp3" preload="none"></audio>
-<audio id="teaMixAudio" src="https://sounddino.com/mp3/35/stir-tea-and-coffee-with-a-spoon.mp3" preload="none"></audio>
+<audio id="ambienceAudio" src="./audio/cafe-ambience.wav" loop preload="none"></audio>
+<audio id="cafeTalkAudio" src="./audio/cafe-ambience.wav" loop preload="none" crossorigin="anonymous"></audio>
+<audio id="teaStirAudio" src="./audio/tea-stir.wav" preload="none"></audio>
+<audio id="teaPourAudio" src="./audio/tea-pour.wav" preload="none"></audio>
+<audio id="cupSaucerAudio" src="./audio/cup-saucer.wav" preload="none"></audio>
+<audio id="teaMixAudio" src="./audio/tea-stir.wav" preload="none"></audio>
 <audio id="placeAudio" src="./audio/domino-place-1.wav" preload="auto"></audio>
 <audio id="drawAudio" src="./audio/domino-draw-1.wav" preload="auto"></audio>
 <audio id="passAudio" src="./audio/domino-pass-1.wav" preload="auto"></audio>
 <audio id="winAudio" src="./audio/domino-win-1.wav" preload="auto"></audio>
-<audio id="licensedMusicAudio" loop preload="none"></audio>
-<div id="ahwaMusicModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>🎶 مزيكا القهوة</h2><p>اختار ملف صوت عندك ومرخّص لك استخدامه، أو من تأليفك. المتصفح لازم يستقبل ضغطة منك قبل التشغيل.</p><div class="field"><label for="ahwaMusicFile">ملف الموسيقى (MP3 / WAV / OGG)</label><input id="ahwaMusicFile" type="file" accept="audio/*" onchange="ahwaLoadMusic(this)"></div><div class="ahwa-audio-controls"><button class="primary" onclick="ahwaPlayMusic()">▶ تشغيل</button><button onclick="ahwaPauseMusic()">⏸ إيقاف مؤقت</button><label for="ahwaMusicVolume">مستوى الموسيقى</label><input id="ahwaMusicVolume" type="range" min="0" max="100" value="24" oninput="ahwaMusicGain(this.value)"></div><p class="tiny-note">أصوات القهوة والمؤثرات مستقلة عن المزيكا؛ لا توجد أغاني تجارية مرفقة.</p><div class="modal-actions"><button onclick="closeModal('ahwaMusicModal')">رجوع للعب</button></div></div></div>
+<audio id="licensedMusicAudio" src="./audio/ahwa-original-instrumental.wav" loop preload="none"></audio>
+<div id="ahwaMusicModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>🎶 مزيكا القهوة</h2><p>مقطوعة تجريبية أصلية مرفقة؛ اضغط تشغيل، أو اختار ملف صوت عندك ومرخّص لك استخدامه، أو من تأليفك. المتصفح لازم يستقبل ضغطة منك قبل التشغيل.</p><div class="field"><label for="ahwaMusicFile">ملف الموسيقى (MP3 / WAV / OGG)</label><input id="ahwaMusicFile" type="file" accept="audio/*" onchange="ahwaLoadMusic(this)"></div><div class="ahwa-audio-controls"><button class="primary" onclick="ahwaPlayMusic()">▶ تشغيل</button><button onclick="ahwaPauseMusic()">⏸ إيقاف مؤقت</button><label for="ahwaMusicVolume">مستوى الموسيقى</label><input id="ahwaMusicVolume" type="range" min="0" max="100" value="24" oninput="ahwaMusicGain(this.value)"></div><p class="tiny-note">أصوات القهوة والمؤثرات مستقلة عن المزيكا؛ لا توجد أغاني تجارية مرفقة.</p><div class="modal-actions"><button onclick="closeModal('ahwaMusicModal')">رجوع للعب</button></div></div></div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -1504,9 +1504,9 @@ function stopCafeCueTimer(){if(cafeCueTimer){clearTimeout(cafeCueTimer);cafeCueT
 function scheduleCafeCue(){stopCafeCueTimer();if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const delay=cafeCueFirst?(4500+Math.random()*4500):(16000+Math.random()*18000);cafeCueFirst=false;cafeCueTimer=setTimeout(()=>{if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const cues=[['teaStirAudio',.60],['teaPourAudio',.45],['cupSaucerAudio',.48],['teaMixAudio',.55]];let candidates=cues.filter(c=>c[0]!==lastCafeCue);const cue=candidates[Math.floor(Math.random()*candidates.length)]||cues[0];lastCafeCue=cue[0];playCafeClip(cue[0],cue[1],false);scheduleCafeCue();},delay);}
 async function startCafeAmbience(showErrors=false){
  if(masterMuted||!ambienceEnabled)return false;
- const room=$('ambienceAudio'),talk=$('cafeTalkAudio');if(!room||!talk)return false;
- room.volume=volume*ambientMix*.34;talk.volume=volume*ambientMix*.48;room.muted=false;talk.muted=false;
- const attempts=[room,talk].map(el=>{try{return Promise.resolve(el.play()).then(()=>({ok:true,el}),err=>({ok:false,el,err}));}catch(err){return Promise.resolve({ok:false,el,err});}});
+ const room=$('ambienceAudio'),talk=$('cafeTalkAudio');if(!room)return false;if(talk)talk.pause();
+ room.volume=volume*ambientMix*.34;if(talk)talk.volume=0;room.muted=false;if(talk)talk.muted=true;
+ const attempts=[room].map(el=>{try{return Promise.resolve(el.play()).then(()=>({ok:true,el}),err=>({ok:false,el,err}));}catch(err){return Promise.resolve({ok:false,el,err});}});
  const results=await Promise.all(attempts),success=results.some(r=>r.ok),failed=results.some(r=>!r.ok);
  if(success){scheduleCafeCue();}
  if(failed&&!showErrors)installCafeGestureRetry();
@@ -1661,6 +1661,36 @@ function showComingSoon(name){toast(`${name} قريبًا على ع القهوة
 function editProfileName(){const current=localStorage.getItem('aq-domino-name')||mePlayer(currentGame())?.name||'محمد';const name=prompt('اكتب اسمك على ع القهوة',current);if(name===null)return;const clean=String(name).trim().slice(0,20);if(!clean){toast('اكتب اسمًا صالحًا.');return;}localStorage.setItem('aq-domino-name',clean);if(mode==='local'&&localGame?.players?.me)localGame.players.me.name=clean;render();toast('اتحدّث اسمك على القهوة.');}
 function init(){if(!localStorage.getItem('aq-domino-avatar'))localStorage.setItem('aq-domino-avatar','curly-man');const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';document.body.dataset.tableSkin=localStorage.getItem('aq-domino-table-skin')||'wood';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();bindDominoDrag();renderSkinStrip();createLocalGame(true);$('leftPanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();attemptCafeAutoplay();window.addEventListener('resize',()=>{clearTimeout(chainResizeTimer);chainResizeTimer=setTimeout(()=>{const g=currentGame();if(g)renderChain(g);},120);});}
 window.addEventListener('DOMContentLoaded',init);
+
+/* AHWA 4.1: occasional café orders; uses device Arabic TTS and requires voice availability. */
+let ahwaOrderTimer=null;
+function ahwaScheduleOrders(){
+ if(ahwaOrderTimer)clearTimeout(ahwaOrderTimer);
+ ahwaOrderTimer=setTimeout(()=>{
+  if(!masterMuted&&ambienceEnabled&&calloutEnabled&&document.visibilityState==='visible'){
+    const lines=['واحد شاي يا أسطى!','شيشة تفاحتين يا معلم!','حساب الترابيزة يا ريس!','القهوة وصلت يا باشا!'];
+    speakCafeLine(lines[Math.floor(Math.random()*lines.length)]);
+  }
+  ahwaScheduleOrders();
+ },26000+Math.random()*22000);
+}
+document.addEventListener('DOMContentLoaded',ahwaScheduleOrders);
+
 </script>
-<script src="./landscape-mode.js"></script>
+<script src="./landscape-mode.js">
+/* AHWA 4.1: occasional café orders; uses device Arabic TTS and requires voice availability. */
+let ahwaOrderTimer=null;
+function ahwaScheduleOrders(){
+ if(ahwaOrderTimer)clearTimeout(ahwaOrderTimer);
+ ahwaOrderTimer=setTimeout(()=>{
+  if(!masterMuted&&ambienceEnabled&&calloutEnabled&&document.visibilityState==='visible'){
+    const lines=['واحد شاي يا أسطى!','شيشة تفاحتين يا معلم!','حساب الترابيزة يا ريس!','القهوة وصلت يا باشا!'];
+    speakCafeLine(lines[Math.floor(Math.random()*lines.length)]);
+  }
+  ahwaScheduleOrders();
+ },26000+Math.random()*22000);
+}
+document.addEventListener('DOMContentLoaded',ahwaScheduleOrders);
+
+</script>
 </body></html>
