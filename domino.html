@@ -1040,6 +1040,36 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 .ahwa-audio-controls button{font-size:12px}
 
 </style>
+<style>
+/* ===== V4.3 – Natural domino table, clean playing-first interface ===== */
+@media (min-width:761px){
+  .layout{grid-template-columns:clamp(142px,13vw,205px) minmax(0,1fr) clamp(210px,18vw,275px)!important;gap:5px!important}
+  .left-nav{min-width:0!important}
+  .arena{grid-template-rows:38px minmax(0,1fr) 128px 31px!important;gap:5px!important}
+  .table-shell{padding:5px!important;border-width:5px!important;border-radius:20px!important}
+  .felt{border-radius:14px!important}
+  .hand-zone{height:128px!important;min-height:128px!important;max-height:128px!important;grid-template-rows:17px minmax(0,1fr) 29px!important}
+  .hand-track{min-height:77px!important;padding:8px 7px 8px!important;overflow-y:visible!important}
+  .hand-tile{height:63px!important;min-height:63px!important;max-height:63px!important;width:41px!important;min-width:41px!important;max-width:41px!important;flex-basis:41px!important}
+  .top-action,.top-shortcuts button{filter:none!important}
+}
+.aq-natural-viewport{overflow-x:auto!important;overflow-y:hidden!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;scrollbar-width:thin!important;padding:14px 12px!important;min-width:0!important}
+.aq-natural-chain{position:relative!important;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;gap:0!important;min-width:max-content!important;max-width:none!important;width:max-content!important;height:100%!important;min-height:80px!important;margin:0 auto!important;overflow:visible!important;direction:ltr!important}
+.aq-chain-slot{height:calc(var(--aq-unit,40px)*2 + 10px);position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.aq-chain-slot .aq-real-tile{position:relative!important;left:auto!important;top:auto!important;transform:none!important;width:calc(var(--aq-unit,40px)*2)!important;height:var(--aq-unit,40px)!important;min-width:0!important;min-height:0!important;margin:0!important;box-sizing:border-box!important;animation:none!important;border-radius:5px!important}
+.aq-chain-slot.aq-double-slot .aq-real-tile{width:var(--aq-unit,40px)!important;height:calc(var(--aq-unit,40px)*2)!important;flex-direction:column!important}
+.aq-chain-slot.aq-double-slot .divider{width:auto!important;height:1px!important;margin:0 2px!important}
+.aq-chain-slot.aq-double-slot .half{width:100%!important;min-height:0!important}
+.aq-chain-slot .dot{width:clamp(3px,0.35vw,6px)!important;height:clamp(3px,0.35vw,6px)!important}
+@media(max-width:760px){
+ .arena{grid-template-rows:43px minmax(0,1fr) 119px 27px!important}
+ .hand-zone{height:119px!important;min-height:119px!important;max-height:119px!important;grid-template-rows:17px minmax(0,1fr) 27px!important}
+ .hand-track{overflow-x:auto!important;overflow-y:visible!important;padding:8px 6px!important;min-height:72px!important}
+ .hand-tile{height:55px!important;min-height:55px!important;max-height:55px!important;width:34px!important;min-width:34px!important;max-width:34px!important}
+ .aq-natural-chain{min-height:60px!important}
+ .aq-chain-slot{height:calc(var(--aq-unit,29px)*2 + 8px)}
+}
+</style>
 </head>
 <body data-skin="ivory">
 <div id="app">
@@ -1352,44 +1382,31 @@ function buildConnectedChainLayout(chain, interiorCols){
 }
 function renderChain(g){
  const track=$('chainTrack'),view=$('chainViewport'),chain=Array.isArray(g?.chain)?g.chain:[];
- track.innerHTML='';track.style.width='';track.style.height='';track.style.position='relative';track.style.flex='0 0 auto';track.style.margin='auto';
- if(!chain.length){track.style.minHeight='0';track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';return;}
- const availW=Math.max(120,view.clientWidth-16),availH=Math.max(80,view.clientHeight-14);
- const gapY=unit=>Math.max(3,Math.min(6,Math.round(unit*.11)));
- let best=null;
- // Find the largest half-tile size that fits both the table width and height.
- for(let unit=16;unit<=64;unit++){
-  const cols=Math.max(2,Math.floor(availW/unit)-2);
-  const layout=buildConnectedChainLayout(chain,cols);
-  const rowGap=gapY(unit),topPad=Math.ceil(unit/2),width=(layout.maxX-layout.minX+1)*unit,height=topPad+layout.maxY*(unit+rowGap)+unit;
-  if(width<=availW && height<=availH){best={unit,cols,layout,rowGap,width,height};}
- }
- if(!best){
-  const unit=14,cols=Math.max(2,Math.floor(availW/unit)-2),layout=buildConnectedChainLayout(chain,cols),rowGap=gapY(unit);
-  best={unit,cols,layout,rowGap,width:(layout.maxX-layout.minX+1)*unit,height:Math.ceil(unit/2)+layout.maxY*(unit+rowGap)+unit};
- }
- const {unit,layout,rowGap}=best,trackW=Math.max(unit,best.width),trackH=Math.max(unit,best.height),stepY=unit+rowGap,topPad=Math.ceil(unit/2);
- track.style.setProperty('width',trackW+'px','important');track.style.setProperty('height',trackH+'px','important');track.style.setProperty('min-height',trackH+'px','important');
- track.innerHTML=chain.map(t=>tileHtml(t,'table','chain-piece')).join('');
- const pieces=track.querySelectorAll('.table-tile');
- pieces.forEach((el,i)=>{
-  const place=layout.placements[i];if(!place)return;
-  const {p1,p2,orientation}=place,horizontal=orientation==='horizontal';
-  el.classList.add(horizontal?'tile-horizontal':'tile-vertical');
-  if(horizontal&&p2.x<p1.x)el.classList.add('tile-reverse');
-  if(!horizontal&&p2.y<p1.y)el.classList.add('tile-reverse');
-  const x=Math.min(p1.x,p2.x)-layout.minX,y=Math.min(p1.y,p2.y);
-  el.style.setProperty('position','absolute','important');
-  el.style.setProperty('left',(x*unit)+'px','important');
-  let tileTop=y*stepY+topPad;
-  const isDouble=Number(el.dataset.a)===Number(el.dataset.b);
-  if(!horizontal&&isDouble&&!place.wrapped)tileTop-=Math.ceil(unit/2);
-  el.style.setProperty('top',tileTop+'px','important');
-  el.style.setProperty('width',(horizontal?unit*2:unit)+'px','important');
-  // Row-corner pieces bridge the vertical gap; ordinary doubles stay centered on the same row.
-  el.style.setProperty('height',(horizontal?unit:(!horizontal&&place.wrapped?unit*2+rowGap:unit*2))+'px','important');
-  el.style.setProperty('transform','none','important');el.style.setProperty('margin','0','important');
-  el.title=`${el.dataset.a} | ${el.dataset.b}`;
+ track.replaceChildren();
+ track.removeAttribute('style');
+ track.classList.add('aq-natural-chain');
+ view.classList.add('aq-natural-viewport');
+ if(!chain.length){track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';return;}
+ const available=Math.max(160,view.clientWidth-22);
+ // Actual domino proportions: 2:1, not a 2-column grid or snake of square cells.
+ const count=chain.length;
+ const unit=Math.max(29,Math.min(52,Math.floor((available-24)/(Math.max(3,count)*1.32))));
+ const baseH=unit;
+ track.style.setProperty('--aq-unit',unit+'px');
+ chain.forEach(t=>{
+  const isDouble=Number(t.a)===Number(t.b);
+  const holder=document.createElement('div');holder.className='aq-chain-slot'+(isDouble?' aq-double-slot':'');
+  holder.innerHTML=tileHtml(t,'table','aq-real-tile');
+  const tile=holder.firstElementChild;
+  // Our default tile is horizontal: doubled tile is turned across the chain.
+  if(isDouble){tile.classList.add('aq-double');}
+  holder.style.flex='0 0 '+(isDouble?baseH:baseH*2)+'px';
+  track.append(holder);
+ });
+ requestAnimationFrame(()=>{
+   if(!view.isConnected)return;
+   // Keep latest pieces in view without obscuring earlier ones.
+   if(track.scrollWidth>view.clientWidth){view.scrollLeft=0;}
  });
 }
 function updateButtonState(g,me,acts){const myTurn=g?.status==='playing'&&g.current===myId();const chosen=acts.filter(a=>a.tileId===selectedTileId);const sides=new Set(chosen.map(x=>x.side));$('playLeftBtn').disabled=!myTurn||!sides.has('left');$('playRightBtn').disabled=!myTurn||!sides.has('right');$('playCenterBtn').disabled=!myTurn||!sides.has('center');$('drawBtn').disabled=!myTurn||acts.length>0||!g.boneyard.length;$('passBtn').disabled=!myTurn||acts.length>0||g.boneyard.length>0;$('nextRoundBtn').disabled=!g||!['round-over','match-over'].includes(g.status);$('drawBtn').textContent=g?.boneyard?.length?`＋ اسحب قطعة (${g.boneyard.length})`:'السحب خلص';const hint=$('handHelp');if(!myTurn)hint.textContent=g.status==='playing'?'استنى دورك يا معلم':'الجولة انتهت';else if(!g.chain.length)hint.textContent=`ابدأ بأعلى دوبل: ${g.requiredOpeningId?.replace('-',' | ')||'—'}`;else if(acts.length)hint.textContent='اختار قطعة وحدّد الطرف';else if(g.boneyard.length)hint.textContent='مفيش قطعة راكبة — اسحب من الرصيد';else hint.textContent='مفيش حركة صالحة — مرّر الدور';}
@@ -1677,22 +1694,7 @@ function ahwaScheduleOrders(){
 document.addEventListener('DOMContentLoaded',ahwaScheduleOrders);
 
 </script>
-<script src="./landscape-mode.js">
-/* AHWA 4.1: occasional café orders; uses device Arabic TTS and requires voice availability. */
-let ahwaOrderTimer=null;
-function ahwaScheduleOrders(){
- if(ahwaOrderTimer)clearTimeout(ahwaOrderTimer);
- ahwaOrderTimer=setTimeout(()=>{
-  if(!masterMuted&&ambienceEnabled&&calloutEnabled&&document.visibilityState==='visible'){
-    const lines=['واحد شاي يا أسطى!','شيشة تفاحتين يا معلم!','حساب الترابيزة يا ريس!','القهوة وصلت يا باشا!'];
-    speakCafeLine(lines[Math.floor(Math.random()*lines.length)]);
-  }
-  ahwaScheduleOrders();
- },26000+Math.random()*22000);
-}
-document.addEventListener('DOMContentLoaded',ahwaScheduleOrders);
-
-</script>
+<script src="./landscape-mode.js"></script>
 
 <style>
 #ahwaSoundTest{position:fixed;bottom:118px;right:15px;z-index:48;border:2px solid #f5c36d;background:#2e1b0d;color:#fff1cd;padding:9px 13px;border-radius:14px;font-weight:900;box-shadow:0 4px 18px #0009}
