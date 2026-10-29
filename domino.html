@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2327170e'/%3E%3Ctext x='50' y='67' font-size='60' text-anchor='middle'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
-<title>ع القهوة | دومينو بلدي — الإصدار 3.7 — تحسين الطاولة والسحب</title>
+<title>ع القهوة | دومينو بلدي — الإصدار 3.9 — طاولة أكبر وصوت وشات مطوّر</title>
 <style>
 :root{--gold:#f4c56f;--gold2:#d99b35;--cream:#f8e9c7;--ink:#160d08;--panel:rgba(27,15,10,.93);--line:rgba(238,185,83,.48);--felt:#075b43;--felt2:#023a2b;--accent:#e4ad4b;--red:#821d24;--muted:#cbb58d;--tile-bg:#f3e4c4;--tile-dot:#171713;--tile-edge:#ad8950;--tile-text:#252018}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#130b07;color:var(--cream);font-family:"Tajawal","Cairo",Tahoma,Arial,sans-serif}body{background-image:linear-gradient(115deg,rgba(15,7,4,.79),rgba(16,8,4,.62)),url('./ahwa-night.webp');background-position:center;background-size:cover;background-attachment:fixed}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);color:var(--cream);background:linear-gradient(180deg,rgba(65,38,24,.94),rgba(22,13,9,.97));border-radius:12px;padding:8px 12px;box-shadow:inset 0 1px rgba(255,255,255,.07),0 5px 12px rgba(0,0,0,.25);transition:transform .12s,border-color .12s,filter .12s}button:hover{border-color:var(--gold);filter:brightness(1.12)}button:active{transform:translateY(1px)}button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.5)}.primary{background:linear-gradient(180deg,#ffdf8a,#b97920);color:#261406;border-color:#ffdf8a;font-weight:900}.danger{background:linear-gradient(180deg,#9e3238,#511017)}.muted{color:var(--muted)}.small{font-size:12px}.hidden{display:none!important}
@@ -922,6 +922,83 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 
 /* v3.8.1 — updated, illuminated Bank El Haz footer artwork */
 .bank-luck-art{object-position:center 63%!important;filter:saturate(1.06) contrast(1.04) brightness(1.02)!important;}
+
+
+/* v3.9 — larger domino table, connected row wrapping, vertical doubles, sender avatars, global sound */
+.table-tile.tile-horizontal{flex-direction:row!important}
+.table-tile.tile-vertical{flex-direction:column!important}
+.table-tile .half{flex:1 1 50%!important;min-width:0!important;min-height:0!important}
+.table-tile .divider{flex:0 0 1px!important;width:auto!important;height:auto!important;margin:1px!important}
+.table-tile.tile-vertical .divider{width:auto!important;height:1px!important;flex:0 0 1px!important;margin:1px 2px!important}
+.chain-viewport{overflow:auto!important;overscroll-behavior:contain!important;align-items:center!important;justify-content:center!important;padding:5px!important}
+.chain-track{display:block!important;position:relative!important;flex:0 0 auto!important;max-width:none!important;gap:0!important;margin:auto!important;overflow:visible!important}
+.table-tile{padding:2px!important;box-sizing:border-box!important}
+
+.chat-msg{display:flex!important;align-items:flex-start!important;gap:8px!important;padding:8px!important;direction:rtl!important;max-width:100%!important}
+.chat-msg.mine{margin-right:8%!important;margin-left:0!important}
+.chat-msg:not(.mine){margin-left:8%!important;margin-right:0!important}
+.chat-avatar{display:block!important;flex:0 0 36px!important;width:36px!important;height:36px!important;border-radius:50%!important;border:2px solid #edbf68!important;box-shadow:0 2px 7px #0009!important;background-color:#3b2416!important;background-repeat:no-repeat!important;background-size:cover!important;overflow:hidden!important}
+.chat-avatar.avatar-sprite{background-size:400% 300%!important}
+.chat-avatar.avatar-photo{background-size:cover!important;background-position:center!important}
+.chat-bubble{min-width:0!important;flex:1 1 auto!important}
+.chat-meta{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:7px!important;margin-bottom:4px!important}
+.chat-msg .who{font-size:11px!important;margin:0!important;color:#ffd476!important}
+.chat-msg .time{font-size:9px!important;white-space:nowrap!important;float:none!important}
+.chat-text{font-size:12px!important;line-height:1.55!important;overflow-wrap:anywhere!important}
+.chat-mute-player{font-size:9px!important;padding:2px 6px!important;margin-top:5px!important}
+.master-sound-btn{border-color:#d7aa58!important;box-shadow:0 0 0 1px #f4c56f25,0 3px 10px #0006!important}
+.master-sound-btn.sound-muted{border-color:#b84a42!important;background:linear-gradient(145deg,#57221d,#210b09)!important}
+.master-sound-btn #masterSoundLabel{font-size:9px!important}
+
+@media(min-width:761px){
+ #app{grid-template-rows:clamp(54px,7vh,72px) minmax(0,1fr) clamp(48px,7vh,66px)!important;gap:4px!important;padding:4px!important}
+ .layout{grid-template-columns:minmax(0,1fr) minmax(220px,24%)!important;gap:6px!important}
+ .arena{grid-template-rows:clamp(36px,5vh,48px) minmax(0,1fr) clamp(96px,13vh,120px) clamp(32px,4.5vh,42px)!important;gap:4px!important;min-height:0!important}
+ .table-shell{width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;padding:5px!important;border-width:3px!important;border-radius:15px!important;overflow:hidden!important}
+ .felt{width:100%!important;height:100%!important;min-height:0!important;border-radius:10px!important}
+ .chain-viewport{width:100%!important;height:100%!important;min-height:0!important;padding:5px!important}
+ .hand-zone{min-height:0!important;height:100%!important;grid-template-rows:18px minmax(0,1fr) 24px!important;padding:4px 6px!important;gap:2px!important}
+ .hand-tile{width:42px!important;height:58px!important;min-width:42px!important;flex:0 0 42px!important}
+ .skin-strip{min-height:0!important;height:100%!important;padding:2px 5px!important;grid-template-columns:88px minmax(0,1fr)!important}
+ .skin-chip .tile-preview{width:17px!important;height:21px!important;flex-basis:21px!important}
+}
+@media(max-width:760px){
+ #app{grid-template-rows:42px minmax(0,1fr) 72px!important;gap:3px!important;padding:3px!important}
+ .header{height:42px!important;min-height:42px!important;grid-template-columns:88px minmax(0,1fr) auto!important;gap:2px!important;padding:1px 3px!important}
+ .brand{height:36px!important}.brand-title{font-size:12px!important}.brand-sub{font-size:5.5px!important}
+ .header-actions{gap:2px!important}.header-actions .top-action{width:28px!important;min-width:28px!important;height:31px!important;flex:0 0 28px!important;padding:1px!important}
+ .header-actions .top-action span{font-size:13px!important}.header-actions .top-action small{display:none!important}
+ .header-actions .master-sound-btn{display:flex!important;visibility:visible!important;opacity:1!important}
+ .layout{height:100%!important;min-height:0!important;overflow:hidden!important}
+ .arena{height:100%!important;min-height:0!important;grid-template-rows:32px minmax(0,1fr) 84px 30px!important;gap:3px!important;padding:2px!important;overflow:hidden!important}
+ .player-row{min-height:0!important;padding:0 2px!important}.player-card{height:30px!important;min-height:30px!important;padding:2px 4px!important;gap:4px!important}.avatar{width:25px!important;height:25px!important;flex-basis:25px!important}
+ .player-details strong{font-size:9px!important}.player-details span{font-size:7px!important}.count-badge{font-size:7px!important;padding:2px 4px!important}
+ .table-shell{width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;padding:3px!important;border-width:2px!important;border-radius:12px!important;overflow:hidden!important}
+ .felt{width:100%!important;height:100%!important;min-height:0!important;border-radius:8px!important}
+ .felt-top{padding:2px 4px!important;gap:3px!important}.endpoint{font-size:7px!important}.endpoint b{font-size:8px!important}.stock-pile{font-size:7px!important;padding:2px 4px!important}
+ .chain-viewport{min-height:0!important;height:100%!important;padding:2px!important;overflow:auto!important}
+ .hand-zone{height:84px!important;min-height:84px!important;max-height:84px!important;grid-template-rows:13px minmax(0,1fr) 19px!important;gap:2px!important;padding:2px 3px!important;overflow:hidden!important}
+ .hand-heading{font-size:8px!important}.hand-heading small{font-size:6px!important}
+ .hand-track{height:100%!important;min-height:0!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;padding:2px!important;overflow-x:auto!important;overflow-y:hidden!important}
+ .hand-tile{width:38px!important;min-width:38px!important;max-width:38px!important;flex:0 0 38px!important;height:58px!important;min-height:58px!important;max-height:58px!important;padding:2px!important}
+ .hand-tile .dot{width:4px!important;height:4px!important}
+ .actions-row{height:19px!important;min-height:19px!important;gap:2px!important;overflow:hidden!important}.actions-row button{height:19px!important;min-height:19px!important;padding:1px 3px!important;font-size:7px!important;line-height:1!important}
+ .skin-strip{height:100%!important;min-height:0!important;grid-template-columns:65px minmax(0,1fr)!important;gap:2px!important;padding:1px 3px!important;overflow:hidden!important}
+ .skin-strip>strong{font-size:7px!important}.skin-strip-options{gap:2px!important}.skin-chip{padding:1px!important;gap:1px!important}.skin-chip .tile-preview{width:13px!important;height:17px!important;flex-basis:17px!important}.skin-chip .tile-preview b{font-size:5px!important}.skin-chip small{font-size:5px!important}
+ .chat-avatar{width:31px!important;height:31px!important;flex-basis:31px!important}.chat-msg{gap:6px!important;padding:6px!important}.chat-msg.mine{margin-right:4%!important}.chat-msg:not(.mine){margin-left:4%!important}.chat-text{font-size:11px!important}
+ .bottom-hub{height:72px!important;min-height:72px!important;max-height:72px!important}
+}
+@media(max-width:390px){
+ #app{grid-template-rows:40px minmax(0,1fr) 70px!important}
+ .header{grid-template-columns:78px minmax(0,1fr) auto!important;height:40px!important;min-height:40px!important}
+ .brand{height:34px!important}.brand-title{font-size:11px!important}
+ .header-actions .top-action{width:26px!important;min-width:26px!important;flex-basis:26px!important;height:29px!important}
+ .arena{grid-template-rows:30px minmax(0,1fr) 82px 28px!important}
+ .hand-zone{height:82px!important;min-height:82px!important;max-height:82px!important}
+ .hand-tile{width:36px!important;min-width:36px!important;max-width:36px!important;flex-basis:36px!important;height:55px!important;min-height:55px!important;max-height:55px!important}
+ .bottom-hub{height:70px!important;min-height:70px!important;max-height:70px!important}
+}
+
 </style>
 </head>
 <body data-skin="ivory">
@@ -945,7 +1022,7 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
   <div class="header-actions">
    <span class="status-pill" id="connectionStatus">محلي 🟢</span>
    <button class="icon-btn top-action home-action" type="button" title="العودة إلى القائمة الرئيسية" onclick="window.location.href='./index.html'"><span>⌂</span><small>الرئيسية</small></button>
-   <button class="icon-btn top-action" title="صوت اللعبة" onclick="openModal('soundModal')"><span>🔊</span><small>الصوت</small></button>
+   <button class="icon-btn top-action master-sound-btn" id="masterSoundBtn" title="كتم الصوت" aria-label="كتم صوت اللعبة" onclick="toggleMasterMute()"><span id="masterSoundIcon">🔊</span><small id="masterSoundLabel">كتم الصوت</small></button>
    <button class="icon-btn top-action" title="راديو القهوة" onclick="openMusic()"><span>📻</span><small>الراديو</small></button>
    <button class="icon-btn top-action hide-mobile chat-toggle" id="chatToggleBtn" title="فتح أو إخفاء شات القعدة" onclick="toggleChatPanel()"><span>💬</span><small>الشات</small><b id="chatTopUnread" class="badge-count hidden">0</b></button>
    <button class="icon-btn top-action" title="مشاركة القعدة" onclick="shareRoom()"><span>↗</span><small>مشاركة</small></button>
@@ -1045,7 +1122,7 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 <div id="skinsModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختار شكل الدومينو</h2><p>اختيارك بيتحفظ على جهازك وتقدر تغيّره في أي وقت.</p><div class="skins-grid" id="skinsGrid"></div><div class="modal-actions"><button onclick="closeModal('skinsModal')">تم</button></div></div></div>
 <div id="tableSkinsModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>اختار شكل الطاولة</h2><p>اختار لون سطح اللعب اللي يريح عينك؛ الاختيار هيتحفظ على جهازك.</p><div class="table-skins-grid" id="tableSkinsGrid"></div><div class="modal-actions"><button onclick="closeModal('tableSkinsModal')">تم</button></div></div></div>
 <div id="avatarModal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="avatarModalTitle"><div class="modal"><h2 id="avatarModalTitle">🖼️ اختار صورتك في القهوة</h2><p>اختار أفاتار يعبر عنك؛ شباب وبنات وشخصيات قهوة وحيوانات أليفة. اختيارك يُحفظ على جهازك ويظهر في قعدات الأونلاين الجديدة.</p><div class="avatar-categories"><button class="active" data-avatar-category="all" onclick="setAvatarCategory('all')">الكل</button><button data-avatar-category="men" onclick="setAvatarCategory('men')">ولاد</button><button data-avatar-category="women" onclick="setAvatarCategory('women')">بنات</button><button data-avatar-category="pets" onclick="setAvatarCategory('pets')">حيوانات أليفة</button><button data-avatar-category="cafe" onclick="setAvatarCategory('cafe')">شخصيات القهوة</button></div><div class="avatar-picker-grid" id="avatarPickerGrid"></div><div class="modal-actions"><button onclick="closeModal('avatarModal')">تم</button></div><p class="tiny-note">هذه صور جاهزة للاختيار، وليست تسجيل حساب أو رفع صورة شخصية. رفع الصور والحسابات الفعلية نضيفها لاحقًا مع إعدادات حماية مناسبة.</p></div></div>
-<div id="soundModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>☕ أجواء القهوة والدومينو</h2><p>خلّي القعدة حية: همهمة ناس من بعيد، معلقة بتتقلب في كباية شاي، صب مشروب ورنين الكوب على الصحن. شغّل الأجواء من الزر، وتقدر تتحكم في كل طبقة أو تكتمها في أي وقت.</p><div class="field"><label><input id="fxEnabled" type="checkbox" checked> أصوات قطع الدومينو</label></div><div class="field"><label><input id="ambienceEnabled" type="checkbox"> همهمة القهوة والكلام البعيد (تسجيل محيط مقهى)</label></div><div class="field"><label><input id="teaCuesEnabled" type="checkbox" checked> أصوات الشاي والفناجين بشكل متقطع</label></div><div class="field"><label><input id="calloutEnabled" type="checkbox"> نداءات مصرية قصيرة بصوت جهازك</label></div><div class="field"><label for="ambientSlider">قوة أجواء الناس <span id="ambientValue">80%</span></label><input id="ambientSlider" type="range" min="0" max="100" value="80"></div><div class="field"><label for="teaSlider">قوة أصوات الشاي والفناجين <span id="teaValue">75%</span></label><input id="teaSlider" type="range" min="0" max="100" value="75"></div><div class="field"><label for="volumeSlider">مستوى الصوت العام <span id="volumeValue">65%</span></label><input id="volumeSlider" type="range" min="0" max="100" value="65"></div><div class="modal-actions"><button class="primary" onclick="toggleAmbience(!ambienceEnabled)">▶ تشغيل/إيقاف أجواء القهوة</button><button onclick="testCafeTalk()">🗣️ جرّب كلام الناس من بعيد</button><button onclick="testTileSound()">جرّب صوت قطعة الدومينو</button><button onclick="testTeaStir()">🥄 جرّب تقليب الشاي</button><button onclick="testTeaPour()">🫖 جرّب صب المشروب</button><button onclick="testCupClink()">🥃 جرّب رنين الكوب</button><button onclick="testCallout()">📣 جرّب نداء القهوة</button><button onclick="closeModal('soundModal')">إغلاق</button></div><p class="tiny-note">الأصوات المسجّلة القصيرة من SoundDino، وهمهمة القهوة من تسجيل CC0 على Freesound؛ تحتاج اتصال إنترنت. التشغيل لا يبدأ إلا بعد ضغطك، ويمكنك كتم الخلفية أو الأصوات المتقطعة بشكل مستقل.</p></div></div>
+<div id="soundModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>☕ أجواء القهوة والدومينو</h2><p>خلّي القعدة حية: همهمة ناس من بعيد، معلقة بتتقلب في كباية شاي، صب مشروب ورنين الكوب على الصحن. اللعبة تحاول تشغيل أجواء القهوة تلقائيًا عند الفتح، وتقدر تكتم كل الأصوات من زر الصوت أعلى الصفحة. لو المتصفح منع التشغيل التلقائي، أول لمسة داخل اللعبة هتفعّله.</p><div class="field"><label><input id="fxEnabled" type="checkbox" checked> أصوات قطع الدومينو</label></div><div class="field"><label><input id="ambienceEnabled" type="checkbox" checked> همهمة القهوة والكلام البعيد (تسجيل محيط مقهى)</label></div><div class="field"><label><input id="teaCuesEnabled" type="checkbox" checked> أصوات الشاي والفناجين بشكل متقطع</label></div><div class="field"><label><input id="calloutEnabled" type="checkbox"> نداءات مصرية قصيرة بصوت جهازك</label></div><div class="field"><label for="ambientSlider">قوة أجواء الناس <span id="ambientValue">80%</span></label><input id="ambientSlider" type="range" min="0" max="100" value="80"></div><div class="field"><label for="teaSlider">قوة أصوات الشاي والفناجين <span id="teaValue">75%</span></label><input id="teaSlider" type="range" min="0" max="100" value="75"></div><div class="field"><label for="volumeSlider">مستوى الصوت العام <span id="volumeValue">65%</span></label><input id="volumeSlider" type="range" min="0" max="100" value="65"></div><div class="modal-actions"><button class="primary" onclick="toggleAmbience(!ambienceEnabled)">▶ تشغيل/إيقاف أجواء القهوة</button><button onclick="testCafeTalk()">🗣️ جرّب كلام الناس من بعيد</button><button onclick="testTileSound()">جرّب صوت قطعة الدومينو</button><button onclick="testTeaStir()">🥄 جرّب تقليب الشاي</button><button onclick="testTeaPour()">🫖 جرّب صب المشروب</button><button onclick="testCupClink()">🥃 جرّب رنين الكوب</button><button onclick="testCallout()">📣 جرّب نداء القهوة</button><button onclick="closeModal('soundModal')">إغلاق</button></div><p class="tiny-note">الأصوات المسجّلة القصيرة من SoundDino، وهمهمة القهوة من تسجيل CC0 على Freesound؛ تحتاج اتصال إنترنت. المتصفح ممكن يمنع الصوت التلقائي؛ لذلك اللعبة بتحاول تشغيله عند الفتح ثم تعيد المحاولة مع أول تفاعل. زر الكتم أعلى الصفحة يوقف كل أصوات اللعبة.</p></div></div>
 <div id="rulesModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>قواعد الدومينو البلدي</h2><p>تلعب النسخة بمجموعة الدومينو المزدوجة ستة (28 قطعة). كل لاعب يأخذ 7 قطع، والباقي في السحب. ابدأ بأعلى دوبل موجود؛ وفي كل دور وصّل قطعة بأحد طرفَي السلسلة بحيث تتطابق الأرقام. لو ما عندكش قطعة مناسبة، اسحب إلى أن تجد قطعة صالحة أو يخلص السحب، وبعدها مرّر الدور. الجولة تنتهي عندما يخلص لاعب من قطعه أو تُغلق اللعبة على الطرفين، والفائز يحصل على نقاط من القطع المتبقية لدى الخصم؛ أول لاعب يصل إلى الهدف المحدد يفوز بالمباراة. هذه قواعد افتراضية قابلة للتعديل لاحقًا حسب قواعد قهوتكم.</p><div class="field"><label for="targetSelect">النقاط المطلوبة للفوز</label><select id="targetSelect" onchange="setTarget(Number(this.value))"><option value="50">50 نقطة</option><option value="100" selected>100 نقطة</option><option value="150">150 نقطة</option></select></div><div class="field"><label for="difficultySelect">مستوى المعلم</label><select id="difficultySelect" onchange="setDifficulty(this.value)"><option value="easy">معلم هادي</option><option value="normal" selected>معلم عادي</option><option value="hard">معلم تقيل</option></select></div><div class="modal-actions"><button class="primary" onclick="closeModal('rulesModal')">تمام</button></div></div></div>
 <div id="resultModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2 id="resultTitle">خلصت الجولة</h2><p id="resultBody"></p><div class="modal-actions"><button class="primary" onclick="nextRound();closeModal('resultModal')">جولة جديدة</button><button onclick="newLocalGame();closeModal('resultModal')">مباراة جديدة</button></div></div></div>
 <div id="toast" class="toast hidden" role="status"></div>
@@ -1106,7 +1183,7 @@ const TABLE_SKINS=[
  {id:'sand',name:'رملي شعبي',desc:'لون دافي',swatch:'sand'}
 ];
 const safeAlphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=true, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null;
+let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=true, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
 let firebaseReady=false, db=null, cafeCueTimer=null, lastCafeCue='', cafeCueFirst=true;
 // Keep the same five radio choices and stream/official fallbacks as the Basra game.
 const DOMINO_RADIO_STATIONS={
@@ -1158,7 +1235,7 @@ function localAction(action){if(mode!=='local'||!localGame)return;const result=a
 function aiPick(g){const pid='ai',acts=legalActions(g,pid);if(!acts.length)return null;const hand=g.players[pid].hand;let scored=acts.map(act=>{const t=hand.find(x=>x.id===act.tileId);const after=hand.filter(x=>x.id!==t.id);const ownPips=t.a+t.b;const sameEnd=act.side==='left'?g.openLeft:g.openRight;const newEnd=act.side==='left'?(t.b===sameEnd?t.a:t.b):(t.a===sameEnd?t.b:t.a);const countAfter=after.filter(x=>x.a===newEnd||x.b===newEnd).length;let score=ownPips*.35+countAfter*(difficulty==='hard'?2.6:difficulty==='easy'?.8:1.7)+(t.a===t.b?.6:0);if(difficulty==='easy')score+=Math.random()*7;else score+=Math.random()*1.6;return{act,score};});scored.sort((a,b)=>b.score-a.score);return scored[0].act;}
 function scheduleAI(ms=500){clearTimeout(aiTimer);if(mode!=='local'||!localGame||localGame.status!=='playing'||localGame.current!=='ai')return;aiTimer=setTimeout(aiTurn,ms);}
 function aiTurn(){if(mode!=='local'||!localGame||localGame.status!=='playing'||localGame.current!=='ai')return;const g=localGame;let acts=legalActions(g,'ai');if(!acts.length&&g.boneyard.length){const r=applyAction(g,'ai',{type:'draw'});if(r.ok){playFx('draw',.65);render();scheduleAI(480);return;}}
- acts=legalActions(g,'ai');if(!acts.length){const r=applyAction(g,'ai',{type:'pass'});if(r.ok){playFx('pass',.55);appendLocalChat('المعلم زكي','👳🏻‍♂️',g.status==='playing'?'مفيش قطعة راكبة يا معلم، همرّر الدور.':g.roundMessage);render();if(g.status!=='playing')showRoundResult(g);else scheduleAI(620);}return;}
+ acts=legalActions(g,'ai');if(!acts.length){const r=applyAction(g,'ai',{type:'pass'});if(r.ok){playFx('pass',.55);appendLocalChat('المعلم زكي','teacher',g.status==='playing'?'مفيش قطعة راكبة يا معلم، همرّر الدور.':g.roundMessage);render();if(g.status!=='playing')showRoundResult(g);else scheduleAI(620);}return;}
  const act=aiPick(g);const result=applyAction(g,'ai',{type:'play',...act});if(result.ok){playFx('place',.7);maybeCallout(result.tile,'ai');render();if(g.status!=='playing'){showRoundResult(g);return;}scheduleAI(520);}else{toast(result.reason||'المعلم واجه مشكلة في الحركة؛ جاري المحاولة.');scheduleAI(700);}}
 function selectTile(id){const g=currentGame();if(!g||g.status!=='playing'||g.current!==myId())return;const t=mePlayer(g)?.hand.find(x=>x.id===id);if(!t)return;const acts=legalActions(g,myId()).filter(a=>a.tileId===id);if(!acts.length){toast(!g.chain.length&&g.requiredOpeningId?'لازم تبدأ بأعلى دوبل في إيدك.':'القطعة دي مش راكبة على أي طرف.');return;}selectedTileId=selectedTileId===id?null:id;render();}
 function playSelected(side){const g=currentGame();if(!g||!selectedTileId)return;if(side==='center'&&g.chain.length) return;const action={type:'play',tileId:selectedTileId,side};selectedTileId=null;if(mode==='local'){localAction(action);return;}onlineAction(action);}
@@ -1176,21 +1253,101 @@ function tileHtml(t,kind='table',extra='',skinOverride=''){
  const typeClass=kind==='hand'?'hand-tile':kind==='table'?'table-tile':'skin-preview-domino';
  return `<div class="domino skin-${skin} ${typeClass} ${extra}" data-tile="${esc(t.id)}" data-a="${Number(t.a)}" data-b="${Number(t.b)}" ${interactive}>${halfHtml(t.a)}<span class="divider"></span>${halfHtml(t.b)}</div>`;
 }
+function buildConnectedChainLayout(chain, interiorCols){
+ const occupied=new Set(),placements=[];
+ let current=null,dir=1,minX=Infinity,maxX=-Infinity,maxY=0;
+ const key=p=>`${p.x},${p.y}`;
+ const free=p=>p.x>=0&&p.x<=interiorCols+1&&p.y>=0&&!occupied.has(key(p));
+ const add=(tile,p1,p2,orientation,wrapped=false,continueFromSecond=true)=>{
+  if(!free(p1)||!free(p2))return false;
+  occupied.add(key(p1));occupied.add(key(p2));
+  placements.push({p1,p2,orientation,wrapped});
+  // A double stands upright but the chain continues from its centerline on the same row.
+  current=continueFromSecond?p2:p1;minX=Math.min(minX,p1.x,p2.x);maxX=Math.max(maxX,p1.x,p2.x);maxY=Math.max(maxY,p1.y,p2.y);
+  if(wrapped)dir=-dir;
+  return true;
+ };
+ for(let i=0;i<chain.length;i++){
+  const tile=chain[i],isDouble=Number(tile.a)===Number(tile.b);
+  let p1,p2,orientation,wrapped=false,placed=false;
+  if(!current){
+   p1={x:1,y:0};
+   if(isDouble){p2={x:1,y:1};orientation='vertical';}
+   else {p2={x:2,y:0};orientation='horizontal';}
+   placed=add(tile,p1,p2,orientation,false,!isDouble);
+  }else{
+   const first={x:current.x+dir,y:current.y};
+   const secondHorizontal={x:first.x+dir,y:first.y};
+   const secondVertical={x:first.x,y:first.y+1};
+   if(isDouble && first.x>=1 && first.x<=interiorCols && free(first)&&free(secondVertical)){
+    p1=first;p2=secondVertical;orientation='vertical';placed=add(tile,p1,p2,orientation,false,false);
+   }else if(!isDouble && first.x>=1 && first.x<=interiorCols && secondHorizontal.x>=1 && secondHorizontal.x<=interiorCols && free(first)&&free(secondHorizontal)){
+    p1=first;p2=secondHorizontal;orientation='horizontal';placed=add(tile,p1,p2,orientation,false);
+   }
+   if(!placed){
+    // Use this tile as the corner bridge. At an edge it extends one cell past the row,
+    // then its lower half feeds into the next row in the opposite direction.
+    p1={x:current.x+dir,y:current.y};p2={x:p1.x,y:p1.y+1};orientation='vertical';wrapped=true;
+    if(!free(p1)||!free(p2)){
+     // Defensive fallback for short/narrow screens: step down before continuing.
+     p1={x:current.x,y:current.y+1};p2={x:current.x,y:current.y+2};orientation='vertical';
+    }
+    placed=add(tile,p1,p2,orientation,true);
+   }
+   if(!placed){
+    // Last-resort safe placement keeps all dominoes visible rather than throwing.
+    p1={x:current.x,y:current.y+1};p2={x:current.x,y:current.y+2};
+    if(!free(p1)||!free(p2)){
+     let yy=maxY+1;while(occupied.has(`${current.x},${yy}`)||occupied.has(`${current.x},${yy+1}`))yy++;
+     p1={x:current.x,y:yy};p2={x:current.x,y:yy+1};
+    }
+    placed=add(tile,p1,p2,'vertical',true);
+   }
+  }
+ }
+ return {placements,minX:Number.isFinite(minX)?minX:0,maxX:Number.isFinite(maxX)?maxX:0,maxY};
+}
 function renderChain(g){
  const track=$('chainTrack'),view=$('chainViewport'),chain=Array.isArray(g?.chain)?g.chain:[];
- track.innerHTML='';track.style.width='';track.style.height='';track.style.position='relative';track.style.flex='0 0 auto';
+ track.innerHTML='';track.style.width='';track.style.height='';track.style.position='relative';track.style.flex='0 0 auto';track.style.margin='auto';
  if(!chain.length){track.style.minHeight='0';track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';return;}
- const totalCells=chain.length*2,availW=Math.max(100,view.clientWidth-24),availH=Math.max(80,view.clientHeight-24),cellGap=7;
- let best={unit:0,cols:Math.min(totalCells,7),rows:Math.ceil(totalCells/Math.min(totalCells,7))};
- const maxCols=Math.max(2,Math.min(totalCells,Math.floor((availW-4+cellGap)/(17+cellGap)),38));
- const candidates=totalCells>=6?Array.from({length:Math.max(0,Math.floor((maxCols-5)/2)+1)},(_,i)=>5+i*2).filter(c=>c<=maxCols):[Math.min(totalCells,maxCols)];
- for(const cols of candidates){if(cols<2)continue;const rows=Math.ceil(totalCells/cols);const unit=Math.floor(Math.min((availW-4-(cols-1)*cellGap)/cols,(availH-4-(rows-1)*cellGap)/rows,42));if(unit>best.unit||(unit===best.unit&&cols>best.cols)){best={unit,cols,rows};}}
- const unit=Math.max(14,best.unit||20),cols=best.cols,rows=Math.ceil(totalCells/cols),trackW=cols*unit+(cols-1)*cellGap,trackH=rows*unit+(rows-1)*cellGap;
+ const availW=Math.max(120,view.clientWidth-16),availH=Math.max(80,view.clientHeight-14);
+ const gapY=unit=>Math.max(3,Math.min(6,Math.round(unit*.11)));
+ let best=null;
+ // Find the largest half-tile size that fits both the table width and height.
+ for(let unit=16;unit<=64;unit++){
+  const cols=Math.max(2,Math.floor(availW/unit)-2);
+  const layout=buildConnectedChainLayout(chain,cols);
+  const rowGap=gapY(unit),topPad=Math.ceil(unit/2),width=(layout.maxX-layout.minX+1)*unit,height=topPad+layout.maxY*(unit+rowGap)+unit;
+  if(width<=availW && height<=availH){best={unit,cols,layout,rowGap,width,height};}
+ }
+ if(!best){
+  const unit=14,cols=Math.max(2,Math.floor(availW/unit)-2),layout=buildConnectedChainLayout(chain,cols),rowGap=gapY(unit);
+  best={unit,cols,layout,rowGap,width:(layout.maxX-layout.minX+1)*unit,height:Math.ceil(unit/2)+layout.maxY*(unit+rowGap)+unit};
+ }
+ const {unit,layout,rowGap}=best,trackW=Math.max(unit,best.width),trackH=Math.max(unit,best.height),stepY=unit+rowGap,topPad=Math.ceil(unit/2);
  track.style.setProperty('width',trackW+'px','important');track.style.setProperty('height',trackH+'px','important');track.style.setProperty('min-height',trackH+'px','important');
- const cells=[];for(let y=0;cells.length<totalCells;y++){if(y%2===0){for(let x=0;x<cols&&cells.length<totalCells;x++)cells.push({x,y});}else{for(let x=cols-1;x>=0&&cells.length<totalCells;x--)cells.push({x,y});}}
  track.innerHTML=chain.map(t=>tileHtml(t,'table','chain-piece')).join('');
  const pieces=track.querySelectorAll('.table-tile');
- pieces.forEach((el,i)=>{const p1=cells[i*2],p2=cells[i*2+1];if(!p1||!p2)return;const horizontal=p1.y===p2.y;el.classList.add(horizontal?'tile-horizontal':'tile-vertical');if(horizontal&&p2.x<p1.x)el.classList.add('tile-reverse');if(!horizontal&&p2.y<p1.y)el.classList.add('tile-reverse');el.style.setProperty('position','absolute','important');el.style.setProperty('left',(Math.min(p1.x,p2.x)*(unit+cellGap))+'px','important');el.style.setProperty('top',(Math.min(p1.y,p2.y)*(unit+cellGap))+'px','important');el.style.setProperty('width',(horizontal?unit*2:unit)+'px','important');el.style.setProperty('height',(horizontal?unit:unit*2)+'px','important');el.style.setProperty('transform','none','important');el.style.setProperty('margin','0','important');el.title=`${el.dataset.a} | ${el.dataset.b}`;});
+ pieces.forEach((el,i)=>{
+  const place=layout.placements[i];if(!place)return;
+  const {p1,p2,orientation}=place,horizontal=orientation==='horizontal';
+  el.classList.add(horizontal?'tile-horizontal':'tile-vertical');
+  if(horizontal&&p2.x<p1.x)el.classList.add('tile-reverse');
+  if(!horizontal&&p2.y<p1.y)el.classList.add('tile-reverse');
+  const x=Math.min(p1.x,p2.x)-layout.minX,y=Math.min(p1.y,p2.y);
+  el.style.setProperty('position','absolute','important');
+  el.style.setProperty('left',(x*unit)+'px','important');
+  let tileTop=y*stepY+topPad;
+  const isDouble=Number(el.dataset.a)===Number(el.dataset.b);
+  if(!horizontal&&isDouble&&!place.wrapped)tileTop-=Math.ceil(unit/2);
+  el.style.setProperty('top',tileTop+'px','important');
+  el.style.setProperty('width',(horizontal?unit*2:unit)+'px','important');
+  // Row-corner pieces bridge the vertical gap; ordinary doubles stay centered on the same row.
+  el.style.setProperty('height',(horizontal?unit:(!horizontal&&place.wrapped?unit*2+rowGap:unit*2))+'px','important');
+  el.style.setProperty('transform','none','important');el.style.setProperty('margin','0','important');
+  el.title=`${el.dataset.a} | ${el.dataset.b}`;
+ });
 }
 function updateButtonState(g,me,acts){const myTurn=g?.status==='playing'&&g.current===myId();const chosen=acts.filter(a=>a.tileId===selectedTileId);const sides=new Set(chosen.map(x=>x.side));$('playLeftBtn').disabled=!myTurn||!sides.has('left');$('playRightBtn').disabled=!myTurn||!sides.has('right');$('playCenterBtn').disabled=!myTurn||!sides.has('center');$('drawBtn').disabled=!myTurn||acts.length>0||!g.boneyard.length;$('passBtn').disabled=!myTurn||acts.length>0||g.boneyard.length>0;$('nextRoundBtn').disabled=!g||!['round-over','match-over'].includes(g.status);$('drawBtn').textContent=g?.boneyard?.length?`＋ اسحب قطعة (${g.boneyard.length})`:'السحب خلص';const hint=$('handHelp');if(!myTurn)hint.textContent=g.status==='playing'?'استنى دورك يا معلم':'الجولة انتهت';else if(!g.chain.length)hint.textContent=`ابدأ بأعلى دوبل: ${g.requiredOpeningId?.replace('-',' | ')||'—'}`;else if(acts.length)hint.textContent='اختار قطعة وحدّد الطرف';else if(g.boneyard.length)hint.textContent='مفيش قطعة راكبة — اسحب من الرصيد';else hint.textContent='مفيش حركة صالحة — مرّر الدور';}
 function renderStockPile(count){
@@ -1218,7 +1375,22 @@ function render(){const g=currentGame();if(!g)return;const me=mePlayer(g),op=opP
  renderChain(g);
  const myActs=legalActions(g,myId());const handTrack=$('handTrack');handTrack.innerHTML=(me.hand||[]).slice().sort((a,b)=>(a.a+a.b)-(b.a+b.b)||a.a-b.a).map(t=>tileHtml(t,'hand',selectedTileId===t.id?'selected':'')).join('');
  updateButtonState(g,me,myActs);$('shareBtn').disabled=false;$('shareBtn').textContent=mode==='online'?'مشاركة القعدة ↗':'مشاركة اللعبة ↗';renderChat(g);if(g.status==='round-over'||g.status==='match-over')$('nextRoundBtn').textContent=g.status==='match-over'?'مباراة جديدة':'جولة جديدة ↻';else $('nextRoundBtn').textContent='جولة جديدة ↻';}
-function renderChat(g){const list=$('chatMessages');const messages=Array.isArray(g.chat)?g.chat:[];list.innerHTML=messages.slice(-35).map(m=>{if(m.playerId&&mutedIds.has(m.playerId))return'';return `<div class="chat-msg ${m.playerId===myId()?'mine':''}"><span class="who">${esc(avatarEmoji(m.avatar||'☕'))} ${esc(m.player||'ضيف')}</span><span class="time">${new Date(m.at||Date.now()).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span><div>${esc(m.text)}</div>${mode==='online'&&m.playerId&&m.playerId!==myId()?`<button style="font-size:9px;padding:2px 5px;margin-top:3px" onclick="mutePlayer('${esc(m.playerId)}')">كتم</button>`:''}</div>`;}).join('')||'<div class="tiny-note">لسه مفيش رسايل. ابعت تحية للي معاك.</div>';if(chatOpen)list.scrollTop=list.scrollHeight;$('unreadCount').textContent=unread;$('unreadCount').classList.toggle('hidden',unread===0);$('mobileUnread').textContent=unread;$('mobileUnread').classList.toggle('hidden',unread===0);if($('chatTopUnread')){$('chatTopUnread').textContent=unread;$('chatTopUnread').classList.toggle('hidden',unread===0);}if($('mobileMenuUnread')){$('mobileMenuUnread').textContent=unread;$('mobileMenuUnread').classList.toggle('hidden',unread===0);}}
+function renderChat(g){
+ const list=$('chatMessages'),messages=Array.isArray(g.chat)?g.chat:[];
+ list.innerHTML=messages.slice(-35).map(m=>{
+  if(m.playerId&&mutedIds.has(m.playerId))return'';
+  const senderAvatar=m.avatar||'curly-man';
+  const time=new Date(m.at||Date.now()).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  const muteButton=mode==='online'&&m.playerId&&m.playerId!==myId()?`<button class="chat-mute-player" onclick="mutePlayer('${esc(m.playerId)}')">كتم</button>`:'';
+  return `<div class="chat-msg ${m.playerId===myId()?'mine':''}"><span class="chat-avatar" data-chat-avatar="${esc(senderAvatar)}" aria-hidden="true"></span><div class="chat-bubble"><div class="chat-meta"><span class="who">${esc(m.player||'ضيف')}</span><span class="time">${time}</span></div><div class="chat-text">${esc(m.text)}</div>${muteButton}</div></div>`;
+ }).join('')||'<div class="tiny-note">لسه مفيش رسايل. ابعت تحية للي معاك.</div>';
+ list.querySelectorAll('.chat-avatar').forEach(el=>applyAvatar(el,el.dataset.chatAvatar||'curly-man'));
+ if(chatOpen)list.scrollTop=list.scrollHeight;
+ $('unreadCount').textContent=unread;$('unreadCount').classList.toggle('hidden',unread===0);
+ $('mobileUnread').textContent=unread;$('mobileUnread').classList.toggle('hidden',unread===0);
+ if($('chatTopUnread')){$('chatTopUnread').textContent=unread;$('chatTopUnread').classList.toggle('hidden',unread===0);}
+ if($('mobileMenuUnread')){$('mobileMenuUnread').textContent=unread;$('mobileMenuUnread').classList.toggle('hidden',unread===0);}
+}
 function appendLocalChat(player,avatar,text){if(!localGame)return;localGame.chat=localGame.chat||[];localGame.chat.push({id:`c${Date.now()}${Math.random()}`,player,avatar,text,at:Date.now()});localGame.chat=localGame.chat.slice(-35);renderChat(localGame);}
 function sendQuick(text){if(mode==='local'){appendLocalChat(localGame.players.me.name,localGame.players.me.avatar,text);playFx('place',.35);return;}sendChat(text);}
 function sendChat(textOverride){const input=$('chatInput');const text=String(textOverride??input.value).trim();if(!text)return;if(text.length>120){toast('الرسالة طويلة؛ الحد 120 حرف.');return;}if(!isClean(text)){toast('الرسالة فيها ألفاظ غير مناسبة. خلّي القعدة محترمة يا معلم.');return;}if(Date.now()-lastSentAt<1600){toast('استنى لحظة قبل الرسالة التالية.');return;}lastSentAt=Date.now();if(input)input.value='';const g=currentGame();const me=mePlayer(g);const msg={id:`c${Date.now()}${Math.random().toString(36).slice(2,5)}`,player:me?.name||'ضيف',avatar:me?.avatar||'☕',playerId:myId(),text,at:Date.now()};if(mode==='local'){appendLocalChat(msg.player,msg.avatar,msg.text);return;}if(mode==='online'&&onlineRef){const cRef=onlineRef.child('chat');cRef.transaction(curr=>{let arr=Array.isArray(curr)?curr:[];arr.push(msg);return arr.slice(-35);},(err,committed)=>{if(err||!committed)toast('تعذر إرسال الرسالة؛ تحقق من الاتصال.');});}}
@@ -1239,20 +1411,101 @@ function renderTableSkins(){const grid=$('tableSkinsGrid'),current=localStorage.
 function setTableSkin(id){if(!TABLE_SKINS.some(s=>s.id===id))return;document.body.dataset.tableSkin=id;localStorage.setItem('aq-domino-table-skin',id);renderTableSkins();toast('تم تغيير شكل الطاولة.');renderChain(currentGame());}
 function setTarget(n){if(![50,100,150].includes(n))return;targetScore=n;const g=currentGame();if(g)g.targetScore=n;localStorage.setItem('aq-domino-target',String(n));$('targetLabel').textContent=n+' نقطة';toast(`هدف المباراة ${n} نقطة.`);}
 function setDifficulty(v){if(!['easy','normal','hard'].includes(v))return;difficulty=v;localStorage.setItem('aq-domino-difficulty',v);if($('difficultySelect'))$('difficultySelect').value=v;toast('تم تحديث مستوى المعلم.');}
-function playFx(which,scale=1){if(!fxEnabled)return;const el=$({place:'placeAudio',draw:'drawAudio',pass:'passAudio',win:'winAudio'}[which]);if(!el)return;try{el.pause();el.currentTime=0;el.volume=Math.max(0,Math.min(1,volume*scale));const p=el.play();if(p&&p.catch)p.catch(()=>{});}catch{}}
-function playCafeClip(id,scale=.34,showError=false){const el=$(id);if(!el)return;try{el.pause();el.currentTime=0;const layer=(id==='teaStirAudio'||id==='teaPourAudio'||id==='cupSaucerAudio'||id==='teaMixAudio')?teaMix:1;el.volume=Math.max(0,Math.min(1,volume*layer*scale));const p=el.play();if(p&&p.catch)p.catch(()=>{if(showError)toast('تعذر تحميل الصوت المسجّل؛ تأكد من الإنترنت ثم جرّب مرة أخرى.');});}catch{if(showError)toast('تعذر تشغيل المقطع الصوتي على هذا الجهاز.');}}
+function syncMasterSoundButton(){
+ const btn=$('masterSoundBtn'),icon=$('masterSoundIcon'),label=$('masterSoundLabel');
+ if(icon)icon.textContent=masterMuted?'🔇':'🔊';
+ if(label)label.textContent=masterMuted?'تشغيل الصوت':'كتم الصوت';
+ if(btn){btn.title=masterMuted?'تشغيل أصوات الدومينو والقهوة':'كتم أصوات الدومينو والقهوة';btn.setAttribute('aria-label',btn.title);btn.setAttribute('aria-pressed',masterMuted?'true':'false');btn.classList.toggle('sound-muted',masterMuted);}
+}
+function toggleMasterMute(){
+ masterMuted=!masterMuted;
+ try{localStorage.setItem('aq-domino-master-muted',masterMuted?'1':'0');}catch{}
+ document.querySelectorAll('audio').forEach(el=>{el.muted=masterMuted;if(masterMuted)el.pause();});
+ if(masterMuted){stopCafeCueTimer();if(window.speechSynthesis)window.speechSynthesis.cancel();if(dominoAudioContext?.state==='running')dominoAudioContext.suspend().catch(()=>{});toast('تم كتم أصوات الدومينو والقهوة.');}
+ else{if(dominoAudioContext?.state==='suspended')dominoAudioContext.resume().catch(()=>{});if(ambienceEnabled)startCafeAmbience(false);toast('الصوت رجع يا معلم.');}
+ syncMasterSoundButton();syncSoundSettings();
+}
+function playDominoWoodFallback(which,scale=1){
+ if(masterMuted)return;
+ const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+ try{
+  if(!dominoAudioContext)dominoAudioContext=new Ctx();
+  const ctx=dominoAudioContext;if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+  const now=ctx.currentTime,base=Math.max(.08,Math.min(1,volume*scale));
+  const impact=(at,strength=1,pitch=760)=>{
+   const duration=.055,sr=ctx.sampleRate,buffer=ctx.createBuffer(1,Math.max(1,Math.floor(sr*duration)),sr),data=buffer.getChannelData(0);
+   for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/(sr*.009));
+   const noise=ctx.createBufferSource();noise.buffer=buffer;
+   const filter=ctx.createBiquadFilter();filter.type='bandpass';filter.frequency.setValueAtTime(pitch,at);filter.Q.value=1.15;
+   const gain=ctx.createGain();gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(Math.max(.001,.17*base*strength),at+.0015);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+   noise.connect(filter);filter.connect(gain);gain.connect(ctx.destination);noise.start(at);noise.stop(at+duration);
+   const tone=ctx.createOscillator(),tg=ctx.createGain();tone.type='triangle';tone.frequency.setValueAtTime(pitch*.72,at);tone.frequency.exponentialRampToValueAtTime(Math.max(90,pitch*.28),at+.04);tg.gain.setValueAtTime(.0001,at);tg.gain.exponentialRampToValueAtTime(.045*base*strength,at+.002);tg.gain.exponentialRampToValueAtTime(.0001,at+.045);tone.connect(tg);tg.connect(ctx.destination);tone.start(at);tone.stop(at+.05);
+  };
+  if(which==='place'){impact(now,1,850);impact(now+.045,.56,620);}
+  else if(which==='draw'){impact(now,.52,520);}
+  else if(which==='pass'){impact(now,.28,430);}
+  else {impact(now,.8,800);impact(now+.12,.65,1050);impact(now+.24,.8,900);}
+ }catch(e){console.debug('Domino sound fallback unavailable',e);}
+}
+function playFx(which,scale=1){if(masterMuted||!fxEnabled)return;const el=$({place:'placeAudio',draw:'drawAudio',pass:'passAudio',win:'winAudio'}[which]);if(!el){playDominoWoodFallback(which,scale);return;}try{el.pause();el.currentTime=0;el.volume=Math.max(0,Math.min(1,volume*scale));el.muted=false;const p=el.play();if(p&&p.catch)p.catch(()=>playDominoWoodFallback(which,scale));}catch{playDominoWoodFallback(which,scale);}}
+function playCafeClip(id,scale=.34,showError=false){if(masterMuted)return;const el=$(id);if(!el)return;try{el.pause();el.currentTime=0;const layer=(id==='teaStirAudio'||id==='teaPourAudio'||id==='cupSaucerAudio'||id==='teaMixAudio')?teaMix:1;el.volume=Math.max(0,Math.min(1,volume*layer*scale));el.muted=false;const p=el.play();if(p&&p.catch)p.catch(()=>{if(showError)toast('تعذر تحميل المقطع الصوتي؛ تأكد من الإنترنت ثم جرّب مرة أخرى.');});}catch{if(showError)toast('تعذر تشغيل المقطع الصوتي على هذا الجهاز.');}}
 function stopCafeCueTimer(){if(cafeCueTimer){clearTimeout(cafeCueTimer);cafeCueTimer=null;}}
-function scheduleCafeCue(){stopCafeCueTimer();if(!ambienceEnabled||!teaCuesEnabled)return;const delay=cafeCueFirst?(4500+Math.random()*4500):(16000+Math.random()*18000);cafeCueFirst=false;cafeCueTimer=setTimeout(()=>{if(!ambienceEnabled||!teaCuesEnabled)return;const cues=[['teaStirAudio',.60],['teaPourAudio',.45],['cupSaucerAudio',.48],['teaMixAudio',.55]];let candidates=cues.filter(c=>c[0]!==lastCafeCue);const cue=candidates[Math.floor(Math.random()*candidates.length)]||cues[0];lastCafeCue=cue[0];playCafeClip(cue[0],cue[1],false);scheduleCafeCue();},delay);}
-function toggleAmbience(on){ambienceEnabled=!!on;const room=$('ambienceAudio'),talk=$('cafeTalkAudio');room.volume=volume*ambientMix*.34;talk.volume=volume*ambientMix*.48;if(ambienceEnabled){const p1=room.play();const p2=talk.play();if((p1&&p1.catch)||(p2&&p2.catch)){Promise.allSettled([p1,p2].filter(Boolean)).then(results=>{if(results.some(r=>r.status==='rejected'&&r.reason?.name!=='AbortError'))toast('بعض أصوات القهوة لم تُحمّل؛ تأكد من اتصال الإنترنت.');});}cafeCueFirst=true;scheduleCafeCue();}else{room.pause();talk.pause();stopCafeCueTimer();['teaStirAudio','teaPourAudio','cupSaucerAudio','teaMixAudio'].forEach(id=>{const el=$(id);if(el){el.pause();el.currentTime=0;}});}syncSoundSettings();}
-function syncSoundSettings(){$('fxEnabled').checked=fxEnabled;$('ambienceEnabled').checked=ambienceEnabled;$('teaCuesEnabled').checked=teaCuesEnabled;$('calloutEnabled').checked=calloutEnabled;$('volumeSlider').value=Math.round(volume*100);$('volumeValue').textContent=Math.round(volume*100)+'%';if($('ambientSlider'))$('ambientSlider').value=Math.round(ambientMix*100);if($('ambientValue'))$('ambientValue').textContent=Math.round(ambientMix*100)+'%';if($('teaSlider'))$('teaSlider').value=Math.round(teaMix*100);if($('teaValue'))$('teaValue').textContent=Math.round(teaMix*100)+'%';}
+function scheduleCafeCue(){stopCafeCueTimer();if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const delay=cafeCueFirst?(4500+Math.random()*4500):(16000+Math.random()*18000);cafeCueFirst=false;cafeCueTimer=setTimeout(()=>{if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const cues=[['teaStirAudio',.60],['teaPourAudio',.45],['cupSaucerAudio',.48],['teaMixAudio',.55]];let candidates=cues.filter(c=>c[0]!==lastCafeCue);const cue=candidates[Math.floor(Math.random()*candidates.length)]||cues[0];lastCafeCue=cue[0];playCafeClip(cue[0],cue[1],false);scheduleCafeCue();},delay);}
+async function startCafeAmbience(showErrors=false){
+ if(masterMuted||!ambienceEnabled)return false;
+ const room=$('ambienceAudio'),talk=$('cafeTalkAudio');if(!room||!talk)return false;
+ room.volume=volume*ambientMix*.34;talk.volume=volume*ambientMix*.48;room.muted=false;talk.muted=false;
+ const attempts=[room,talk].map(el=>{try{return Promise.resolve(el.play()).then(()=>({ok:true,el}),err=>({ok:false,el,err}));}catch(err){return Promise.resolve({ok:false,el,err});}});
+ const results=await Promise.all(attempts),success=results.some(r=>r.ok),failed=results.some(r=>!r.ok);
+ if(success){scheduleCafeCue();}
+ if(failed&&!showErrors)installCafeGestureRetry();
+ if(!success&&showErrors)toast('المتصفح أو مصدر الصوت منع التشغيل؛ جرّب مرة أخرى أو تحقق من الاتصال.');
+ return success;
+}
+function installCafeGestureRetry(){
+ if(cafeGestureRetry)return;
+ cafeGestureRetry=async e=>{
+  if(masterMuted||!ambienceEnabled)return;
+  if(e?.target?.closest?.('#masterSoundBtn'))return;
+  const ok=await startCafeAmbience(false);
+  if(ok){document.removeEventListener('pointerdown',cafeGestureRetry,true);document.removeEventListener('keydown',cafeGestureRetry,true);cafeGestureRetry=null;}
+ };
+ document.addEventListener('pointerdown',cafeGestureRetry,true);document.addEventListener('keydown',cafeGestureRetry,true);
+}
+function attemptCafeAutoplay(){if(masterMuted||!ambienceEnabled)return;startCafeAmbience(false).then(ok=>{if(!ok||masterMuted)installCafeGestureRetry();});}
+function toggleAmbience(on){
+ ambienceEnabled=!!on;try{localStorage.setItem('aq-domino-ambience',ambienceEnabled?'1':'0');}catch{}
+ const room=$('ambienceAudio'),talk=$('cafeTalkAudio');
+ if(ambienceEnabled){if(masterMuted){toast('الصوت مكتوم؛ اضغط زر 🔇 أعلى الصفحة لإعادته.');syncSoundSettings();return;}cafeCueFirst=true;startCafeAmbience(true);}
+ else{room.pause();talk.pause();stopCafeCueTimer();['teaStirAudio','teaPourAudio','cupSaucerAudio','teaMixAudio'].forEach(id=>{const el=$(id);if(el){el.pause();el.currentTime=0;}});}
+ syncSoundSettings();
+}
+function syncSoundSettings(){
+ $('fxEnabled').checked=fxEnabled;$('ambienceEnabled').checked=ambienceEnabled;$('teaCuesEnabled').checked=teaCuesEnabled;$('calloutEnabled').checked=calloutEnabled;
+ $('volumeSlider').value=Math.round(volume*100);$('volumeValue').textContent=Math.round(volume*100)+'%';
+ if($('ambientSlider'))$('ambientSlider').value=Math.round(ambientMix*100);if($('ambientValue'))$('ambientValue').textContent=Math.round(ambientMix*100)+'%';
+ if($('teaSlider'))$('teaSlider').value=Math.round(teaMix*100);if($('teaValue'))$('teaValue').textContent=Math.round(teaMix*100)+'%';
+ syncMasterSoundButton();
+}
 function testTileSound(){playFx('place');}
-function testCafeTalk(){const el=$('cafeTalkAudio');if(!el)return;try{if(ambienceEnabled){toast('همهمة القهوة شغالة بالفعل.');return;}clearTimeout(cafeTalkPreviewTimer);el.pause();el.currentTime=0;el.volume=Math.min(1,volume*ambientMix*.62);const p=el.play();if(p&&p.catch)p.catch(()=>toast('تعذر تحميل تسجيل الكلام البعيد؛ تحقق من الإنترنت.'));cafeTalkPreviewTimer=setTimeout(()=>{if(!ambienceEnabled){el.pause();el.currentTime=0;}},9000);}catch{toast('تعذر تشغيل عينة الكلام على هذا الجهاز.');}}
+function testCafeTalk(){if(masterMuted){toast('الصوت مكتوم؛ شغّله من الزر أعلى الصفحة.');return;}const el=$('cafeTalkAudio');if(!el)return;try{if(ambienceEnabled){toast('همهمة القهوة شغالة بالفعل.');return;}clearTimeout(cafeTalkPreviewTimer);el.pause();el.currentTime=0;el.volume=Math.min(1,volume*ambientMix*.62);const p=el.play();if(p&&p.catch)p.catch(()=>toast('تعذر تحميل تسجيل الكلام البعيد؛ تحقق من الإنترنت.'));cafeTalkPreviewTimer=setTimeout(()=>{if(!ambienceEnabled){el.pause();el.currentTime=0;}},9000);}catch{toast('تعذر تشغيل عينة الكلام على هذا الجهاز.');}}
 function testTeaStir(){playCafeClip('teaStirAudio',.82,true);}
 function testTeaPour(){playCafeClip('teaPourAudio',.72,true);}
 function testCupClink(){playCafeClip('cupSaucerAudio',.78,true);}
-function testCallout(){if(!calloutEnabled){toast('فعّل خيار نداءات القهوة الأول.');return;}if(!('speechSynthesis'in window)){toast('جهازك لا يوفر صوت نطق عربي.');return;}try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('يا معلم، شاي خمسين على الترابيزة!');u.lang='ar-EG';u.rate=.86;u.pitch=.78;u.volume=volume;speechSynthesis.speak(u);}catch{toast('تعذر تشغيل النطق على هذا الجهاز.');}}
-function initSoundSettings(){try{chatSoundOn=localStorage.getItem('aq-domino-chat-sound')!=='0';fxEnabled=localStorage.getItem('aq-domino-fx')!=='0';ambienceEnabled=false;calloutEnabled=localStorage.getItem('aq-domino-callouts')==='1';teaCuesEnabled=localStorage.getItem('aq-domino-tea-cues')!=='0';volume=Number(localStorage.getItem('aq-domino-volume')||65)/100;ambientMix=Number(localStorage.getItem('aq-domino-ambient-mix')||80)/100;teaMix=Number(localStorage.getItem('aq-domino-tea-mix')||75)/100;}catch{}$('chatSoundBtn').textContent=chatSoundOn?'🔔 التنبيه شغال':'🔕 التنبيه مكتوم';$('fxEnabled').addEventListener('change',e=>{fxEnabled=e.target.checked;localStorage.setItem('aq-domino-fx',fxEnabled?'1':'0')});$('ambienceEnabled').addEventListener('change',e=>toggleAmbience(e.target.checked));$('teaCuesEnabled').addEventListener('change',e=>{teaCuesEnabled=e.target.checked;localStorage.setItem('aq-domino-tea-cues',teaCuesEnabled?'1':'0');if(ambienceEnabled){if(teaCuesEnabled){cafeCueFirst=true;scheduleCafeCue();}else stopCafeCueTimer();}});$('calloutEnabled').addEventListener('change',e=>{calloutEnabled=e.target.checked;localStorage.setItem('aq-domino-callouts',calloutEnabled?'1':'0')});$('volumeSlider').addEventListener('input',e=>{volume=Number(e.target.value)/100;localStorage.setItem('aq-domino-volume',String(e.target.value));$('volumeValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});$('ambientSlider').addEventListener('input',e=>{ambientMix=Number(e.target.value)/100;localStorage.setItem('aq-domino-ambient-mix',String(e.target.value));$('ambientValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});$('teaSlider').addEventListener('input',e=>{teaMix=Number(e.target.value)/100;localStorage.setItem('aq-domino-tea-mix',String(e.target.value));$('teaValue').textContent=e.target.value+'%';});}
-
+function testCallout(){if(masterMuted){toast('الصوت مكتوم؛ شغّله من الزر أعلى الصفحة.');return;}if(!calloutEnabled){toast('فعّل خيار نداءات القهوة الأول.');return;}if(!('speechSynthesis'in window)){toast('جهازك لا يوفر صوت نطق عربي.');return;}try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('يا معلم، شاي خمسين على الترابيزة!');u.lang='ar-EG';u.rate=.86;u.pitch=.78;u.volume=volume;speechSynthesis.speak(u);}catch{toast('تعذر تشغيل النطق على هذا الجهاز.');}}
+function initSoundSettings(){
+ try{chatSoundOn=localStorage.getItem('aq-domino-chat-sound')!=='0';fxEnabled=localStorage.getItem('aq-domino-fx')!=='0';masterMuted=localStorage.getItem('aq-domino-master-muted')==='1';ambienceEnabled=localStorage.getItem('aq-domino-ambience')!=='0';calloutEnabled=localStorage.getItem('aq-domino-callouts')==='1';teaCuesEnabled=localStorage.getItem('aq-domino-tea-cues')!=='0';volume=Number(localStorage.getItem('aq-domino-volume')||65)/100;ambientMix=Number(localStorage.getItem('aq-domino-ambient-mix')||80)/100;teaMix=Number(localStorage.getItem('aq-domino-tea-mix')||75)/100;}catch{}
+ document.querySelectorAll('audio').forEach(el=>el.muted=masterMuted);
+ $('chatSoundBtn').textContent=chatSoundOn?'🔔 التنبيه شغال':'🔕 التنبيه مكتوم';
+ $('fxEnabled').addEventListener('change',e=>{fxEnabled=e.target.checked;localStorage.setItem('aq-domino-fx',fxEnabled?'1':'0');});
+ $('ambienceEnabled').addEventListener('change',e=>toggleAmbience(e.target.checked));
+ $('teaCuesEnabled').addEventListener('change',e=>{teaCuesEnabled=e.target.checked;localStorage.setItem('aq-domino-tea-cues',teaCuesEnabled?'1':'0');if(ambienceEnabled){if(teaCuesEnabled){cafeCueFirst=true;scheduleCafeCue();}else stopCafeCueTimer();}});
+ $('calloutEnabled').addEventListener('change',e=>{calloutEnabled=e.target.checked;localStorage.setItem('aq-domino-callouts',calloutEnabled?'1':'0');});
+ $('volumeSlider').addEventListener('input',e=>{volume=Number(e.target.value)/100;localStorage.setItem('aq-domino-volume',String(e.target.value));$('volumeValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});
+ $('ambientSlider').addEventListener('input',e=>{ambientMix=Number(e.target.value)/100;localStorage.setItem('aq-domino-ambient-mix',String(e.target.value));$('ambientValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});
+ $('teaSlider').addEventListener('input',e=>{teaMix=Number(e.target.value)/100;localStorage.setItem('aq-domino-tea-mix',String(e.target.value));$('teaValue').textContent=e.target.value+'%';});
+ syncMasterSoundButton();
+}
 function openMusic(){openModal('radioModal');if(!currentRadioStation){const hint=$('radioNowHint');if(hint)hint.textContent='اختار محطة من القائمة. كل لاعب يختار محطته على جهازه.';}}
 function openRadioModal(){openMusic();}
 function closeRadioModal(){closeModal('radioModal');}
@@ -1278,7 +1531,7 @@ function makeRoomKey(code){return 'games/domino_'+code;}
 function playerIdFor(code){try{const key='aq-domino-pid-'+code;let id=localStorage.getItem(key);if(!id){id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);localStorage.setItem(key,id);}return id;}catch{return 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);}}
 async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();closeModal('onlineModal');toast('القعدة اتعملت! ابعت الكود لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+(e?.message||'تحقق من اتصال Firebase وصلاحيات قاعدة البيانات.');}}
 async function joinOnlineRoom(){const msg=$('onlineMessage');let code=$('onlineCode').value.trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'').slice(0,6);if(code.length<5){msg.textContent='اكتب كود القعدة كاملًا.';return;}msg.textContent='بدور على القعدة...';try{await ensureFirebase();const ref=db.ref(makeRoomKey(code));const snap=await ref.once('value');const room=snap.val();if(!room||room.gameType!=='domino'){msg.textContent='القعدة غير موجودة؛ تأكد من الكود.';return;}const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const id=playerIdFor(code);if(room.players?.[id]){onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(room.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast('رجعت للقعدة الموجودة على جهازك.');return;}let added=false;await new Promise((resolve,reject)=>ref.transaction(current=>{if(!current||current.gameType!=='domino')return;const next=clone(current);const ids=next.turnOrder||Object.keys(next.players||{});if(next.status!=='waiting'||ids.length>=2)return;next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};next.turnOrder=[...ids,id];dealRound(next);next.chat=Array.isArray(next.chat)?next.chat:[];next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} دخل القعدة. يلا نلعب!`,at:Date.now()});next.chat=next.chat.slice(-35);added=true;return next;},(err,ok)=>{if(err)reject(err);else resolve(!!ok);},false));const latest=(await ref.once('value')).val();if(!latest||!latest.players?.[id]){msg.textContent=latest?.status==='playing'?'القعدة بدأت بالفعل ومكتملة بلاعبين.':'تعذر الانضمام: القعدة قد تكون اكتملت أو صلاحيات Firebase تمنع ذلك.';return;}onlineRef=ref;onlineGame=latest;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(latest.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast(added?'دخلت القعدة بنجاح.':'تم الاتصال بالقعدة.');}catch(e){msg.textContent='تعذر الانضمام: '+(e?.message||'تحقق من الاتصال والصلاحيات.');}}
-function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online')receiveOnlineChat(g);onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+(err.message||'اتصال أو صلاحيات')));$('onlineMessage').textContent='';render();}
+function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+(err.message||'اتصال أو صلاحيات')));$('onlineMessage').textContent='';render();}
 async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'لم تُحفظ الحركة؛ حاول مرة أخرى.');return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+(e?.message||'تحقق من الاتصال.'));}}
 function loadOnlineFromQuery(){const params=new URLSearchParams(location.search);const code=params.get('room');if(code){$('onlineCode').value='DOM-'+code.toUpperCase();$('onlineName').value=localStorage.getItem('aq-domino-name')||'ضيف';openModal('onlineModal');}}
 function bindEvents(){ $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.overlay:not(.hidden)').forEach(x=>x.classList.add('hidden'));}});document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.add('hidden')}));window.addEventListener('beforeunload',()=>{if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);});}
@@ -1347,7 +1600,7 @@ function bindDominoDrag(){
 
 function showComingSoon(name){toast(`${name} قريبًا على ع القهوة — بنجهّزها لك!`);}
 function editProfileName(){const current=localStorage.getItem('aq-domino-name')||mePlayer(currentGame())?.name||'محمد';const name=prompt('اكتب اسمك على ع القهوة',current);if(name===null)return;const clean=String(name).trim().slice(0,20);if(!clean){toast('اكتب اسمًا صالحًا.');return;}localStorage.setItem('aq-domino-name',clean);if(mode==='local'&&localGame?.players?.me)localGame.players.me.name=clean;render();toast('اتحدّث اسمك على القهوة.');}
-function init(){if(!localStorage.getItem('aq-domino-avatar'))localStorage.setItem('aq-domino-avatar','curly-man');const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';document.body.dataset.tableSkin=localStorage.getItem('aq-domino-table-skin')||'wood';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();bindDominoDrag();renderSkinStrip();createLocalGame(true);$('leftPanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();}
+function init(){if(!localStorage.getItem('aq-domino-avatar'))localStorage.setItem('aq-domino-avatar','curly-man');const target=Number(localStorage.getItem('aq-domino-target')||100);targetScore=[50,100,150].includes(target)?target:100;difficulty=localStorage.getItem('aq-domino-difficulty')||'normal';document.body.dataset.skin=localStorage.getItem('aq-domino-skin')||'ivory';document.body.dataset.tableSkin=localStorage.getItem('aq-domino-table-skin')||'wood';$('targetSelect').value=String(targetScore);$('difficultySelect').value=difficulty;initSoundSettings();bindEvents();bindDominoDrag();renderSkinStrip();createLocalGame(true);$('leftPanel').classList.toggle('mobile-open',chatOpen&&window.matchMedia('(max-width:760px)').matches);loadOnlineFromQuery();attemptCafeAutoplay();window.addEventListener('resize',()=>{clearTimeout(chainResizeTimer);chainResizeTimer=setTimeout(()=>{const g=currentGame();if(g)renderChain(g);},120);});}
 window.addEventListener('DOMContentLoaded',init);
 </script>
 <script src="./landscape-mode.js"></script>
