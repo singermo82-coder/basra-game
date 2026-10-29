@@ -1679,70 +1679,54 @@ async function joinOnlineRoom(){
  const code=(input.value||'').trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'');
  if(code.length!==6){msg.textContent='الكود لازم يكون 6 حروف وأرقام.';return;}
  input.value='DOM-'+code;
- msg.textContent='جاري التحقق من القعدة...';
+ msg.textContent='بنتأكد إن القعدة موجودة...';
  try{
   await ensureFirebase();
   const ref=db.ref(makeRoomKey(code));
   const name=($('onlineName').value.trim()||'ضيف').slice(0,20);
   localStorage.setItem('aq-domino-name',name);
-  // Read existing room first: no writes to non-existent room or unrelated Basra rooms.
   let room=(await ref.once('value')).val();
-  if(!room||room.gameType!=='domino'){msg.textContent='الكود غير موجود. اعمل قعدة جديدة وابعته لصاحبك.';return;}
-  const id=playerIdFor(code);
-  const playersRef=ref.child('players');
+  if(!room||room.gameType!=='domino'){
+   msg.textContent='كود القعدة مش موجود. استخدم الكود الجديد اللي صاحبك نسخه.';return;
+  }
+  let id=playerIdFor(code);
+  const entries=Object.keys(room.players||{});
+  if(id===room.hostId){
+   // A duplicated tab/profile cannot silently become the host's guest.
+   // An existing host session should rejoin as its own seat.
+   if(entries.length===1){msg.textContent='دي قعدتك أنت بالفعل. افتحها من جهاز صاحبك أو متصفح مختلف.';return;}
+  }
   if(!room.players?.[id]){
-   if(room.status!=='waiting'||Object.keys(room.players||{}).length!==1){msg.textContent='القعدة بدأت أو مكتملة. اطلب كود جديد.';return;}
-   msg.textContent='تم العثور على القعدة، جاري إضافة اللاعب الثاني...';
-   // Explicitly warm the child-path cache before Firebase's optimistic transaction.
-   await playersRef.once('value');
-   let reason='';
-   const result=await new Promise((resolve,reject)=>{
-    playersRef.transaction(current=>{
-     // Initial null can be a local-cache placeholder; abort to avoid replacing the host.
-     if(!current){reason='بيانات اللاعبين لم تُحمّل بعد.';return;}
-     const ids=Object.keys(current);
-     if(current[id])return current;
-     if(ids.length!==1){reason='القعدة مكتملة أو لاعب آخر سبقك.';return;}
-     return {...current,[id]:{id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]}};
-    },(error,committed,snap)=>error?reject(error):resolve({committed,snap}),false);
-   });
-   // An aborted transaction isn't a success. Confirm the authoritative database read.
-   const verified=(await playersRef.once('value')).val();
-   if(!verified?.[id]){
-    msg.textContent='تعذر تسجيل اللاعب: '+(reason||'لم تُقبل عملية الانضمام. جرّب قعدة جديدة.');
+   if(room.status!=='waiting'||entries.length!==1){
+    msg.textContent='القعدة مش متاحة للانضمام: '+(room.status!=='waiting'?'اللعب بدأ بالفعل.':'فيه لاعبين بالفعل.');
     return;
+   }
+   msg.textContent='لقينا القعدة! بنسجّل اللاعب الثاني...';
+   // Do NOT transaction() at /players: empty local cache previously caused
+   // the transaction to abort despite the room being present on the server.
+   // A single-leaf set() writes and awaits server acknowledgment.
+   const guest={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};
+   await ref.child('players').child(id).set(guest);
+   const verified=(await ref.child('players').child(id).once('value')).val();
+   if(!verified||verified.id!==id){
+    msg.textContent='الخادم لم يؤكد إضافة اللاعب الثاني. حاول مرة تانية.';return;
    }
   }
   room=(await ref.once('value')).val();
-  if(!room?.players?.[id]){msg.textContent='لم يتم حفظ تسجيل اللاعب في القعدة.';return;}
-  // Establish local session FIRST so a successful join remains connected even
-  // if the round-start transaction is retried from the host or another client.
+  if(!room?.players?.[id]){msg.textContent='لم تظهر بياناتك في الغرفة بعد الحفظ.';return;}
   if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);
   onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;
   lastChatCount=Array.isArray(room.chat)?room.chat.length:0;
-  startOnlineListener();closeModal('onlineModal');
-  toast('✅ اتصلت بالقعدة! جاري تجهيز الجولة.');
-  if(room.status==='waiting'&&Object.keys(room.players||{}).length===2){
-   // Initialize once. Never roll back a successfully registered guest if the
-   // Firebase local cache momentarily does not have the entire room.
-   try{
-    await ref.once('value');
-    await new Promise((resolve,reject)=>ref.transaction(current=>{
-     if(!current||current.status!=='waiting'||Object.keys(current.players||{}).length!==2)return;
-     const next=clone(current),ids=Object.keys(next.players);
-     next.turnOrder=[next.hostId,...ids.filter(p=>p!==next.hostId)];
-     if(next.turnOrder.length!==2||!next.players[next.turnOrder[0]]||!next.players[next.turnOrder[1]])return;
-     dealRound(next);
-     next.chat=Array.isArray(next.chat)?next.chat:[];
-     next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:name+' انضم للقعدة. يلا نلعب!',at:Date.now()});
-     next.chat=next.chat.slice(-35);
-     return next;
-    },(err,committed)=>err?reject(err):resolve(committed),false));
-    const latest=(await ref.once('value')).val();
-    if(latest?.status==='waiting')toast('تم انضمامك، لكن الجولة لم تبدأ بعد. خلي صاحبك يحدّث القعدة.');
-   }catch(startErr){console.warn('Domino round start pending',startErr);toast('انضمامك نجح، لكن بداية الجولة متأخرة: '+aqOnlineError(startErr));}
-  }
- }catch(e){msg.textContent='تعذر الانضمام: '+aqOnlineError(e);console.error('Domino join error',e);}
+  closeModal('onlineModal');
+  startOnlineListener();
+  toast('✅ دخلت القعدة. بنبدأ اللعب...');
+  // Server-confirmed first registration, followed by independent game start.
+  if(room.status==='waiting'&&Object.keys(room.players||{}).length===2)
+   await aqStartWaitingRoom();
+ }catch(e){
+  msg.textContent='فشل الدخول: '+aqOnlineError(e)+' ('+(e?.code||e?.message||'UNKNOWN')+')';
+  console.error('Domino join error',e);
+ }
 }
 
 async function aqStartWaitingRoom(){if(!onlineRef||!onlineGame||onlineGame.status!=='waiting'||Object.keys(onlineGame.players||{}).length!==2)return;try{await onlineRef.once('value');await new Promise((resolve,reject)=>onlineRef.transaction(current=>{if(!current||current.status!=='waiting'||Object.keys(current.players||{}).length!==2)return;const next=clone(current);next.turnOrder=[next.hostId,...Object.keys(next.players).filter(x=>x!==next.hostId)];if(next.turnOrder.length!==2||next.turnOrder.some(x=>!next.players[x]))return;dealRound(next);return next;},(err)=>err?reject(err):resolve(),false));}catch(e){console.error('round start',e);}}
