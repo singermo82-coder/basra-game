@@ -1,3 +1,16 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ع القهوة — الصفحة الأصلية</title><style>body{background:#241006;color:#ffe2aa;font:18px Tahoma,Arial;text-align:center;padding:15vh 16px}a{color:#ffca6f}</style></head><body><p>☕ جاري فتح تصميم «ع القهوة» الأصلي…</p><p id="error" hidden>تعذر تحميل التصميم الأصلي. <a href="https://github.com/singermo82-coder/basra-game/blob/ab5c81279de9d2dc3b33ecbf07c42f9e1cbda6c3/index.html">عرض النسخة الأصلية على GitHub</a></p><script>
-(async()=>{try{const u='https://raw.githubusercontent.com/singermo82-coder/basra-game/ab5c81279de9d2dc3b33ecbf07c42f9e1cbda6c3/index.html';let r=await fetch(u,{cache:'force-cache'});if(!r.ok)throw Error('HTTP '+r.status);let original=await r.text();if(!/<html[\s>]/i.test(original))throw Error('Not HTML');let base='<base href="https://singermo82-coder.github.io/basra-game/">';original=original.replace(/<head([^>]*)>/i,'<head$1>'+base);original=original.replace(/<\/body>/i, '<script src="./ahwa-home-radio.js" defer><\/script><\/body>');document.open();document.write(original);document.close()}catch(err){console.error('Cannot fetch original page:',err);document.querySelector('#error').hidden=false}})();
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ع القهوة — تشغيل سكرو</title><style>body{background:#180b06;color:#ffdaa0;font:16px Cairo,Tahoma,Arial;text-align:center;padding:12vh 12px}a{color:#ffc86d}</style></head><body><p>☕ جاري فتح قعدة ع القهوة…</p><p id="fallback" hidden>تعذر تحميل التصميم القديم من GitHub. <a href="https://github.com/singermo82-coder/basra-game/history/main/index.html">سجل الصفحة الرئيسية</a></p>
+<script>
+(async()=>{try{
+const source='https://raw.githubusercontent.com/singermo82-coder/basra-game/ab5c81279de9d2dc3b33ecbf07c42f9e1cbda6c3/index.html';
+const r=await fetch(source,{cache:'default'});if(!r.ok)throw Error('HTTP '+r.status);
+let html=await r.text();if(!/<html[\s>]/i.test(html))throw Error('invalid content');
+const patch=`<script>(function(){function activate(){let names=[...document.querySelectorAll('h2,h3,strong')];let title=names.find(n=>n.textContent.trim()==='سكرو');if(!title)return;let card=title;for(let i=0;i<5&&card.parentElement;i++){if((card.textContent||'').includes('قريبًا')&&(card.textContent||'').length<380)break;card=card.parentElement;}if(!card||card===document.body)return;
+let badge=[...card.querySelectorAll('*')].find(x=>x.children.length===0&&x.textContent.trim()==='قريبًا في القعدة');if(badge)badge.textContent='لعبة متاحة';
+let btn=[...card.querySelectorAll('button,a,span,div')].find(x=>x.children.length===0&&x.textContent.trim()==='قريبًا');if(btn){btn.textContent='● العب الآن ←';btn.style.cssText+=';background:linear-gradient(180deg,#0eae75,#05744e)!important;color:#fff!important;cursor:pointer!important;';btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.href='./skrew.html'});}
+if(card.tagName==='A'){card.href='./skrew.html';}else{card.style.cursor='pointer';card.addEventListener('click',e=>{if(e.target.closest('a[href]'))return;location.href='./skrew.html';});}
+}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',activate,{once:true});else activate();})();<\/script>`;
+html=html.replace(/<head([^>]*)>/i,'<head$1><base href="https://singermo82-coder.github.io/basra-game/">');
+html=html.replace(/<\/body>/i,patch+'</body>');
+document.open();document.write(html);document.close();
+}catch(err){console.error(err);document.querySelector('#fallback').hidden=false;}})();
 </script></body></html>
