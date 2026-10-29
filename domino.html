@@ -1331,8 +1331,9 @@ function tileSet(){const out=[];for(let a=0;a<=6;a++)for(let b=a;b<=6;b++)out.pu
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pipSum(hand){return (hand||[]).reduce((s,t)=>s+t.a+t.b,0);}
 function dealRound(g){const ids=g.turnOrder;const deck=shuffle(tileSet());ids.forEach(id=>{g.players[id].hand=[];});g.boneyard=[];g.chain=[];g.openLeft=null;g.openRight=null;g.requiredOpeningId=null;g.consecutivePasses=0;g.round=(g.round||0)+1;g.roundWinner=null;g.roundMessage='';g.status='playing';ids.forEach((id,i)=>{g.players[id].hand=deck.splice(0,7);});g.boneyard=deck;
- let best=null;for(const id of ids){for(const t of g.players[id].hand){let v=t.a===t.b?100+t.a*2:t.a+t.b;if(!best||v>best.v)best={id,t,v};}}
- g.current=best.id;g.requiredOpeningId=best.t.id;g.openingPlayer=best.id;g.lastAction='';g.updatedAt=Date.now();return g;}
+ // Egyptian friendly opening: the first player can place ANY tile in their hand.
+ // Do not lock opening to a double that may be held by the opponent.
+ g.current=ids[0];g.requiredOpeningId=null;g.openingPlayer=g.current;g.lastAction='';g.updatedAt=Date.now();return g;}
 function createLocalGame(resetScores=true){const meName=(localStorage.getItem('aq-domino-name')||'محمد').slice(0,20);const meAvatar=localStorage.getItem('aq-domino-avatar')||'curly-man';const old=localGame;const scores=resetScores||!old?{me:0,ai:0}:{me:old.players.me.score||0,ai:old.players.ai.score||0};localGame={gameType:'domino',mode:'local',code:'',turnOrder:['me','ai'],players:{me:{id:'me',name:meName,avatar:meAvatar,score:scores.me,hand:[]},ai:{id:'ai',name:'المعلم زكي',avatar:'teacher',score:scores.ai,hand:[]}},targetScore,status:'playing',round:0,chain:[],boneyard:[],current:'me',openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,roundWinner:null,chat:[{id:'hello',player:'المعلم زكي',avatar:'👳🏻‍♂️',text:'يلا بينا يا معلم، قعدة دومينو بلدي!' ,at:Date.now()}]};dealRound(localGame);mode='local';onlineGame=null;myRoomCode='';selectedTileId=null;unread=0;chatOpen=window.matchMedia('(min-width:761px)').matches;render();if(localGame.current==='ai')scheduleAI(500);}
 function currentGame(){return mode==='online'?onlineGame:localGame;}
 function myId(){return mode==='online'?myOnlineId:'me';}
@@ -1340,7 +1341,7 @@ function opponentId(g){return g.turnOrder.find(id=>id!==myId())||g.turnOrder[0];
 function mePlayer(g){return g?.players?.[myId()];}
 function opPlayer(g){const g0=g;return g0?.players?.[opponentId(g0)];}
 function currentPlayer(g){return g?.players?.[g.current];}
-function legalActions(g,pid){if(!g||g.status!=='playing'||g.current!==pid)return[];const hand=g.players[pid]?.hand||[];if(!g.chain.length){const t=hand.find(x=>x.id===g.requiredOpeningId);return t?[{tileId:t.id,side:'center'}]:[];}const out=[];for(const t of hand){if(t.a===g.openRight)out.push({tileId:t.id,side:'right'});else if(t.b===g.openRight)out.push({tileId:t.id,side:'right'});if(t.b===g.openLeft)out.push({tileId:t.id,side:'left'});else if(t.a===g.openLeft)out.push({tileId:t.id,side:'left'});}return out;}
+function legalActions(g,pid){if(!g||g.status!=='playing'||g.current!==pid)return[];const hand=g.players[pid]?.hand||[];if(!g.chain.length){return hand.map(t=>({tileId:t.id,side:'center'}));}const out=[];for(const t of hand){if(t.a===g.openRight)out.push({tileId:t.id,side:'right'});else if(t.b===g.openRight)out.push({tileId:t.id,side:'right'});if(t.b===g.openLeft)out.push({tileId:t.id,side:'left'});else if(t.a===g.openLeft)out.push({tileId:t.id,side:'left'});}return out;}
 function applyAction(g,pid,action){if(!g||g.status!=='playing'||g.current!==pid)return{ok:false,reason:'مش دورك.'};const player=g.players[pid];if(!player)return{ok:false,reason:'اللاعب غير موجود.'};
  if(action.type==='draw'){if(legalActions(g,pid).length)return{ok:false,reason:'معاك قطعة تقدر تلعبها.'};if(!g.boneyard.length)return{ok:false,reason:'مفيش قطع في السحب؛ مرّر الدور.'};const drawn=g.boneyard.pop();player.hand.push(drawn);player.hand.sort((x,y)=>(x.a+x.b)-(y.a+y.b)||x.a-y.a);g.lastAction=`${player.name} سحب قطعة`;g.consecutivePasses=0;g.updatedAt=Date.now();return{ok:true,drawn};}
  if(action.type==='pass'){if(legalActions(g,pid).length)return{ok:false,reason:'عندك قطعة صالحة؛ العبها.'};if(g.boneyard.length)return{ok:false,reason:'اسحب قطعة قبل ما تمرّر.'};g.consecutivePasses++;g.lastAction=`${player.name} مرّر الدور`;if(g.consecutivePasses>=g.turnOrder.length)finishRound(g,null,true);else g.current=g.turnOrder[(g.turnOrder.indexOf(pid)+1)%g.turnOrder.length];g.updatedAt=Date.now();return{ok:true};}
@@ -1360,7 +1361,7 @@ function scheduleAI(ms=500){clearTimeout(aiTimer);if(mode!=='local'||!localGame|
 function aiTurn(){if(mode!=='local'||!localGame||localGame.status!=='playing'||localGame.current!=='ai')return;const g=localGame;let acts=legalActions(g,'ai');if(!acts.length&&g.boneyard.length){const r=applyAction(g,'ai',{type:'draw'});if(r.ok){playFx('draw',.65);render();scheduleAI(480);return;}}
  acts=legalActions(g,'ai');if(!acts.length){const r=applyAction(g,'ai',{type:'pass'});if(r.ok){playFx('pass',.55);appendLocalChat('المعلم زكي','teacher',g.status==='playing'?'مفيش قطعة راكبة يا معلم، همرّر الدور.':g.roundMessage);render();if(g.status!=='playing')showRoundResult(g);else scheduleAI(620);}return;}
  const act=aiPick(g);const result=applyAction(g,'ai',{type:'play',...act});if(result.ok){playFx('place',.7);maybeCallout(result.tile,'ai');render();if(g.status!=='playing'){showRoundResult(g);return;}scheduleAI(520);}else{toast(result.reason||'المعلم واجه مشكلة في الحركة؛ جاري المحاولة.');scheduleAI(700);}}
-function selectTile(id){const g=currentGame();if(!g||g.status!=='playing'||g.current!==myId())return;const t=mePlayer(g)?.hand.find(x=>x.id===id);if(!t)return;const acts=legalActions(g,myId()).filter(a=>a.tileId===id);if(!acts.length){toast(!g.chain.length&&g.requiredOpeningId?'لازم تبدأ بأعلى دوبل في إيدك.':'القطعة دي مش راكبة على أي طرف.');return;}if(acts.length===1&&(!g.chain.length||acts[0].side==='center')){selectedTileId=id;playSelected(acts[0].side);return;}selectedTileId=selectedTileId===id?null:id;render();}
+function selectTile(id){const g=currentGame();if(!g||g.status!=='playing'||g.current!==myId())return;const t=mePlayer(g)?.hand.find(x=>x.id===id);if(!t)return;const acts=legalActions(g,myId()).filter(a=>a.tileId===id);if(!acts.length){toast(!g.chain.length&&g.requiredOpeningId?'اختار أي قطعة من إيدك عشان تبدأ الجولة.':'القطعة دي مش راكبة على أي طرف.');return;}if(acts.length===1&&(!g.chain.length||acts[0].side==='center')){selectedTileId=id;playSelected(acts[0].side);return;}selectedTileId=selectedTileId===id?null:id;render();}
 function playSelected(side){const g=currentGame();if(!g||!selectedTileId)return;if(side==='center'&&g.chain.length) return;const action={type:'play',tileId:selectedTileId,side};selectedTileId=null;if(mode==='local'){localAction(action);return;}onlineAction(action);}
 function drawOne(){if(mode==='local'){localAction({type:'draw'});return;}onlineAction({type:'draw'});}
 function passTurn(){if(mode==='local'){localAction({type:'pass'});return;}onlineAction({type:'pass'});}
@@ -1437,7 +1438,7 @@ function renderChain(g){
  view.classList.add('aq-natural-viewport','aq-fit-viewport');
  track.removeAttribute('style');
  if(!chain.length){
-  track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';
+  track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأي قطعة من إيدك</small></div>';
   return;
  }
  // An adaptive serpentine layout: ALL pieces stay within the visible table.
