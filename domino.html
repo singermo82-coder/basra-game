@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2327170e'/%3E%3Ctext x='50' y='67' font-size='60' text-anchor='middle'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
-<title>ع القهوة | دومينو بلدي — الإصدار 3.9 — طاولة أكبر وصوت وشات مطوّر</title>
+<title>ع القهوة | دومينو بلدي — الإصدار 4.0 — طاولة واسعة وقطع كاملة ونظام صوت واقعي</title>
 <style>
 :root{--gold:#f4c56f;--gold2:#d99b35;--cream:#f8e9c7;--ink:#160d08;--panel:rgba(27,15,10,.93);--line:rgba(238,185,83,.48);--felt:#075b43;--felt2:#023a2b;--accent:#e4ad4b;--red:#821d24;--muted:#cbb58d;--tile-bg:#f3e4c4;--tile-dot:#171713;--tile-edge:#ad8950;--tile-text:#252018}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#130b07;color:var(--cream);font-family:"Tajawal","Cairo",Tahoma,Arial,sans-serif}body{background-image:linear-gradient(115deg,rgba(15,7,4,.79),rgba(16,8,4,.62)),url('./ahwa-night.webp');background-position:center;background-size:cover;background-attachment:fixed}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);color:var(--cream);background:linear-gradient(180deg,rgba(65,38,24,.94),rgba(22,13,9,.97));border-radius:12px;padding:8px 12px;box-shadow:inset 0 1px rgba(255,255,255,.07),0 5px 12px rgba(0,0,0,.25);transition:transform .12s,border-color .12s,filter .12s}button:hover{border-color:var(--gold);filter:brightness(1.12)}button:active{transform:translateY(1px)}button:disabled{opacity:.38;cursor:not-allowed;filter:grayscale(.5)}.primary{background:linear-gradient(180deg,#ffdf8a,#b97920);color:#261406;border-color:#ffdf8a;font-weight:900}.danger{background:linear-gradient(180deg,#9e3238,#511017)}.muted{color:var(--muted)}.small{font-size:12px}.hidden{display:none!important}
@@ -999,6 +999,46 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
  .bottom-hub{height:70px!important;min-height:70px!important;max-height:70px!important}
 }
 
+
+/* ===== AHWA 4.0: large game table / compact chat / full visible hand ===== */
+@media(min-width:761px){
+ #app{grid-template-rows:clamp(52px,6.5vh,66px) minmax(0,1fr) clamp(49px,6.5vh,62px)!important}
+ .layout{grid-template-columns:clamp(150px,15vw,235px) minmax(0,1fr) clamp(220px,20vw,305px)!important;gap:5px!important;direction:ltr!important}
+ .left-nav{grid-column:1!important;grid-row:1!important;min-width:0!important;overflow:hidden!important}
+ .arena{grid-column:2!important;grid-row:1!important;min-width:0!important;grid-template-rows:clamp(35px,5vh,46px) minmax(0,1fr) 122px clamp(31px,4vh,39px)!important;gap:4px!important}
+ .side-panel{grid-column:3!important;grid-row:1!important;min-width:0!important}
+ .left-nav .chat-tools{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important}
+ .left-nav .chat-tools button{min-width:0!important;padding:4px 2px!important;font-size:9px!important}
+ .left-nav .chat-msg{gap:4px!important;padding:5px!important;margin-inline:0!important}
+ .left-nav .chat-avatar{width:27px!important;height:27px!important;flex-basis:27px!important}
+ .left-nav .chat-text{font-size:10px!important}
+ .hand-zone{height:122px!important;min-height:122px!important;max-height:122px!important;grid-template-rows:18px minmax(72px,1fr) 27px!important;overflow:visible!important;padding:4px 8px!important}
+ .hand-track{height:100%!important;min-height:72px!important;overflow-x:auto!important;overflow-y:visible!important;align-items:center!important;justify-content:safe center!important;padding:9px 9px 5px!important;scrollbar-width:thin!important}
+ .hand-tile{height:60px!important;min-height:60px!important;max-height:60px!important;width:43px!important;min-width:43px!important;max-width:43px!important;flex:0 0 43px!important}
+ .hand-tile.selected{transform:translateY(-4px)!important}
+ .hand-tile:hover{transform:translateY(-2px)!important}
+ .hand-tile.selected:hover{transform:translateY(-4px)!important}
+ .actions-row{height:27px!important;min-height:27px!important;overflow:visible!important}
+}
+@media(max-width:1100px) and (min-width:761px){
+ .layout{grid-template-columns:clamp(125px,15vw,180px) minmax(0,1fr) clamp(190px,21vw,245px)!important}
+ .arena{grid-template-rows:35px minmax(0,1fr) 115px 32px!important}
+ .hand-zone{height:115px!important;min-height:115px!important;max-height:115px!important}
+ .hand-tile{width:38px!important;min-width:38px!important;max-width:38px!important;flex-basis:38px!important;height:57px!important;min-height:57px!important;max-height:57px!important}
+}
+@media(max-width:760px){
+ .arena{grid-template-rows:32px minmax(0,1fr) 108px 30px!important}
+ .hand-zone{height:108px!important;min-height:108px!important;max-height:108px!important;grid-template-rows:15px minmax(70px,1fr) 19px!important;overflow:visible!important}
+ .hand-track{height:100%!important;min-height:70px!important;overflow-x:auto!important;overflow-y:visible!important;padding:8px 4px 4px!important;align-items:center!important;justify-content:flex-start!important}
+ .hand-tile{height:57px!important;min-height:57px!important;max-height:57px!important;width:38px!important;min-width:38px!important;max-width:38px!important;flex-basis:38px!important}
+ .hand-tile.selected{transform:translateY(-3px)!important}
+}
+@media(max-width:390px){.arena{grid-template-rows:30px minmax(0,1fr) 103px 28px!important}.hand-zone{height:103px!important;min-height:103px!important;max-height:103px!important}.hand-track{min-height:67px!important}.hand-tile{height:54px!important;min-height:54px!important;max-height:54px!important}}
+.ahwa-audio-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.ahwa-audio-controls label{font-size:12px;color:#ffe2a0}
+.ahwa-audio-controls input[type=range]{width:110px;accent-color:#e6b54d}
+.ahwa-audio-controls button{font-size:12px}
+
 </style>
 </head>
 <body data-skin="ivory">
@@ -1023,6 +1063,7 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
    <span class="status-pill" id="connectionStatus">محلي 🟢</span>
    <button class="icon-btn top-action home-action" type="button" title="العودة إلى القائمة الرئيسية" onclick="window.location.href='./index.html'"><span>⌂</span><small>الرئيسية</small></button>
    <button class="icon-btn top-action master-sound-btn" id="masterSoundBtn" title="كتم الصوت" aria-label="كتم صوت اللعبة" onclick="toggleMasterMute()"><span id="masterSoundIcon">🔊</span><small id="masterSoundLabel">كتم الصوت</small></button>
+   <button class="icon-btn top-action hide-mobile" title="موسيقى القهوة من ملفاتك المرخّصة" onclick="ahwaOpenMusic()"><span>🎶</span><small>شعبي</small></button>
    <button class="icon-btn top-action" title="راديو القهوة" onclick="openMusic()"><span>📻</span><small>الراديو</small></button>
    <button class="icon-btn top-action hide-mobile chat-toggle" id="chatToggleBtn" title="فتح أو إخفاء شات القعدة" onclick="toggleChatPanel()"><span>💬</span><small>الشات</small><b id="chatTopUnread" class="badge-count hidden">0</b></button>
    <button class="icon-btn top-action" title="مشاركة القعدة" onclick="shareRoom()"><span>↗</span><small>مشاركة</small></button>
@@ -1132,10 +1173,12 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 <audio id="teaPourAudio" src="https://sounddino.com/mp3/43/the-sound-of-pouring-coffee-into-a-cup.mp3" preload="none"></audio>
 <audio id="cupSaucerAudio" src="https://sounddino.com/mp3/13/sound-coffee-cup-placed-on-a-saucer.mp3" preload="none"></audio>
 <audio id="teaMixAudio" src="https://sounddino.com/mp3/35/stir-tea-and-coffee-with-a-spoon.mp3" preload="none"></audio>
-<audio id="placeAudio" src="./domino-place.wav" preload="auto"></audio>
-<audio id="drawAudio" src="./domino-draw.wav" preload="auto"></audio>
-<audio id="passAudio" src="./domino-pass.wav" preload="auto"></audio>
-<audio id="winAudio" src="./domino-win.wav" preload="auto"></audio>
+<audio id="placeAudio" src="./audio/domino-place-1.wav" preload="auto"></audio>
+<audio id="drawAudio" src="./audio/domino-draw-1.wav" preload="auto"></audio>
+<audio id="passAudio" src="./audio/domino-pass-1.wav" preload="auto"></audio>
+<audio id="winAudio" src="./audio/domino-win-1.wav" preload="auto"></audio>
+<audio id="licensedMusicAudio" loop preload="none"></audio>
+<div id="ahwaMusicModal" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2>🎶 مزيكا القهوة</h2><p>اختار ملف صوت عندك ومرخّص لك استخدامه، أو من تأليفك. المتصفح لازم يستقبل ضغطة منك قبل التشغيل.</p><div class="field"><label for="ahwaMusicFile">ملف الموسيقى (MP3 / WAV / OGG)</label><input id="ahwaMusicFile" type="file" accept="audio/*" onchange="ahwaLoadMusic(this)"></div><div class="ahwa-audio-controls"><button class="primary" onclick="ahwaPlayMusic()">▶ تشغيل</button><button onclick="ahwaPauseMusic()">⏸ إيقاف مؤقت</button><label for="ahwaMusicVolume">مستوى الموسيقى</label><input id="ahwaMusicVolume" type="range" min="0" max="100" value="24" oninput="ahwaMusicGain(this.value)"></div><p class="tiny-note">أصوات القهوة والمؤثرات مستقلة عن المزيكا؛ لا توجد أغاني تجارية مرفقة.</p><div class="modal-actions"><button onclick="closeModal('ahwaMusicModal')">رجوع للعب</button></div></div></div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -1447,7 +1490,15 @@ function playDominoWoodFallback(which,scale=1){
   else {impact(now,.8,800);impact(now+.12,.65,1050);impact(now+.24,.8,900);}
  }catch(e){console.debug('Domino sound fallback unavailable',e);}
 }
-function playFx(which,scale=1){if(masterMuted||!fxEnabled)return;const el=$({place:'placeAudio',draw:'drawAudio',pass:'passAudio',win:'winAudio'}[which]);if(!el){playDominoWoodFallback(which,scale);return;}try{el.pause();el.currentTime=0;el.volume=Math.max(0,Math.min(1,volume*scale));el.muted=false;const p=el.play();if(p&&p.catch)p.catch(()=>playDominoWoodFallback(which,scale));}catch{playDominoWoodFallback(which,scale);}}
+const AHWA_FX_FILES={place:['./audio/domino-place-1.wav','./audio/domino-place-2.wav','./audio/domino-place-3.wav'],draw:['./audio/domino-draw-1.wav','./audio/domino-draw-2.wav'],pass:['./audio/domino-pass-1.wav'],win:['./audio/domino-win-1.wav']};
+const ahwaAudioPools={};let ahwaLastFx={};
+function playFx(which,scale=1){
+ if(masterMuted||!fxEnabled)return;
+ const options=AHWA_FX_FILES[which]||[];if(!options.length)return;
+ const choices=options.filter((_,i)=>i!==ahwaLastFx[which]);const index=choices.length?options.indexOf(choices[Math.floor(Math.random()*choices.length)]):0;ahwaLastFx[which]=index;
+ const file=options[index];const audio=ahwaAudioPools[file]||(ahwaAudioPools[file]=new Audio(file));
+ try{audio.pause();audio.currentTime=0;audio.volume=Math.min(1,Math.max(0,volume*scale*(.92+Math.random()*.1)));const playing=audio.play();if(playing&&playing.catch)playing.catch(()=>{});}catch(e){}
+}
 function playCafeClip(id,scale=.34,showError=false){if(masterMuted)return;const el=$(id);if(!el)return;try{el.pause();el.currentTime=0;const layer=(id==='teaStirAudio'||id==='teaPourAudio'||id==='cupSaucerAudio'||id==='teaMixAudio')?teaMix:1;el.volume=Math.max(0,Math.min(1,volume*layer*scale));el.muted=false;const p=el.play();if(p&&p.catch)p.catch(()=>{if(showError)toast('تعذر تحميل المقطع الصوتي؛ تأكد من الإنترنت ثم جرّب مرة أخرى.');});}catch{if(showError)toast('تعذر تشغيل المقطع الصوتي على هذا الجهاز.');}}
 function stopCafeCueTimer(){if(cafeCueTimer){clearTimeout(cafeCueTimer);cafeCueTimer=null;}}
 function scheduleCafeCue(){stopCafeCueTimer();if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const delay=cafeCueFirst?(4500+Math.random()*4500):(16000+Math.random()*18000);cafeCueFirst=false;cafeCueTimer=setTimeout(()=>{if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const cues=[['teaStirAudio',.60],['teaPourAudio',.45],['cupSaucerAudio',.48],['teaMixAudio',.55]];let candidates=cues.filter(c=>c[0]!==lastCafeCue);const cue=candidates[Math.floor(Math.random()*candidates.length)]||cues[0];lastCafeCue=cue[0];playCafeClip(cue[0],cue[1],false);scheduleCafeCue();},delay);}
@@ -1597,6 +1648,14 @@ function bindDominoDrag(){
   if(e.target.closest('.hand-tile')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();recentDragFinishAt=0;}
  },true);
 }
+
+
+let ahwaMusicObjectUrl=null;
+function ahwaOpenMusic(){openModal('ahwaMusicModal');}
+function ahwaLoadMusic(input){let f=input.files&&input.files[0];if(!f)return;if(!f.type.startsWith('audio/')){toast('اختار ملف صوت صالح');return;}const a=$('licensedMusicAudio');a.pause();if(ahwaMusicObjectUrl)URL.revokeObjectURL(ahwaMusicObjectUrl);ahwaMusicObjectUrl=URL.createObjectURL(f);a.src=ahwaMusicObjectUrl;a.volume=.24;toast('الموسيقى جاهزة — اضغط تشغيل');}
+function ahwaPlayMusic(){const a=$('licensedMusicAudio');if(!a.src){toast('اختار ملف موسيقى الأول');return;}if(masterMuted){toast('افتح الصوت من الزر أعلى الصفحة');return;}const p=a.play();if(p&&p.catch)p.catch(()=>toast('اضغط تشغيل مرة أخرى للسماح بالصوت'));}
+function ahwaPauseMusic(){$('licensedMusicAudio').pause();}
+function ahwaMusicGain(v){$('licensedMusicAudio').volume=Number(v)/100;}
 
 function showComingSoon(name){toast(`${name} قريبًا على ع القهوة — بنجهّزها لك!`);}
 function editProfileName(){const current=localStorage.getItem('aq-domino-name')||mePlayer(currentGame())?.name||'محمد';const name=prompt('اكتب اسمك على ع القهوة',current);if(name===null)return;const clean=String(name).trim().slice(0,20);if(!clean){toast('اكتب اسمًا صالحًا.');return;}localStorage.setItem('aq-domino-name',clean);if(mode==='local'&&localGame?.players?.me)localGame.players.me.name=clean;render();toast('اتحدّث اسمك على القهوة.');}
