@@ -1039,6 +1039,38 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 .ahwa-audio-controls input[type=range]{width:110px;accent-color:#e6b54d}
 .ahwa-audio-controls button{font-size:12px}
 
+
+/* v4.4 all domino pieces remain visible — no horizontal or vertical scrolling */
+.chain-viewport.aq-fit-viewport{
+ overflow:hidden!important; display:flex!important; align-items:center!important;
+ justify-content:center!important; min-width:0!important; min-height:0!important;
+ padding:5px 8px!important; scrollbar-width:none!important;
+}
+.aq-fit-viewport::-webkit-scrollbar{display:none!important}
+.chain-track.aq-fit-chain{
+ display:flex!important; flex-direction:column!important; flex-wrap:nowrap!important;
+ width:100%!important; max-width:100%!important; min-width:0!important;
+ height:auto!important; min-height:0!important; max-height:100%!important;
+ justify-content:center!important; align-items:center!important;
+ gap:var(--aq-row-gap,5px)!important; overflow:visible!important;
+ margin:auto!important; position:relative!important;
+}
+.aq-chain-line{
+ display:flex!important; flex-flow:row nowrap!important; align-items:center!important;
+ justify-content:center!important; flex:0 0 auto!important; width:100%!important;
+ min-width:0!important; height:calc(var(--aq-unit,36px)*2 + 5px)!important;
+ direction:ltr!important; gap:0!important;
+}
+.aq-chain-line.aq-chain-return{flex-direction:row-reverse!important}
+.aq-chain-line .aq-chain-slot{
+ flex-shrink:0!important; height:calc(var(--aq-unit,36px)*2 + 4px)!important;
+ display:flex!important; align-items:center!important; justify-content:center!important;
+}
+.aq-chain-line .aq-real-tile .dot{
+ width:clamp(2px,calc(var(--aq-unit,36px)*.12),5px)!important;
+ height:clamp(2px,calc(var(--aq-unit,36px)*.12),5px)!important;
+}
+
 </style>
 <style>
 /* ===== V4.3 – Natural domino table, clean playing-first interface ===== */
@@ -1386,31 +1418,56 @@ function buildConnectedChainLayout(chain, interiorCols){
 function renderChain(g){
  const track=$('chainTrack'),view=$('chainViewport'),chain=Array.isArray(g?.chain)?g.chain:[];
  track.replaceChildren();
+ track.classList.add('aq-natural-chain','aq-fit-chain');
+ view.classList.add('aq-natural-viewport','aq-fit-viewport');
  track.removeAttribute('style');
- track.classList.add('aq-natural-chain');
- view.classList.add('aq-natural-viewport');
- if(!chain.length){track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';return;}
- const available=Math.max(160,view.clientWidth-22);
- // Actual domino proportions: 2:1, not a 2-column grid or snake of square cells.
- const count=chain.length;
- const unit=Math.max(29,Math.min(52,Math.floor((available-24)/(Math.max(3,count)*1.32))));
- const baseH=unit;
+ if(!chain.length){
+  track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأعلى دوبل في إيدك</small></div>';
+  return;
+ }
+ // An adaptive serpentine layout: ALL pieces stay within the visible table.
+ // Logical order is preserved; odd rows turn back in the opposite direction.
+ const w=Math.max(150,view.clientWidth-20),h=Math.max(100,view.clientHeight-16);
+ const n=chain.length, maxRows=Math.min(n,7);
+ let best=null;
+ for(let rows=1;rows<=maxRows;rows++){
+  const cap=Math.ceil(n/rows);
+  // Width allowance uses worst case (non-double tile = two units).
+  const unit=Math.min(49,Math.floor((w-18)/(cap*2+0.4)));
+  const heightNeeded=rows*(unit*2+7)+Math.max(0,rows-1)*6;
+  if(unit<11||heightNeeded>h)continue;
+  const quality=unit-(rows-1)*1.2;
+  if(!best||quality>best.quality)best={rows,unit,quality};
+ }
+ if(!best){
+  const rows=maxRows,cap=Math.ceil(n/rows);
+  best={rows,unit:Math.max(8,Math.min(25,Math.floor((w-18)/(cap*2)),Math.floor((h-20)/(rows*2+1))))};
+ }
+ const {rows,unit}=best;
  track.style.setProperty('--aq-unit',unit+'px');
- chain.forEach(t=>{
-  const isDouble=Number(t.a)===Number(t.b);
-  const holder=document.createElement('div');holder.className='aq-chain-slot'+(isDouble?' aq-double-slot':'');
-  holder.innerHTML=tileHtml(t,'table','aq-real-tile');
-  const tile=holder.firstElementChild;
-  // Our default tile is horizontal: doubled tile is turned across the chain.
-  if(isDouble){tile.classList.add('aq-double');}
-  holder.style.flex='0 0 '+(isDouble?baseH:baseH*2)+'px';
-  track.append(holder);
- });
- requestAnimationFrame(()=>{
-   if(!view.isConnected)return;
-   // Keep latest pieces in view without obscuring earlier ones.
-   if(track.scrollWidth>view.clientWidth){view.scrollLeft=0;}
- });
+ track.style.setProperty('--aq-row-gap',Math.max(3,Math.round(unit*.18))+'px');
+ track.setAttribute('aria-label',`سلسلة الدومينو: ${n} قطعة ظاهرة بالكامل في ${rows} صف`);
+ const base=Math.floor(n/rows),extra=n%rows;
+ let cursor=0;
+ for(let r=0;r<rows;r++){
+  const size=base+(r<extra?1:0);
+  const pieces=chain.slice(cursor,cursor+size);
+  cursor+=size;
+  const line=document.createElement('div');
+  line.className='aq-chain-line'+(r%2?' aq-chain-return':'');
+  for(const t of pieces){
+   const double=Number(t.a)===Number(t.b);
+   const slot=document.createElement('div');
+   slot.className='aq-chain-slot'+(double?' aq-double-slot':'');
+   slot.style.flex='0 0 '+(double?unit:unit*2)+'px';
+   slot.innerHTML=tileHtml(t,'table','aq-real-tile');
+   if(double)slot.firstElementChild.classList.add('aq-double');
+   line.appendChild(slot);
+  }
+  track.appendChild(line);
+ }
+ view.scrollLeft=0;
+ view.scrollTop=0;
 }
 function updateButtonState(g,me,acts){const myTurn=g?.status==='playing'&&g.current===myId();const chosen=acts.filter(a=>a.tileId===selectedTileId);const sides=new Set(chosen.map(x=>x.side));$('playLeftBtn').disabled=!myTurn||!sides.has('left');$('playRightBtn').disabled=!myTurn||!sides.has('right');$('playCenterBtn').disabled=!myTurn||!sides.has('center');$('drawBtn').disabled=!myTurn||acts.length>0||!g.boneyard.length;$('passBtn').disabled=!myTurn||acts.length>0||g.boneyard.length>0;$('nextRoundBtn').disabled=!g||!['round-over','match-over'].includes(g.status);$('drawBtn').textContent=g?.boneyard?.length?`＋ اسحب قطعة (${g.boneyard.length})`:'السحب خلص';const hint=$('handHelp');if(!myTurn)hint.textContent=g.status==='playing'?'استنى دورك يا معلم':'الجولة انتهت';else if(!g.chain.length)hint.textContent=`ابدأ بأعلى دوبل: ${g.requiredOpeningId?.replace('-',' | ')||'—'}`;else if(acts.length)hint.textContent='اختار قطعة وحدّد الطرف';else if(g.boneyard.length)hint.textContent='مفيش قطعة راكبة — اسحب من الرصيد';else hint.textContent='مفيش حركة صالحة — مرّر الدور';}
 function renderStockPile(count){
@@ -1521,7 +1578,7 @@ function playFx(which,scale=1){
 }
 function playCafeClip(id,scale=.34,showError=false){if(masterMuted)return;const el=$(id);if(!el)return;try{el.pause();el.currentTime=0;const layer=(id==='teaStirAudio'||id==='teaPourAudio'||id==='cupSaucerAudio'||id==='teaMixAudio')?teaMix:1;el.volume=Math.max(0,Math.min(1,volume*layer*scale));el.muted=false;const p=el.play();if(p&&p.catch)p.catch(()=>{if(showError)toast('تعذر تحميل المقطع الصوتي؛ تأكد من الإنترنت ثم جرّب مرة أخرى.');});}catch{if(showError)toast('تعذر تشغيل المقطع الصوتي على هذا الجهاز.');}}
 function stopCafeCueTimer(){if(cafeCueTimer){clearTimeout(cafeCueTimer);cafeCueTimer=null;}}
-function scheduleCafeCue(){stopCafeCueTimer();if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const delay=cafeCueFirst?(4500+Math.random()*4500):(16000+Math.random()*18000);cafeCueFirst=false;cafeCueTimer=setTimeout(()=>{if(masterMuted||!ambienceEnabled||!teaCuesEnabled)return;const cues=[['teaStirAudio',.60],['teaPourAudio',.45],['cupSaucerAudio',.48],['teaMixAudio',.55]];let candidates=cues.filter(c=>c[0]!==lastCafeCue);const cue=candidates[Math.floor(Math.random()*candidates.length)]||cues[0];lastCafeCue=cue[0];playCafeClip(cue[0],cue[1],false);scheduleCafeCue();},delay);}
+function scheduleCafeCue(){stopCafeCueTimer(); /* Tea/cup clinking removed by request. */}
 async function startCafeAmbience(showErrors=false){
  if(masterMuted||!ambienceEnabled)return false;
  const room=$('ambienceAudio'),talk=$('cafeTalkAudio');if(!room)return false;if(talk)talk.pause();
@@ -1552,7 +1609,7 @@ function toggleAmbience(on){
  syncSoundSettings();
 }
 function syncSoundSettings(){
- $('fxEnabled').checked=fxEnabled;$('ambienceEnabled').checked=ambienceEnabled;$('teaCuesEnabled').checked=teaCuesEnabled;$('calloutEnabled').checked=calloutEnabled;
+ $('fxEnabled').checked=fxEnabled;$('ambienceEnabled').checked=ambienceEnabled;$('teaCuesEnabled').checked=false;$('calloutEnabled').checked=calloutEnabled;
  $('volumeSlider').value=Math.round(volume*100);$('volumeValue').textContent=Math.round(volume*100)+'%';
  if($('ambientSlider'))$('ambientSlider').value=Math.round(ambientMix*100);if($('ambientValue'))$('ambientValue').textContent=Math.round(ambientMix*100)+'%';
  if($('teaSlider'))$('teaSlider').value=Math.round(teaMix*100);if($('teaValue'))$('teaValue').textContent=Math.round(teaMix*100)+'%';
@@ -1565,12 +1622,12 @@ function testTeaPour(){playCafeClip('teaPourAudio',.72,true);}
 function testCupClink(){playCafeClip('cupSaucerAudio',.78,true);}
 function testCallout(){if(masterMuted){toast('الصوت مكتوم؛ شغّله من الزر أعلى الصفحة.');return;}if(!calloutEnabled){toast('فعّل خيار نداءات القهوة الأول.');return;}if(!('speechSynthesis'in window)){toast('جهازك لا يوفر صوت نطق عربي.');return;}try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('يا معلم، شاي خمسين على الترابيزة!');u.lang='ar-EG';u.rate=.86;u.pitch=.78;u.volume=volume;speechSynthesis.speak(u);}catch{toast('تعذر تشغيل النطق على هذا الجهاز.');}}
 function initSoundSettings(){
- try{chatSoundOn=localStorage.getItem('aq-domino-chat-sound')!=='0';fxEnabled=localStorage.getItem('aq-domino-fx')!=='0';masterMuted=localStorage.getItem('aq-domino-master-muted')==='1';ambienceEnabled=localStorage.getItem('aq-domino-ambience')!=='0';calloutEnabled=localStorage.getItem('aq-domino-callouts')==='1';teaCuesEnabled=localStorage.getItem('aq-domino-tea-cues')!=='0';volume=Number(localStorage.getItem('aq-domino-volume')||65)/100;ambientMix=Number(localStorage.getItem('aq-domino-ambient-mix')||80)/100;teaMix=Number(localStorage.getItem('aq-domino-tea-mix')||75)/100;}catch{}
+ try{chatSoundOn=localStorage.getItem('aq-domino-chat-sound')!=='0';fxEnabled=localStorage.getItem('aq-domino-fx')!=='0';masterMuted=localStorage.getItem('aq-domino-master-muted')==='1';ambienceEnabled=localStorage.getItem('aq-domino-ambience')!=='0';calloutEnabled=localStorage.getItem('aq-domino-callouts')==='1';teaCuesEnabled=false;volume=Number(localStorage.getItem('aq-domino-volume')||65)/100;ambientMix=Number(localStorage.getItem('aq-domino-ambient-mix')||80)/100;teaMix=Number(localStorage.getItem('aq-domino-tea-mix')||75)/100;}catch{}
  document.querySelectorAll('audio').forEach(el=>el.muted=masterMuted);
  $('chatSoundBtn').textContent=chatSoundOn?'🔔 التنبيه شغال':'🔕 التنبيه مكتوم';
  $('fxEnabled').addEventListener('change',e=>{fxEnabled=e.target.checked;localStorage.setItem('aq-domino-fx',fxEnabled?'1':'0');});
  $('ambienceEnabled').addEventListener('change',e=>toggleAmbience(e.target.checked));
- $('teaCuesEnabled').addEventListener('change',e=>{teaCuesEnabled=e.target.checked;localStorage.setItem('aq-domino-tea-cues',teaCuesEnabled?'1':'0');if(ambienceEnabled){if(teaCuesEnabled){cafeCueFirst=true;scheduleCafeCue();}else stopCafeCueTimer();}});
+ $('teaCuesEnabled').addEventListener('change',e=>{teaCuesEnabled=false;e.target.checked=false;localStorage.setItem('aq-domino-tea-cues','0');stopCafeCueTimer();});
  $('calloutEnabled').addEventListener('change',e=>{calloutEnabled=e.target.checked;localStorage.setItem('aq-domino-callouts',calloutEnabled?'1':'0');});
  $('volumeSlider').addEventListener('input',e=>{volume=Number(e.target.value)/100;localStorage.setItem('aq-domino-volume',String(e.target.value));$('volumeValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});
  $('ambientSlider').addEventListener('input',e=>{ambientMix=Number(e.target.value)/100;localStorage.setItem('aq-domino-ambient-mix',String(e.target.value));$('ambientValue').textContent=e.target.value+'%';$('ambienceAudio').volume=volume*ambientMix*.34;$('cafeTalkAudio').volume=volume*ambientMix*.48;});
@@ -1598,12 +1655,13 @@ function selectRadioStation(key){const station=DOMINO_RADIO_STATIONS[key];if(!st
 function stopRadio(){currentRadioStation=null;const frame=$('radioFrame');if(frame)frame.src='about:blank';const placeholder=$('radioFramePlaceholder');if(placeholder)placeholder.classList.remove('hidden');const label=$('radioNowLabel');if(label)label.textContent='اختار محطة للبدء';const hint=$('radioNowHint');if(hint)hint.textContent='اضغط على محطة ثم شغّل البث داخل المشغل إذا طُلب منك ذلك.';const link=$('radioOfficialLink');if(link){link.href=DOMINO_RADIO_STATIONS.nagham.official;link.textContent=DOMINO_RADIO_STATIONS.nagham.officialLabel;}document.querySelectorAll('.radio-station').forEach(b=>b.classList.remove('active'));}
 function addRadioButton(){const btn=document.createElement('button');btn.className='icon-btn hide-mobile';btn.title='راديو القهوة';btn.textContent='♫';btn.onclick=openMusic;btn.style.display='none';}
 function ensureFirebase(){return new Promise((resolve,reject)=>{if(firebaseReady&&db)return resolve();if(window.firebase&&firebase.database){try{db=firebase.database();firebaseReady=true;return resolve();}catch(e){return reject(e);}}let appScript=document.querySelector('script[data-firebase-app]');let dbScript=document.querySelector('script[data-firebase-db]');const load=(src,attr,existing)=>new Promise((res,rej)=>{if(existing&&existing.dataset.loaded==='1')return res();const s=existing||document.createElement('script');s.src=src;s.async=true;s.setAttribute(attr,'1');s.onload=()=>{s.dataset.loaded='1';res();};s.onerror=()=>rej(Error('تعذر تحميل مكتبة الاتصال من Firebase.'));if(!existing)document.head.appendChild(s);});(async()=>{try{await load('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js','data-firebase-app',appScript);await load('https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js','data-firebase-db',dbScript);const cfg={apiKey:'AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I',authDomain:'basra-game-2995a.firebaseapp.com',databaseURL:'https://basra-game-2995a-default-rtdb.firebaseio.com',projectId:'basra-game-2995a',storageBucket:'basra-game-2995a.firebasestorage.app',messagingSenderId:'1024179389498',appId:'1:1024179389498:web:3ba98f053d49bfa1676103'};if(!firebase.apps.length)firebase.initializeApp(cfg);db=firebase.database();firebaseReady=true;resolve();}catch(e){reject(e);}})();});}
+function aqOnlineError(e){const code=String(e?.code||'').toLowerCase(),msg=String(e?.message||'');if(code.includes('permission')||/permission.denied|permission denied/i.test(msg))return 'الخادم رفض الصلاحيات (PERMISSION_DENIED). لازم تحديث قواعد Firebase Realtime Database، مش إعدادات الجهاز.';if(/network|offline|failed to fetch/i.test(msg))return 'تعذر الوصول إلى خادم Firebase؛ تحقق من الاتصال والإنترنت.';return msg||'تعذر الاتصال بالخادم.';}
 function makeRoomKey(code){return 'games/domino_'+code;}
 function playerIdFor(code){try{const key='aq-domino-pid-'+code;let id=localStorage.getItem(key);if(!id){id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);localStorage.setItem(key,id);}return id;}catch{return 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);}}
-async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();closeModal('onlineModal');toast('القعدة اتعملت! ابعت الكود لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+(e?.message||'تحقق من اتصال Firebase وصلاحيات قاعدة البيانات.');}}
-async function joinOnlineRoom(){const msg=$('onlineMessage');let code=$('onlineCode').value.trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'').slice(0,6);if(code.length<5){msg.textContent='اكتب كود القعدة كاملًا.';return;}msg.textContent='بدور على القعدة...';try{await ensureFirebase();const ref=db.ref(makeRoomKey(code));const snap=await ref.once('value');const room=snap.val();if(!room||room.gameType!=='domino'){msg.textContent='القعدة غير موجودة؛ تأكد من الكود.';return;}const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const id=playerIdFor(code);if(room.players?.[id]){onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(room.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast('رجعت للقعدة الموجودة على جهازك.');return;}let added=false;await new Promise((resolve,reject)=>ref.transaction(current=>{if(!current||current.gameType!=='domino')return;const next=clone(current);const ids=next.turnOrder||Object.keys(next.players||{});if(next.status!=='waiting'||ids.length>=2)return;next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};next.turnOrder=[...ids,id];dealRound(next);next.chat=Array.isArray(next.chat)?next.chat:[];next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} دخل القعدة. يلا نلعب!`,at:Date.now()});next.chat=next.chat.slice(-35);added=true;return next;},(err,ok)=>{if(err)reject(err);else resolve(!!ok);},false));const latest=(await ref.once('value')).val();if(!latest||!latest.players?.[id]){msg.textContent=latest?.status==='playing'?'القعدة بدأت بالفعل ومكتملة بلاعبين.':'تعذر الانضمام: القعدة قد تكون اكتملت أو صلاحيات Firebase تمنع ذلك.';return;}onlineRef=ref;onlineGame=latest;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(latest.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast(added?'دخلت القعدة بنجاح.':'تم الاتصال بالقعدة.');}catch(e){msg.textContent='تعذر الانضمام: '+(e?.message||'تحقق من الاتصال والصلاحيات.');}}
-function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+(err.message||'اتصال أو صلاحيات')));$('onlineMessage').textContent='';render();}
-async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'لم تُحفظ الحركة؛ حاول مرة أخرى.');return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+(e?.message||'تحقق من الاتصال.'));}}
+async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();closeModal('onlineModal');toast('القعدة اتعملت! اضغط مشاركة اللعبة لإرسال الرابط الجاهز لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+aqOnlineError(e);}}
+async function joinOnlineRoom(){const msg=$('onlineMessage');let code=$('onlineCode').value.trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'').slice(0,6);if(code.length<5){msg.textContent='اكتب كود القعدة كاملًا.';return;}msg.textContent='بدور على القعدة...';try{await ensureFirebase();const ref=db.ref(makeRoomKey(code));const snap=await ref.once('value');const room=snap.val();if(!room||room.gameType!=='domino'){msg.textContent='القعدة غير موجودة؛ تأكد من الكود.';return;}const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const id=playerIdFor(code);if(room.players?.[id]){onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(room.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast('رجعت للقعدة الموجودة على جهازك.');return;}let added=false;await new Promise((resolve,reject)=>ref.transaction(current=>{if(!current||current.gameType!=='domino')return;const next=clone(current);const ids=next.turnOrder||Object.keys(next.players||{});if(next.status!=='waiting'||ids.length>=2)return;next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};next.turnOrder=[...ids,id];dealRound(next);next.chat=Array.isArray(next.chat)?next.chat:[];next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} دخل القعدة. يلا نلعب!`,at:Date.now()});next.chat=next.chat.slice(-35);added=true;return next;},(err,ok)=>{if(err)reject(err);else resolve(!!ok);},false));const latest=(await ref.once('value')).val();if(!latest||!latest.players?.[id]){msg.textContent=latest?.status==='playing'?'القعدة بدأت بالفعل ومكتملة بلاعبين.':'تعذر الانضمام: القعدة قد تكون اكتملت أو صلاحيات Firebase تمنع ذلك.';return;}onlineRef=ref;onlineGame=latest;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=(latest.chat||[]).length;startOnlineListener();closeModal('onlineModal');toast(added?'دخلت القعدة بنجاح.':'تم الاتصال بالقعدة.');}catch(e){msg.textContent='تعذر الانضمام: '+aqOnlineError(e);}}
+function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+aqOnlineError(err)));$('onlineMessage').textContent='';render();}
+async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'لم تُحفظ الحركة؛ حاول مرة أخرى.');return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+aqOnlineError(e));}}
 function loadOnlineFromQuery(){const params=new URLSearchParams(location.search);const code=params.get('room');if(code){$('onlineCode').value='DOM-'+code.toUpperCase();$('onlineName').value=localStorage.getItem('aq-domino-name')||'ضيف';openModal('onlineModal');}}
 function bindEvents(){ $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.overlay:not(.hidden)').forEach(x=>x.classList.add('hidden'));}});document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.add('hidden')}));window.addEventListener('beforeunload',()=>{if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);});}
 
