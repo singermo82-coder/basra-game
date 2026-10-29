@@ -133,6 +133,113 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
 
 /* بنك الحظ: استخدم صورة العلبة الأصلية التي أرسلها صاحب المشروع مع تركيز واضح على المنتج. */
 .game-card.bank-haz-card .photo-wrap img{object-position:center 50%;}
+
+/* Brand-focused finish: prominent welcome sign and an independent publisher badge on the physical left. */
+.slogan {
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  position:relative;
+  max-width:430px;
+  justify-self:stretch;
+  padding:clamp(8px,1.15vh,14px) clamp(12px,1.5vw,22px);
+  border:2px solid #f0bf5e;
+  border-radius:15px 15px 11px 11px;
+  text-align:center;
+  direction:rtl;
+  background:linear-gradient(145deg,rgba(67,31,13,.98),rgba(20,7,3,.98));
+  box-shadow:inset 0 0 0 3px #f6d88b16,inset 0 1px #fff5,0 8px 20px #0009;
+  color:#ffedc7;
+  line-height:1.15;
+  transform:rotate(-.3deg);
+}
+.slogan::before,.slogan::after {content:"✦";position:absolute;top:50%;transform:translateY(-50%);color:#ffd36f;text-shadow:0 0 8px #ffb21f66;font-size:1rem}
+.slogan::before {right:9px}.slogan::after {left:9px}
+.slogan .slogan-kicker {font-size:clamp(.62rem,1vw,.76rem);font-weight:900;letter-spacing:.08em;color:#dfab51;text-shadow:0 1px #000;}
+.slogan strong {font-size:clamp(1rem,1.7vw,1.42rem);font-weight:1000;color:#ffe29a;text-shadow:0 2px 0 #652f0c,0 0 13px #f9a82a31;white-space:nowrap;}
+.slogan .slogan-sub {font-size:clamp(.76rem,1.25vw,1rem);font-weight:900;color:#fff8e8;}
+.footer {
+  direction:ltr;
+  display:grid !important;
+  grid-template-columns:minmax(155px,1fr) auto minmax(220px,1fr);
+  align-items:center;
+  justify-items:stretch;
+  gap:clamp(7px,1.4vw,18px);
+  padding:5px 12px;
+  min-height:clamp(43px,6vh,56px);
+  text-align:center;
+  overflow:hidden;
+}
+.footer .mahaly-footer-brand {
+  grid-column:1;
+  justify-self:start;
+  direction:rtl;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-width:0;
+  padding:3px 10px 3px 8px;
+  border:1px solid #ffd36b;
+  border-radius:10px;
+  background:linear-gradient(150deg,#55220d 0%,#1a0904 75%);
+  box-shadow:inset 0 0 0 2px #ffdf7a19,inset 0 1px #fff4,0 0 0 2px #100501,0 3px 10px #0009;
+  white-space:nowrap;
+  text-align:right;
+}
+.footer .mahaly-brand-icon {
+  display:grid;place-items:center;flex:0 0 auto;
+  width:31px;height:31px;border-radius:8px;
+  background:linear-gradient(145deg,#ffe9a6,#cd7b19 54%,#5c2709);
+  border:1px solid #ffe9a1;
+  box-shadow:inset 0 1px #fff9,0 2px 4px #0008;
+  font-size:18px;line-height:1;
+}
+.footer .mahaly-brand-copy {display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1;}
+.footer .mahaly-brand-copy small {font-size:clamp(.57rem,.78vw,.69rem);font-weight:900;color:#ffefc8;letter-spacing:.02em;}
+.footer .mahaly-brand-copy strong {
+  font-size:clamp(1.3rem,2.25vw,1.8rem);font-weight:1000;line-height:.96;
+  background:linear-gradient(180deg,#fff9c9 2%,#ffd449 44%,#ff8b24 77%,#f43c23 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:.45px #ffe29b;
+  filter:drop-shadow(0 2px 0 #571800) drop-shadow(0 0 5px #fdb42a30);
+  letter-spacing:-.035em;
+}
+.footer .sound-toggle {grid-column:2;justify-self:center;max-width:100%;}
+.footer .footer-message {
+  grid-column:3;
+  justify-self:end;
+  direction:rtl;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-width:0;max-width:100%;
+  padding:7px clamp(9px,1.3vw,18px);
+  border:1px solid #d9a34b;border-radius:10px;
+  background:linear-gradient(180deg,#4a2410,#1a0904);
+  box-shadow:inset 0 1px #fff3,inset 0 0 0 2px #f2d28b10,0 3px 8px #0008;
+  color:#ffe4a0;font-size:clamp(.72rem,1.1vw,.96rem);font-weight:1000;line-height:1.15;
+  white-space:nowrap;text-shadow:0 1px 2px #000;
+}
+.footer .footer-message::before {content:"☕";font-size:1em;filter:drop-shadow(0 0 3px #f3ae30);}
+@media (max-width:720px) {
+  .footer {grid-template-columns:minmax(120px,auto) minmax(0,1fr);grid-template-rows:auto auto;gap:5px 7px;min-height:0;padding:5px 6px;}
+  .footer .mahaly-footer-brand {grid-column:1;grid-row:1 / span 2;padding:3px 6px;gap:5px;}
+  .footer .mahaly-brand-icon {width:25px;height:25px;font-size:15px;}
+  .footer .mahaly-brand-copy small {font-size:.52rem;}
+  .footer .mahaly-brand-copy strong {font-size:1.35rem;}
+  .footer .sound-toggle {grid-column:2;grid-row:1;justify-self:end;}
+  .footer .footer-message {grid-column:2;grid-row:2;justify-self:stretch;padding:4px 5px;font-size:clamp(.62rem,2.4vw,.78rem);}
+  .slogan {padding:7px 14px;gap:1px;}
+  .slogan strong {font-size:clamp(.86rem,3.4vw,1.05rem);}
+  .slogan .slogan-sub {font-size:clamp(.68rem,2.8vw,.82rem);}
+}
+@media (max-width:390px) {
+  .footer .mahaly-brand-icon {display:none;}
+  .footer .mahaly-brand-copy strong {font-size:1.12rem;}
+  .footer .footer-message {font-size:.6rem;}
+}
+
 </style>
 </head>
 <body>
@@ -141,7 +248,7 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
   <div class="logo-sign" aria-label="شعار ع القهوة">
    <div class="logo-inner"><span class="brand-mark brand-cup" aria-hidden="true">☕</span><div class="brand-copy"><div class="brand-kicker">قعدة ولعب على أصوله</div><h1>ع القهوة</h1><p>ألعاب مصرية أونلاين</p></div><span class="brand-mark brand-cards" aria-hidden="true"><span>♠</span><span>♥</span></span></div>
   </div>
-  <div class="slogan"><strong>لمة أصحاب.. ضحكة من القلب</strong>واللعب لسه مكمل!</div>
+  <div class="slogan" role="note" aria-label="رسالة ترحيب بالقعدة"><span class="slogan-kicker">نداء القهوة</span><strong>هات الشاي وتعالى</strong><span class="slogan-sub">القعدة لسه ما خلصتش!</span></div>
  </header>
  <div class="intro-line">اختار لعبتك، جهّز الشاي، و <b>ابدأ القعدة</b></div>
  <section class="stage" aria-label="الألعاب المتاحة والقادمة">
@@ -180,7 +287,14 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
    </div>
   </div>
  </section>
- <footer class="footer"><b>قعدة بلدي.. واللعب على أصوله!</b><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="تشغيل أو كتم موسيقى وأجواء القهوة"><span class="sound-icon" aria-hidden="true">♫</span><span class="sound-label">شغّل أجواء القهوة</span></button><span class="credit"><span class="credit-label">تصميم وتطوير</span><span class="mahaly-brand" aria-label="ملاهي، شركة منتجة للألعاب"><span class="mahaly-mark" aria-hidden="true">م</span><em>ملاهي</em></span></span></footer>
+ <footer class="footer" aria-label="تذييل الموقع والعلامة المنتجة">
+  <span class="mahaly-footer-brand" aria-label="تصميم وتطوير ملاهي، الشركة المنتجة للألعاب">
+    <span class="mahaly-brand-icon" aria-hidden="true">🎮</span>
+    <span class="mahaly-brand-copy"><small>تصميم وتطوير</small><strong>ملاهي</strong></span>
+  </span>
+  <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="تشغيل أو كتم موسيقى وأجواء القهوة"><span class="sound-icon" aria-hidden="true">♫</span><span class="sound-label">شغّل أجواء القهوة</span></button>
+  <b class="footer-message">قعدة بلدي… واللعب على أصوله!</b>
+</footer>
 </main>
 <div class="audio-gate" id="audioGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
  <div class="gate-card">
