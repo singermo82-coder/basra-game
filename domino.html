@@ -1071,6 +1071,12 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
  height:clamp(2px,calc(var(--aq-unit,36px)*.12),5px)!important;
 }
 
+
+/* v5.4 ensure seven hand tiles remain visible regardless of prior CSS overrides */
+.hand-zone{display:grid!important;grid-template-rows:18px minmax(60px,1fr) 28px!important;min-height:115px!important;overflow:visible!important}
+.hand-track{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;overflow-x:auto!important;overflow-y:visible!important;min-height:64px!important}
+.hand-track .hand-tile{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;transform-origin:center!important;min-height:52px!important}
+.hand-track .hand-tile:disabled{opacity:.5!important}
 </style>
 <style>
 /* ===== V4.3 – Natural domino table, clean playing-first interface ===== */
@@ -1508,8 +1514,12 @@ function render(){const g=currentGame();if(!g)return;const me=mePlayer(g),op=opP
  $('meName').textContent=me.name||'أنت';if($('topProfileName'))$('topProfileName').textContent=me.name||'ضيف القهوة';applyAvatar($('meAvatar'),me.avatar||localStorage.getItem('aq-domino-avatar')||'curly-man');if($('topProfileAvatar'))applyAvatar($('topProfileAvatar'),me.avatar||localStorage.getItem('aq-domino-avatar')||'curly-man');$('opName').textContent=op?.name||(mode==='online'?'في انتظار لاعب':'المعلم زكي');applyAvatar($('opAvatar'),op?.avatar||(mode==='online'?'👤':'teacher'));$('meCount').textContent=`${me.hand?.length??0} قطعة`;if(op)$('opCount').textContent=`${op.hand?.length??0} قطعة`;
  $('scoreMeLabel').textContent=me.name||'أنت';$('scoreMe').textContent=me.score||0;$('scoreOpLabel').textContent=op?.name||'الخصم';$('scoreOp').textContent=op?.score||0;$('targetLabel').textContent=`${g.targetScore||targetScore} نقطة`;$('roundLabel').textContent=g.round||1;$('modeLabel').textContent=mode==='online'?'أونلاين':'ضد المعلم';$('connectionStatus').textContent=mode==='online'?(g.status==='waiting'?'في انتظار لاعب 🟡':'أونلاين 🟢'):'محلي 🟢';$('roomCodeLabel').textContent=mode==='online'&&myRoomCode?`DOM-${myRoomCode}`:'مع المعلم';const stockRemaining=g.boneyard?.length??0;$('stockCount').textContent=`قطع السحب: ${stockRemaining}`;renderStockPile(stockRemaining);$('leftEnd').textContent=g.chain?.length?g.openLeft:'—';$('rightEnd').textContent=g.chain?.length?g.openRight:'—';$('handCount').textContent=me.hand?.length??0;
  const isMyTurn=g.status==='playing'&&g.current===myId();$('turnBanner').textContent=g.status==='waiting'?'مستنيين اللاعب الثاني يدخل القعدة...':g.status==='match-over'?'خلصت الفورة — مبروك للفائز!':g.status==='round-over'?'الجولة خلصت — جاهزين لجولة جديدة':isMyTurn?'دورك يا معلم — اختار قطعة من إيدك':`دور ${currentPlayer(g)?.name||'الخصم'} — استعد`; $('meStatus').textContent=`${me.score||0} نقطة • ${isMyTurn?'دورك الآن':g.status==='playing'?'مستني دورك':'الجولة انتهت'}`;$('opStatus').textContent=`${op?.score||0} نقطة • ${g.status==='playing'&&g.current===op?.id?'بيفكر في الحركة...':mode==='online'?'متصل بالقعدة':'المعلم بيتابعك'}`;
- renderChain(g);
- const myActs=legalActions(g,myId());const handTrack=$('handTrack');handTrack.innerHTML=(me.hand||[]).slice().sort((a,b)=>(a.a+a.b)-(b.a+b.b)||a.a-b.a).map(t=>tileHtml(t,'hand',selectedTileId===t.id?'selected':'')).join('');
+ // Draw the player's hand first; a table-layout exception must never hide their tiles.
+ const handTrack=$('handTrack');
+ try{handTrack.innerHTML=(Array.isArray(me.hand)?me.hand:[]).slice().sort((a,b)=>(a.a+a.b)-(b.a+b.b)||a.a-b.a).map(t=>tileHtml(t,'hand',selectedTileId===t.id?'selected':'')).join('');}
+ catch(e){console.error('Hand rendering error',e);handTrack.textContent='مشكلة في عرض القطع — أعد تحميل الصفحة';}
+ try{renderChain(g);}catch(e){console.error('Table rendering error',e);$('chainTrack').textContent='تعذر رسم السلسلة';}
+ const myActs=legalActions(g,myId());
  updateButtonState(g,me,myActs);$('shareBtn').disabled=false;$('shareBtn').textContent=mode==='online'?'مشاركة القعدة ↗':'مشاركة اللعبة ↗';renderChat(g);if(g.status==='round-over'||g.status==='match-over')$('nextRoundBtn').textContent=g.status==='match-over'?'مباراة جديدة':'جولة جديدة ↻';else $('nextRoundBtn').textContent='جولة جديدة ↻';}
 function renderChat(g){
  const list=$('chatMessages'),messages=Array.isArray(g.chat)?g.chat:[];
@@ -1761,7 +1771,48 @@ async function aqStartWaitingRoom(){
  finally{window.aqOnlineRoundWriteInProgress=false;}
 }
 function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;if(g.status==='playing'){document.getElementById('onlineModal')?.classList.add('hidden');document.getElementById('aqRoomReady')?.classList.add('hidden');}const aqN=Object.keys(g.players||{}).length;const aqMsg=document.getElementById('onlineMessage');if(aqMsg&&g.status==='waiting')aqMsg.textContent=aqN>=2?'✅ اللاعب الثاني دخل — بنوزع القطع الآن...':'🟡 القعدة متسجلة، في انتظار انضمام اللاعب الثاني...';if(g.status==='waiting'&&Object.keys(g.players||{}).length===2&&!window.aqOnlineRoundStarting){window.aqOnlineRoundStarting=true;aqStartWaitingRoom().finally(()=>{window.aqOnlineRoundStarting=false;});}render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+aqOnlineError(err)));$('onlineMessage').textContent='';render();}
-async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{const fresh=(await onlineRef.once('value')).val();if(!fresh||fresh.status!=='playing'&&action.type!=='nextRound'){toast('الجولة لسه ما بدأتش.');return;}onlineGame=fresh;let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'الحركة لم تُحفظ؛ أعد المحاولة.');console.warn('Domino transaction aborted',action);return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+aqOnlineError(e));}}
+async function onlineAction(action){
+ if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}
+ if(window.aqMoveBusy)return;
+ window.aqMoveBusy=true;
+ try{
+  const current=(await onlineRef.once('value')).val();
+  if(!current||current.gameType!=='domino'){toast('القعدة مش موجودة.');return;}
+  const next=clone(current);
+  if(action.type==='nextRound'){
+   if(!['round-over','match-over'].includes(next.status)){toast('الجولة لسه شغالة.');return;}
+   if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);
+   dealRound(next);
+  }else{
+   if(next.status!=='playing'){toast('الجولة لسه ما بدأتش.');return;}
+   if(next.current!==myOnlineId){toast('مش دورك يا معلم.');return;}
+   const outcome=applyAction(next,myOnlineId,action);
+   if(!outcome.ok){toast(outcome.reason||'الحركة غير مسموحة.');return;}
+  }
+  // Firebase multipath update: a single acknowledged write avoids failed
+  // root transaction on an empty local SDK cache. Preserve room identity/chat.
+  const changes={
+   status:next.status,round:next.round,turnOrder:next.turnOrder,current:next.current,
+   chain:next.chain,boneyard:next.boneyard,openLeft:next.openLeft,openRight:next.openRight,
+   requiredOpeningId:next.requiredOpeningId??null,openingPlayer:next.openingPlayer??null,
+   consecutivePasses:next.consecutivePasses,roundWinner:next.roundWinner??null,
+   roundMessage:next.roundMessage||'',roundPoints:next.roundPoints??null,
+   lastAction:next.lastAction||'',updatedAt:Date.now()
+  };
+  for(const id of next.turnOrder){
+   changes['players/'+id+'/hand']=next.players[id].hand||[];
+   changes['players/'+id+'/score']=next.players[id].score||0;
+  }
+  await onlineRef.update(changes);
+  const saved=(await onlineRef.once('value')).val();
+  if(!saved){toast('تعذر تأكيد الحركة من الخادم.');return;}
+  onlineGame=saved;selectedTileId=null;render();
+  if(action.type==='play')playFx('place',.8);
+  else if(action.type==='draw')playFx('draw',.65);
+  else if(action.type==='pass')playFx('slide',.5);
+ }catch(err){console.error('Online action failed',err);toast('فشل حفظ الحركة: '+aqOnlineError(err));}
+ finally{window.aqMoveBusy=false;}
+}
 function loadOnlineFromQuery(){const params=new URLSearchParams(location.search);const code=params.get('room');if(code){$('onlineCode').value='DOM-'+code.toUpperCase();$('onlineName').value=localStorage.getItem('aq-domino-name')||'ضيف';openModal('onlineModal');}}
 function bindEvents(){ $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.overlay:not(.hidden)').forEach(x=>x.classList.add('hidden'));}});document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.add('hidden')}));window.addEventListener('beforeunload',()=>{if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);});}
 
