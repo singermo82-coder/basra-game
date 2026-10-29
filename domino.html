@@ -1676,67 +1676,77 @@ function playerIdFor(code){try{const key='aq-domino-pid-'+code;let id=localStora
 async function createOnlineRoom(){const msg=$('onlineMessage');msg.textContent='بجهز القعدة...';$('aqRoomReady')?.classList.add('hidden');try{await ensureFirebase();const name=($('onlineName').value.trim()||'ضيف').slice(0,20);localStorage.setItem('aq-domino-name',name);const av=localStorage.getItem('aq-domino-avatar')||'curly-man';for(let i=0;i<4;i++){const code=randCode();const id=playerIdFor(code);const room={gameType:'domino',code,status:'waiting',createdAt:Date.now(),hostId:id,players:{[id]:{id,name,avatar:av,score:0,hand:[]}},turnOrder:[id],current:null,targetScore,round:0,chain:[],boneyard:[],openLeft:null,openRight:null,requiredOpeningId:null,consecutivePasses:0,chat:[{id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:'القعدة اتفتحت. ابعت الكود لصاحبك!',at:Date.now()}]};const ref=db.ref(makeRoomKey(code));let committed=false;await new Promise((resolve,reject)=>ref.transaction(cur=>{if(cur===null)return room;return;},(err,ok)=>{if(err)reject(err);else{committed=ok;resolve();}},false));if(!committed)continue;onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;lastChatCount=room.chat.length;startOnlineListener();aqShowInvite(code);toast('القعدة اتعملت! انسخ الكود وابعته لصاحبك.');return;}msg.textContent='حصل تعارض في إنشاء الكود، جرّب تاني.';}catch(e){msg.textContent='تعذر إنشاء القعدة: '+aqOnlineError(e);}}
 async function joinOnlineRoom(){
  const msg=$('onlineMessage'),input=$('onlineCode');
- const raw=(input.value||'').trim().toUpperCase();
- let code=raw.replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'');
- if(code.length!==6){msg.textContent='الكود لازم يكون 6 حروف وأرقام. انسخ كود صاحبك مباشرة.';return;}
+ const code=(input.value||'').trim().toUpperCase().replace(/^DOM[-_ ]?/,'').replace(/[^A-Z0-9]/g,'');
+ if(code.length!==6){msg.textContent='الكود لازم يكون 6 حروف وأرقام.';return;}
  input.value='DOM-'+code;
- msg.textContent='جاري الانضمام إلى القعدة...';
+ msg.textContent='جاري التحقق من القعدة...';
  try{
   await ensureFirebase();
   const ref=db.ref(makeRoomKey(code));
   const name=($('onlineName').value.trim()||'ضيف').slice(0,20);
   localStorage.setItem('aq-domino-name',name);
-  const id=playerIdFor(code);
+  // Read existing room first: no writes to non-existent room or unrelated Basra rooms.
   let room=(await ref.once('value')).val();
-  if(!room||room.gameType!=='domino'){msg.textContent='الكود مش موجود. اطلب كود قعدة جديدة من صاحبك.';return;}
+  if(!room||room.gameType!=='domino'){msg.textContent='الكود غير موجود. اعمل قعدة جديدة وابعته لصاحبك.';return;}
+  const id=playerIdFor(code);
+  const playersRef=ref.child('players');
   if(!room.players?.[id]){
-   if(room.status!=='waiting'||Object.keys(room.players||{}).length>=2){msg.textContent='القعدة مكتملة أو بدأت بالفعل. اطلب كود جديد.';return;}
-   // Phase 1: add guest only. Do not deal cards inside the join transaction.
-   const joined=await new Promise((resolve,reject)=>{
-    ref.transaction(current=>{
-     if(!current||current.gameType!=='domino'||current.status!=='waiting')return;
-     if(current.players?.[id])return current;
-     const ids=Object.keys(current.players||{});
-     if(ids.length!==1)return;
-     const next=clone(current);
-     next.players[id]={id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]};
-     next.turnOrder=[next.hostId||ids[0],id];
-     next.updatedAt=Date.now();
-     return next;
-    },(error,committed)=>error?reject(error):resolve(committed),false);
+   if(room.status!=='waiting'||Object.keys(room.players||{}).length!==1){msg.textContent='القعدة بدأت أو مكتملة. اطلب كود جديد.';return;}
+   msg.textContent='تم العثور على القعدة، جاري إضافة اللاعب الثاني...';
+   // Explicitly warm the child-path cache before Firebase's optimistic transaction.
+   await playersRef.once('value');
+   let reason='';
+   const result=await new Promise((resolve,reject)=>{
+    playersRef.transaction(current=>{
+     // Initial null can be a local-cache placeholder; abort to avoid replacing the host.
+     if(!current){reason='بيانات اللاعبين لم تُحمّل بعد.';return;}
+     const ids=Object.keys(current);
+     if(current[id])return current;
+     if(ids.length!==1){reason='القعدة مكتملة أو لاعب آخر سبقك.';return;}
+     return {...current,[id]:{id,name,avatar:localStorage.getItem('aq-domino-avatar')||'curly-man',score:0,hand:[]}};
+    },(error,committed,snap)=>error?reject(error):resolve({committed,snap}),false);
    });
-   room=(await ref.once('value')).val();
-   if(!room?.players?.[id]){
-    msg.textContent=joined?'تعذر تأكيد الدخول. جرّب مرة ثانية.':'لم تدخل القعدة. تأكد إن صاحبك لسه مستني وما دخلش لاعب غيرك.';
+   // An aborted transaction isn't a success. Confirm the authoritative database read.
+   const verified=(await playersRef.once('value')).val();
+   if(!verified?.[id]){
+    msg.textContent='تعذر تسجيل اللاعب: '+(reason||'لم تُقبل عملية الانضمام. جرّب قعدة جديدة.');
     return;
    }
   }
-  // Phase 2: begin round independently. Any client can safely retry this
-  // operation; only the first committed transaction will initialize the round.
-  if(room.status==='waiting'&&Object.keys(room.players||{}).length===2){
-   await new Promise((resolve,reject)=>ref.transaction(current=>{
-    if(!current||current.status!=='waiting'||Object.keys(current.players||{}).length!==2)return;
-    const next=clone(current);
-    const ids=Object.keys(next.players);
-    next.turnOrder=[next.hostId,...ids.filter(x=>x!==next.hostId)];
-    if(next.turnOrder.length!==2||!next.players[next.turnOrder[0]]||!next.players[next.turnOrder[1]])return;
-    dealRound(next);
-    next.chat=Array.isArray(next.chat)?next.chat:[];
-    next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:`${name} انضم للقعدة. يلا نلعب!`,at:Date.now()});
-    next.chat=next.chat.slice(-35);
-    return next;
-   },(error)=>error?reject(error):resolve(),false));
-  }
   room=(await ref.once('value')).val();
-  if(!room?.players?.[id]){msg.textContent='تعذر التأكد من وجود اللاعب في القعدة.';return;}
+  if(!room?.players?.[id]){msg.textContent='لم يتم حفظ تسجيل اللاعب في القعدة.';return;}
+  // Establish local session FIRST so a successful join remains connected even
+  // if the round-start transaction is retried from the host or another client.
   if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);
   onlineRef=ref;onlineGame=room;mode='online';myOnlineId=id;myRoomCode=code;
-  lastChatCount=(room.chat||[]).length;
+  lastChatCount=Array.isArray(room.chat)?room.chat.length:0;
   startOnlineListener();closeModal('onlineModal');
-  toast(room.status==='playing'?'✅ اتصلت بصاحبك! يلا نلعب.':'✅ دخلت القعدة. جاري بدء الجولة...');
+  toast('✅ اتصلت بالقعدة! جاري تجهيز الجولة.');
+  if(room.status==='waiting'&&Object.keys(room.players||{}).length===2){
+   // Initialize once. Never roll back a successfully registered guest if the
+   // Firebase local cache momentarily does not have the entire room.
+   try{
+    await ref.once('value');
+    await new Promise((resolve,reject)=>ref.transaction(current=>{
+     if(!current||current.status!=='waiting'||Object.keys(current.players||{}).length!==2)return;
+     const next=clone(current),ids=Object.keys(next.players);
+     next.turnOrder=[next.hostId,...ids.filter(p=>p!==next.hostId)];
+     if(next.turnOrder.length!==2||!next.players[next.turnOrder[0]]||!next.players[next.turnOrder[1]])return;
+     dealRound(next);
+     next.chat=Array.isArray(next.chat)?next.chat:[];
+     next.chat.push({id:'system_'+Date.now(),player:'القهوة',avatar:'☕',text:name+' انضم للقعدة. يلا نلعب!',at:Date.now()});
+     next.chat=next.chat.slice(-35);
+     return next;
+    },(err,committed)=>err?reject(err):resolve(committed),false));
+    const latest=(await ref.once('value')).val();
+    if(latest?.status==='waiting')toast('تم انضمامك، لكن الجولة لم تبدأ بعد. خلي صاحبك يحدّث القعدة.');
+   }catch(startErr){console.warn('Domino round start pending',startErr);toast('انضمامك نجح، لكن بداية الجولة متأخرة: '+aqOnlineError(startErr));}
+  }
  }catch(e){msg.textContent='تعذر الانضمام: '+aqOnlineError(e);console.error('Domino join error',e);}
 }
-function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+aqOnlineError(err)));$('onlineMessage').textContent='';render();}
+
+async function aqStartWaitingRoom(){if(!onlineRef||!onlineGame||onlineGame.status!=='waiting'||Object.keys(onlineGame.players||{}).length!==2)return;try{await onlineRef.once('value');await new Promise((resolve,reject)=>onlineRef.transaction(current=>{if(!current||current.status!=='waiting'||Object.keys(current.players||{}).length!==2)return;const next=clone(current);next.turnOrder=[next.hostId,...Object.keys(next.players).filter(x=>x!==next.hostId)];if(next.turnOrder.length!==2||next.turnOrder.some(x=>!next.players[x]))return;dealRound(next);return next;},(err)=>err?reject(err):resolve(),false));}catch(e){console.error('round start',e);}}
+function startOnlineListener(){if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);onlineListener=snap=>{const g=snap.val();if(!g||g.gameType!=='domino'){toast('القعدة لم تعد متاحة.');return;}if(mode==='online'){receiveOnlineChat(g);const oldChain=Array.isArray(onlineGame?.chain)?onlineGame.chain:[],newChain=Array.isArray(g.chain)?g.chain:[];if(newChain.length>oldChain.length){const oldIds=new Set(oldChain.map(t=>t.id));const added=newChain.find(t=>!oldIds.has(t.id));if(added&&added.player!==myOnlineId)playFx('place',.82);}}onlineGame=g;if(g.status==='waiting'&&Object.keys(g.players||{}).length===2&&!window.aqOnlineRoundStarting){window.aqOnlineRoundStarting=true;aqStartWaitingRoom().finally(()=>{window.aqOnlineRoundStarting=false;});}render();};onlineRef.on('value',onlineListener,err=>toast('تعذر تحديث القعدة: '+aqOnlineError(err)));$('onlineMessage').textContent='';render();}
 async function onlineAction(action){if(!onlineRef||!onlineGame){toast('مفيش قعدة أونلاين متصلة.');return;}try{let reason='';const tx=await new Promise((resolve,reject)=>onlineRef.transaction(curr=>{if(!curr||curr.gameType!=='domino'){reason='القعدة غير موجودة.';return;}const next=clone(curr);if(action.type==='nextRound'){if(!['round-over','match-over'].includes(next.status)){reason='الجولة لسه شغالة.';return;}if(next.status==='match-over')next.turnOrder.forEach(id=>next.players[id].score=0);dealRound(next);return next;}if(next.current!==myOnlineId){reason='مش دورك يا معلم.';return;}const res=applyAction(next,myOnlineId,action);if(!res.ok){reason=res.reason;return;}next.chat=Array.isArray(next.chat)?next.chat:[];return next;},(err,committed,snap)=>{if(err)reject(err);else resolve({committed,snap});},false));if(!tx.committed){toast(reason||'لم تُحفظ الحركة؛ حاول مرة أخرى.');return;}const g=tx.snap?.val?.();if(action.type==='play')playFx('place');else if(action.type==='draw')playFx('draw');else if(action.type==='pass')playFx('pass');if(g?.status==='round-over'||g?.status==='match-over')showRoundResult(g);}catch(e){toast('تعذر حفظ الحركة: '+aqOnlineError(e));}}
 function loadOnlineFromQuery(){const params=new URLSearchParams(location.search);const code=params.get('room');if(code){$('onlineCode').value='DOM-'+code.toUpperCase();$('onlineName').value=localStorage.getItem('aq-domino-name')||'ضيف';openModal('onlineModal');}}
 function bindEvents(){ $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendChat();}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.overlay:not(.hidden)').forEach(x=>x.classList.add('hidden'));}});document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.add('hidden')}));window.addEventListener('beforeunload',()=>{if(onlineRef&&onlineListener)onlineRef.off('value',onlineListener);});}
