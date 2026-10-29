@@ -52,6 +52,48 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
 .game-card:focus-visible{outline:3px solid #ffe7a3;outline-offset:3px}
 .footer{min-width:0;min-height:clamp(34px,5.5vh,47px);display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,23px);padding:5px 14px;border:1px solid #dcb05a;border-radius:12px;background:linear-gradient(90deg,#160803f5,#512711f5,#170803f5);box-shadow:inset 0 0 0 3px #ffdc8a0b,0 4px 15px #0007;text-align:center}
 .footer b{color:#ffe2a0;font-size:clamp(.76rem,1.26vw,1.1rem);white-space:nowrap}.footer span{color:#e6c58a;font-size:clamp(.63rem,.97vw,.85rem);white-space:nowrap}.footer .credit{color:#fff1d0;border-inline-start:1px solid #b98643;padding-inline-start:clamp(8px,1.45vw,18px)}.footer .credit em{color:#ffd36f;font-style:normal;font-weight:1000}
+
+/* Brand identity and sound controls */
+.logo-sign{border-radius:23px 23px 17px 17px;border:2px solid #f8d37c;background:linear-gradient(180deg,#583018 0%,#301407 48%,#170804 100%);box-shadow:inset 0 0 0 2px #ffe6aa26,inset 0 0 0 6px #0003,0 0 0 1px #6f451b,0 9px 24px #000b;}
+.logo-sign:after,.logo-sign:before{content:"✦";color:#ffdf91;filter:drop-shadow(0 0 5px #ffcc6238)}
+.logo-inner{gap:clamp(7px,1.35vw,17px)}
+.brand-mark{position:relative;border:1px solid #f5d58d;background:radial-gradient(circle at 30% 25%,#cc8a3c,#48220e 65%,#170904);box-shadow:inset 0 0 0 3px #ffe6ad15,0 0 0 3px #251006,0 4px 12px #0008}
+.brand-cup{font-size:clamp(23px,3.4vw,39px);}
+.brand-cards{display:flex;flex-direction:column;gap:0;font-family:Georgia,serif;font-size:clamp(16px,2.3vw,24px);line-height:.82;transform:rotate(7deg)}
+.brand-cards span:first-child{color:#fff1cd}.brand-cards span:last-child{color:#ff7971}
+.brand-copy h1{font-size:clamp(1.85rem,3.7vw,3.55rem);letter-spacing:-.055em;-webkit-text-stroke:.35px #fff0b0;text-shadow:0 1px #fff2be,0 3px #8c491b,0 6px 0 #321407,0 8px 8px #000d,0 0 21px #ffc15f42}
+.brand-copy .brand-kicker{margin:0 0 2px;color:#e7bb67;font-size:clamp(.48rem,.7vw,.7rem);font-weight:900;letter-spacing:.12em;text-shadow:0 2px 3px #000}
+.brand-copy p{font-size:clamp(.66rem,1.08vw,.92rem);text-shadow:0 2px 4px #000}
+.footer{gap:clamp(8px,1.4vw,18px)}
+.footer .credit{display:flex;align-items:center;gap:8px;border:0;padding-inline-start:clamp(8px,1vw,14px)}
+.credit-label{color:#fff0d0!important;font-weight:900;letter-spacing:.01em}
+.mahaly-brand{display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 5px;border:1px solid #ffdc83;border-radius:7px 12px 7px 12px;background:linear-gradient(135deg,#79251e,#341009 60%,#170704);box-shadow:inset 0 0 0 2px #ffd66b20,0 2px 7px #0008;transform:skew(-3deg)}
+.mahaly-mark{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid #ffdf8a;border-radius:5px 8px 5px 8px;background:linear-gradient(145deg,#ffdf8a,#a85c23);color:#351006;font-size:14px;font-weight:1000;text-shadow:0 1px #fff7;transform:skew(3deg)}
+.mahaly-brand em{font-style:normal;font-size:clamp(.8rem,1.1vw,1rem);font-weight:1000;color:#ffe6a0;text-shadow:0 2px #3b1208,0 0 10px #ffd36f25;transform:skew(3deg)}
+.sound-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:28px;padding:4px 10px;border:1px solid #d6a955;border-radius:999px;background:linear-gradient(180deg,#4b2a16,#211006);color:#ffedc6;font:inherit;font-size:clamp(.59rem,.85vw,.78rem);font-weight:900;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px #fff2,0 2px 7px #0008}
+.sound-toggle[aria-pressed="true"]{border-color:#9ce2ac;background:linear-gradient(180deg,#146f4d,#073824);color:#efffed}
+.sound-icon{font-size:1.15em;color:#ffdc86}
+.audio-gate{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 35%,#54250dda,#100603f2 70%);backdrop-filter:blur(8px);transition:opacity .25s ease,visibility .25s ease}
+.audio-gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.gate-card{width:min(500px,94vw);padding:clamp(20px,4vw,32px);text-align:center;border:2px solid #f3cd75;border-radius:24px 24px 17px 17px;background:linear-gradient(160deg,#512a14f7,#201007fa 58%,#100603);box-shadow:inset 0 0 0 5px #ffe6aa12,0 22px 65px #000c;color:#fff0cf}
+.gate-logo{margin:0 auto 10px;display:grid;place-items:center;width:76px;height:76px;border:2px solid #f8d783;border-radius:22px 22px 16px 16px;background:radial-gradient(circle at 25% 20%,#8f4d21,#2b1107 72%);box-shadow:0 0 0 4px #160802,0 0 25px #edaa4544;font-size:38px}
+.gate-card h2{margin:5px 0 8px;color:#ffdc8b;font-size:clamp(1.7rem,5vw,2.4rem);font-weight:1000;text-shadow:0 3px #6a2d0d,0 5px #000}
+.gate-card p{margin:0 auto 17px;max-width:390px;font-size:clamp(.9rem,2.6vw,1.05rem);line-height:1.8;color:#f4dfb6}
+.gate-buttons{display:flex;flex-direction:column;gap:9px}
+.gate-enter,.gate-silent{width:100%;min-height:46px;padding:10px 15px;border-radius:12px;font:inherit;font-size:1rem;font-weight:1000;cursor:pointer}
+.gate-enter{border:1px solid #ffe6a5;background:linear-gradient(180deg,#0d9e67,#05603f);color:#fff9e9;box-shadow:0 5px 15px #0007,inset 0 1px #ffffff55}
+.gate-silent{border:1px solid #9e7544;background:#261207;color:#e8d1aa}
+.gate-note{display:block;margin-top:12px;color:#c9a878;font-size:.72rem;line-height:1.5}
+@media(max-width:760px) and (orientation:portrait){
+ .logo-inner{gap:7px}.brand-copy .brand-kicker{font-size:.48rem;letter-spacing:.06em}.brand-copy h1{font-size:clamp(1.65rem,8vw,2.25rem)}
+ .brand-cards{font-size:17px}.brand-cup{font-size:24px}
+ .footer{gap:5px}.footer b{font-size:clamp(.57rem,2.3vw,.72rem)}.footer .credit{gap:4px;padding-inline-start:3px}.credit-label{font-size:.55rem!important}.mahaly-brand{padding:2px 5px 2px 3px;gap:3px}.mahaly-mark{width:16px;height:16px;font-size:11px}.mahaly-brand em{font-size:.69rem}.sound-toggle{min-height:25px;padding:3px 6px;font-size:.58rem;gap:3px}
+}
+@media(max-width:760px) and (orientation:landscape), (max-height:520px){
+ .brand-copy .brand-kicker{display:none}.brand-cards{font-size:14px}.sound-toggle{min-height:22px;padding:2px 6px;font-size:clamp(.48rem,.92vw,.62rem)}.footer .credit{gap:4px}.mahaly-brand{padding:1px 5px 1px 3px}.mahaly-mark{width:15px;height:15px;font-size:10px}.mahaly-brand em{font-size:clamp(.65rem,.8vw,.77rem)}
+ .gate-card{padding:12px 17px;width:min(440px,95vw)}.gate-logo{width:48px;height:48px;font-size:25px;margin-bottom:4px}.gate-card h2{font-size:1.5rem;margin:3px 0}.gate-card p{font-size:.78rem;line-height:1.4;margin-bottom:8px}.gate-enter,.gate-silent{min-height:32px;padding:5px 12px;font-size:.82rem}.gate-note{margin-top:6px;font-size:.6rem}
+}
+
 @media(max-width:760px) and (orientation:portrait){
  .scene{gap:5px;padding:7px 7px 6px}
  .masthead{min-height:clamp(58px,8.5vh,72px);grid-template-columns:minmax(0,1fr);gap:0}
@@ -86,7 +128,7 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
  .card-meta{gap:2px;padding:3px 3px 4px}.card-meta h2{font-size:clamp(.55rem,1.3vw,.76rem)}.play-badge{min-height:clamp(17px,4.6vh,23px);font-size:clamp(.5rem,1.05vw,.64rem);padding:2px 3px;gap:4px}.play-badge .status-dot{width:4px;height:4px}
  .footer{min-height:25px;padding:3px 7px;gap:7px;border-radius:7px}.footer b{font-size:clamp(.58rem,1.25vw,.75rem)}.footer span{font-size:clamp(.5rem,.93vw,.63rem)}
 }
-@media(max-width:400px) and (orientation:portrait){.footer span:nth-child(2){display:none}.footer b{font-size:.7rem}.footer span{font-size:.58rem}}
+@media(max-width:400px) and (orientation:portrait){.sound-label{display:none}.sound-toggle{padding:3px 7px;min-width:31px}.footer{gap:4px;justify-content:space-between}.footer b{font-size:clamp(.57rem,2.5vw,.68rem)}.footer .credit{gap:3px}.credit-label{font-size:.49rem!important}.mahaly-brand{padding:2px 4px 2px 2px}.mahaly-mark{width:15px;height:15px;font-size:10px}.mahaly-brand em{font-size:.64rem}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
 </style>
 </head>
@@ -94,7 +136,7 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
 <main class="scene" aria-label="القائمة الرئيسية لع القهوة">
  <header class="masthead">
   <div class="logo-sign" aria-label="شعار ع القهوة">
-   <div class="logo-inner"><span class="brand-mark" aria-hidden="true">☕</span><div class="brand-copy"><h1>ع القهوة</h1><p>ألعاب مصرية أونلاين • من ملاهي</p></div><span class="brand-mark" aria-hidden="true">♠♥</span></div>
+   <div class="logo-inner"><span class="brand-mark brand-cup" aria-hidden="true">☕</span><div class="brand-copy"><div class="brand-kicker">قعدة ولعب على أصوله</div><h1>ع القهوة</h1><p>ألعاب مصرية أونلاين</p></div><span class="brand-mark brand-cards" aria-hidden="true"><span>♠</span><span>♥</span></span></div>
   </div>
   <div class="slogan"><strong>لمة أصحاب.. ضحكة من القلب</strong>واللعب لسه مكمل!</div>
  </header>
@@ -131,7 +173,155 @@ body{font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--cream);b
    </div>
   </div>
  </section>
- <footer class="footer"><b>قعدة بلدي.. واللعب على أصوله!</b><span>ديكورات وستايل مصري</span><span class="credit">تصميم وتطوير <em>ملاهي</em></span></footer>
+ <footer class="footer"><b>قعدة بلدي.. واللعب على أصوله!</b><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="تشغيل أو كتم أجواء القهوة"><span class="sound-icon" aria-hidden="true">♫</span><span class="sound-label">شغّل صوت القهوة</span></button><span class="credit"><span class="credit-label">تصميم وتطوير</span><span class="mahaly-brand" aria-label="ملاهي، شركة منتجة للألعاب"><span class="mahaly-mark" aria-hidden="true">م</span><em>ملاهي</em></span></span></footer>
 </main>
+<div class="audio-gate" id="audioGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+ <div class="gate-card">
+  <div class="gate-logo" aria-hidden="true">☕</div>
+  <h2 id="gateTitle">ع القهوة</h2>
+  <p>ريحة الشاي، رنّة الكوبايات، نِدا الشاي والشيشة، وراديو قديم من بعيد…<br><strong>القعدة مش قعدة من غير صوتها!</strong></p>
+  <div class="gate-buttons">
+   <button class="gate-enter" id="enterWithSound" type="button">ادخل القهوة وشغّل الأجواء ♫</button>
+   <button class="gate-silent" id="enterSilent" type="button">ادخل من غير صوت</button>
+  </div>
+  <small class="gate-note">ملاحظة: المتصفح يحتاج لمسة منك للسماح بالصوت؛ وبعدها تقدر تكتمه أو تشغّله من الزر أسفل الصفحة.</small>
+ </div>
+</div>
+<script>
+(() => {
+  const gate = document.getElementById('audioGate');
+  const toggle = document.getElementById('soundToggle');
+  const toggleLabel = toggle?.querySelector('.sound-label');
+  const toggleIcon = toggle?.querySelector('.sound-icon');
+  const enterSound = document.getElementById('enterWithSound');
+  const enterSilent = document.getElementById('enterSilent');
+  let ctx = null, master = null, ambienceStarted = false, timers = [], voices = [];
+  const synth = window.speechSynthesis || null;
+  const phrases = [
+    'شاي يا معلم... شاي سخن!',
+    'شيشة مظبوطة يا بيه؟ اتفضل يا كبير.',
+    'واحد شاي نعناع على الترابيزة دي!',
+    'كوبايات الشاي وصلت يا رجالة!',
+    'اتفضل يا أستاذ، القهوة منوّرة بأهلها!',
+    'مين طالب شاي كُشري؟ شاي على أصوله!'
+  ];
+  const rand = (a,b) => a + Math.random() * (b-a);
+  function later(fn, min, max) {
+    const id = setTimeout(() => { if (ambienceStarted) { try { fn(); } catch(e) {} later(fn,min,max); } }, rand(min,max));
+    timers.push(id);
+  }
+  function tone(freq, duration, volume, type='sine', endFreq=null, when=0) {
+    if (!ctx || !master) return;
+    const t = ctx.currentTime + when;
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq,t);
+    if (endFreq && endFreq > 0) osc.frequency.exponentialRampToValueAtTime(endFreq,t+duration);
+    gain.gain.setValueAtTime(0.0001,t); gain.gain.exponentialRampToValueAtTime(Math.max(0.0002,volume),t+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t+duration);
+    osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t+duration+0.03);
+  }
+  function noiseBuffer(seconds=2) {
+    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*seconds), ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    let last=0;
+    for(let i=0;i<data.length;i++){ const white=Math.random()*2-1; last=(last*.78)+(white*.22); data[i]=last*2.6; }
+    return buf;
+  }
+  function continuousMurmur() {
+    const src = ctx.createBufferSource(); src.buffer=noiseBuffer(3); src.loop=true;
+    const filter=ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=480; filter.Q.value=.55;
+    const gain=ctx.createGain(); gain.gain.value=.18;
+    src.connect(filter); filter.connect(gain); gain.connect(master); src.start();
+    const low = ctx.createBiquadFilter();
+    const src2=ctx.createBufferSource();src2.buffer=noiseBuffer(3);src2.loop=true;low.type='lowpass';low.frequency.value=260;
+    const g2=ctx.createGain();g2.gain.value=.14;src2.connect(low);low.connect(g2);g2.connect(master);src2.start();
+  }
+  function cupClink() {
+    const base=rand(720,1250);
+    tone(base,.55,rand(.025,.055),'sine',base*rand(.82,.96));
+    tone(base*1.51,.36,rand(.012,.03),'triangle',base*1.32,.035);
+    if(Math.random()>.55) tone(rand(1450,1900),.22,.012,'sine',1300,.08);
+  }
+  function shishaBubble() {
+    [0,.09,.22,.39].forEach((delay,i)=>tone(rand(75,135),rand(.13,.26),rand(.025,.05),'sine',rand(48,82),delay));
+    tone(rand(300,520),.12,.018,'triangle',rand(150,250),.36);
+  }
+  function distantHorn() {
+    // Short, deliberately low-volume synthesized street-horn impression.
+    const f=rand(210,255);
+    tone(f,.5,.018,'sawtooth',f*.96);
+    tone(f*1.26,.45,.012,'triangle',f*1.23,.06);
+  }
+  function oldRadioPhrase() {
+    // An original, simple, non-copyrighted radio-like instrumental motif (not a known song).
+    const notes=[220,261.63,293.66,349.23,329.63,261.63,196];
+    const start=Math.floor(Math.random()*notes.length);
+    for(let i=0;i<4;i++){
+      const n=notes[(start+i)%notes.length];
+      tone(n,rand(.22,.42),.009,'triangle',n*.985,i*.29);
+      tone(n*2,.19,.0035,'sine',n*1.95,i*.29+.02);
+    }
+    // Tiny crackle pops like a distant, tuned-in radio.
+    for(let i=0;i<3;i++) tone(rand(1100,2400),.018,.006,'square',rand(500,1200),rand(.05,.75));
+  }
+  function speakCallout() {
+    if (!synth || !ambienceStarted) return;
+    try {
+      synth.cancel();
+      if (!voices.length) voices=synth.getVoices().filter(v => /^ar(-|_)/i.test(v.lang));
+      const u=new SpeechSynthesisUtterance(phrases[Math.floor(Math.random()*phrases.length)]);
+      u.lang='ar-EG'; u.rate=rand(.76,.91); u.pitch=rand(.64,.91); u.volume=rand(.38,.57);
+      if(voices.length) u.voice=voices[Math.floor(Math.random()*voices.length)];
+      synth.speak(u);
+    } catch(e) {}
+  }
+  function setSoundState(on) {
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', String(on));
+      if(toggleLabel) toggleLabel.textContent = on ? 'اكتم صوت القهوة' : 'شغّل صوت القهوة';
+      if(toggleIcon) toggleIcon.textContent = on ? '♫' : '🔇';
+    }
+  }
+  async function startSound() {
+    try {
+      if (!ctx) {
+        const AC=window.AudioContext||window.webkitAudioContext;
+        if(!AC) throw new Error('Web Audio unsupported');
+        ctx=new AC(); master=ctx.createGain(); master.gain.value=.72; master.connect(ctx.destination);
+      }
+      await ctx.resume();
+      if(ctx.state!=='running') throw new Error('Audio context did not start');
+      if(!ambienceStarted){
+        ambienceStarted=true; continuousMurmur();
+        later(cupClink,2500,6500); later(shishaBubble,9000,16000); later(oldRadioPhrase,5000,11000);
+        later(distantHorn,38000,65000); later(speakCallout,10000,17000);
+        // Keep the ambience running while this page is open; intervals are deliberately irregular.
+      }
+      if(master) master.gain.setTargetAtTime(.72,ctx.currentTime,.12);
+      setSoundState(true); gate?.classList.add('hidden');
+      return true;
+    } catch(e) {
+      setSoundState(false); return false;
+    }
+  }
+  function stopSound() {
+    ambienceStarted=false;
+    timers.forEach(clearTimeout);timers=[];
+    if(synth) { try{synth.cancel();}catch(e){} }
+    if(master&&ctx) master.gain.setTargetAtTime(0,ctx.currentTime,.08);
+    setSoundState(false);
+  }
+  function openSilent() { stopSound(); gate?.classList.add('hidden'); }
+  enterSound?.addEventListener('click', async()=>{ const ok=await startSound(); if(!ok){alert('المتصفح لم يسمح بتشغيل الصوت. جرّب الضغط مرة أخرى أو استخدم زر الصوت بعد السماح به.');} });
+  enterSilent?.addEventListener('click',openSilent);
+  toggle?.addEventListener('click',async()=>{ if(ambienceStarted) stopSound(); else {const ok=await startSound(); if(!ok) alert('تعذّر بدء الصوت في هذا المتصفح. جرّب تفعيل الصوت من إعدادات الموقع.');} });
+  // Attempt autoplay when permitted; otherwise retain the entry gate so the visitor can grant audio with a tap.
+  window.addEventListener('load', async()=>{
+    const ok=await startSound();
+    if(!ok) gate?.classList.remove('hidden');
+  },{once:true});
+  if(synth) synth.addEventListener?.('voiceschanged',()=>{voices=synth.getVoices().filter(v=>/^ar(-|_)/i.test(v.lang));});
+})();
+</script>
 </body>
 </html>
