@@ -215,6 +215,61 @@
     })();`;
     dom.body.appendChild(playerCode);
 
+    // Adjust ONLY the two hero panels so their OUTER edges line up with the game cards.
+    // The center game grid and its content are deliberately unchanged.
+    const alignScript=dom.createElement('script');
+    alignScript.textContent=`
+    (()=>{
+      const SELECTOR='[data-ahwa-header-aligned]';
+      function exactLabel(text){return (text||'').replace(/\\s+/g,' ').trim();}
+      function findText(needle){
+        return [...document.querySelectorAll('body *')].find(e=>e.children.length===0 && exactLabel(e.textContent).includes(needle)) ||
+          [...document.querySelectorAll('body *')].find(e=>e.children.length<3 && exactLabel(e.textContent)===needle);
+      }
+      function panelFor(label){
+        const leaf=findText(label);if(!leaf)return null;
+        let p=leaf;
+        for(let i=0;i<7 && p && p!==document.body;i++,p=p.parentElement){
+          const r=p.getBoundingClientRect();
+          if(r.width>250 && r.height>55 && r.height<180 && r.top<240 &&
+          (getComputedStyle(p).borderTopWidth!=='0px'||getComputedStyle(p).borderRadius!=='0px')) return p;
+        }
+        return leaf.closest('aside,article,section')||leaf.parentElement;
+      }
+      function gameCard(title){
+        const heading=[...document.querySelectorAll('h2,h3,h4')].find(e=>exactLabel(e.textContent)===title);
+        if(!heading)return null;
+        let p=heading;
+        for(let i=0;i<7&&p;i++,p=p.parentElement){
+          const r=p.getBoundingClientRect();
+          if(r.width>220 && r.width<600 && r.height>180 && r.height<600)return p;
+        }
+        return null;
+      }
+      function reset(p){if(p){p.style.removeProperty('width');p.style.removeProperty('max-width');p.style.removeProperty('translate');p.removeAttribute('data-ahwa-header-aligned')}}
+      function align(){
+        const hero=panelFor('قعدة ولعب على أصوله')||panelFor('ألعاب مصرية أونلاين');
+        const call=panelFor('نداء القهوة')||panelFor('هات الشاي وتعالى');
+        reset(hero);reset(call);
+        const right=gameCard('بصرة'),left=gameCard('اللودو');
+        if(!hero||!call||!right||!left||hero===call)return;
+        const r=hero.getBoundingClientRect(),l=call.getBoundingClientRect();
+        const targetRight=right.getBoundingClientRect().right;
+        const targetLeft=left.getBoundingClientRect().left;
+        // Preserve the inward-facing edge of each box; only expand/contract outward.
+        const heroWidth=r.width+(targetRight-r.right);
+        const callWidth=l.width+(l.left-targetLeft);
+        if(heroWidth>250 && heroWidth<1800){hero.style.setProperty('width',heroWidth+'px','important');hero.style.setProperty('max-width','none','important');hero.dataset.ahwaHeaderAligned='true';}
+        if(callWidth>260 && callWidth<850){call.style.setProperty('width',callWidth+'px','important');call.style.setProperty('max-width','none','important');call.style.setProperty('translate',(targetLeft-l.left)+'px 0','important');call.dataset.ahwaHeaderAligned='true';}
+      }
+      let timer;
+      const schedule=()=>{clearTimeout(timer);timer=setTimeout(align,120)};
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{schedule();setTimeout(align,500)},{once:true});
+      else {schedule();setTimeout(align,500)}
+      window.addEventListener('resize',schedule,{passive:true});
+    })();`;
+    dom.body.appendChild(alignScript);
+
     document.open();document.write('<!doctype html>\n'+dom.documentElement.outerHTML);document.close();
   }catch(err){console.error('Home page loading failed:',err);const p=document.querySelector('#error');if(p)p.style.display='block';}
 })();
