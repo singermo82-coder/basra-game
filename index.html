@@ -259,6 +259,23 @@ body.ludo-board-neon .center-arena>.boardbox{background:linear-gradient(135deg,#
 .invite-tools input{font:600 11px sans-serif!important;direction:ltr;text-align:left}
 .invite-tools small{font-size:11px;color:#f8da9b;line-height:1.6}
 @media(max-width:750px){#rightSidebar{overflow:visible!important}#rightSidebar .inline-avatar-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+/* V10: token overlay and home rings share exactly one 750x750 SVG coordinate system. */
+.board{position:relative!important;direction:ltr!important}
+#boardSvg,#tokens{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;aspect-ratio:1!important}
+#boardSvg{pointer-events:none!important}
+#tokens{pointer-events:none!important;overflow:visible!important;z-index:5!important}
+#tokens .piece-svg{pointer-events:visiblePainted!important;filter:drop-shadow(0 3px 2px #0007)}
+#tokens .piece-svg.canmove{filter:drop-shadow(0 0 6px #fff)!important;outline:none}
+#rightSidebar .player-portrait-pane{padding:7px!important}
+#rightSidebar .inline-avatar-grid{display:block!important;overflow:visible!important}
+.photo-open-btn{display:flex;align-items:center;gap:10px;width:100%;padding:7px;border:1px solid #bf9251;border-radius:11px;background:#2d1b10;color:#ffe1a7;font:inherit;cursor:pointer;text-align:right}
+.photo-open-btn .ahwa-avatar{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:50%!important}
+.photo-open-btn span:nth-child(2){font-size:11px;flex:1}
+.photo-open-btn strong{font-size:10px;white-space:nowrap}
+.avatar-pick-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;max-height:min(60vh,420px);overflow-y:auto}
+#rightSidebar .competitor-pane .player:first-child .ahwa-avatar{cursor:pointer}
+@media(max-width:600px){.avatar-pick-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 </style></head><body><div class="shell">
 <header class="domino-header">
 <div class="brand-ahwa"><img class="brand-plaque" src="./logo-plaque.webp" alt="ع القهوة" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="brand-fallback">☕</div><div><div class="brand-name">ع القهوة</div><div class="brand-sub">من ملاهي | ألعاب مصرية أونلاين</div></div></div>
@@ -268,7 +285,7 @@ body.ludo-board-neon .center-arena>.boardbox{background:linear-gradient(135deg,#
 <main class="main" id="ahwaLayout">
 <aside class="side" id="chatSidebar"><section class="cardpane"><div class="paneTitle">☕ قعدة ملاهي المصرية</div><div class="chat-area"><div class="quick-chat"><button data-quick="حظ سعيد يا معلم!">حظ سعيد</button><button data-quick="يا سلام على اللعب!">يا سلام</button><button data-quick="تحية من القهوة ☕">تحية ☕</button><button data-quick="دبل يا كبير!">دبل يا كبير</button></div><div class="chat-messages" id="chatMessagesAhwa" aria-live="polite"><div class="chat-message"><b>القهوة:</b> أهلاً بيك! الشات هنا على نفس الجهاز.</div></div><div class="chat-compose"><input id="chatInputAhwa" maxlength="120" placeholder="اكتب رسالة قصيرة..."><button id="chatSendAhwa">➤</button></div></div></section></aside>
 <section class="center-arena"><div class="turn-banner" id="turnBannerAhwa">🎲 اللودو البلدي — قعدة ملاهي على أصولها</div>
-<div class="boardbox"><div class="board" id="board"><svg id="boardSvg" viewBox="0 0 750 750" xmlns="http://www.w3.org/2000/svg" aria-label="لوحة لودو كاملة"></svg><div class="tokens" id="tokens"></div></div><div class="boardbadge">✦ اللودو · ع القهوة ✦</div></div>
+<div class="boardbox"><div class="board" id="board"><svg id="boardSvg" viewBox="0 0 750 750" xmlns="http://www.w3.org/2000/svg" aria-label="لوحة لودو كاملة"></svg><svg class="tokens" id="tokens" viewBox="0 0 750 750" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="قطع اللودو"></svg></div><div class="boardbadge">✦ اللودو · ع القهوة ✦</div></div>
 <section class="cardpane"><div class="paneTitle">🎲 النرد والدور الحالي</div><div class="dicepane"><div class="dice3d" id="dice"><div class="pips" id="pips"></div></div><div class="ludo-dice-actions"><button id="rollBtn" class="btn gold">🎲 ارمي النرد</button><button id="resetBtn" class="btn">↻ مباراة جديدة</button></div><div class="turnText" id="turnText">ابدأ المباراة!</div></div></section>
 </section>
 <aside class="side" id="rightSidebar"><section class="cardpane player-portrait-pane"><div class="paneTitle">📸 اختار صورتك</div><div id="inlineAvatarGrid" class="inline-avatar-grid"></div></section><section class="cardpane competitor-pane"><div class="paneTitle">🏆 المنافسين</div><div id="players"></div></section><section class="cardpane"><div class="paneTitle">🎮 قعدة اللودو البلدي <small style="float:left;color:#d8bb84">V8</small></div><div class="menu-grid"><button id="newGameAhwa">🎮 مباراة جديدة</button><button id="rulesBtnAhwa">📜 القواعد</button><button id="fullBtn">⛶ ملء الشاشة</button><button id="shareSideAhwa">↗ مشاركة</button></div></section><section class="cardpane"><div class="paneTitle">📊 إحصائيات المباراة</div><div class="stats"><div class="stat"><b id="roundNum">1</b><span>الجولات</span></div><div class="stat"><b id="capturesNum">0</b><span>عمليات الأكل</span></div><div class="stat"><b id="rollsNum">0</b><span>رميات النرد</span></div><div class="stat"><b id="leadNum">—</b><span>المتصدر</span></div></div></section><section class="cardpane"><div class="paneTitle">⚡ أحداث المباراة</div><div class="log" id="log"></div></section><section class="cardpane ahwa-quick-custom"><div class="paneTitle">🎨 تخصيص اللعبة</div><div class="menu-grid"><button type="button" id="boardPickerQuick">🎲 شكل اللوحة</button><button type="button" id="piecePickerQuick">♟ شكل القطع</button><button type="button" id="avatarPickerQuick">👤 صورة اللاعب</button><button type="button" id="onlineQuick">🌐 أونلاين ٢–٤</button></div><small class="ahwa-quick-note">تقدر تغيّر اللوحة والقطع أثناء اللعب</small></section><section class="cardpane"><div class="paneTitle">🔊 إعدادات القعدة</div><div class="menu-grid"><button id="soundSideAhwa">🔊 الصوت</button><button id="themeSideAhwa">🎨 لوحة اللودو</button><button id="pieceSelectSide">♟ شكل القطع</button><button id="settingsSideAhwa">⚙ الإعدادات</button><button id="radioSideAhwa">📻 الراديو</button></div></section></aside>
@@ -300,7 +317,7 @@ body.ludo-board-neon .center-arena>.boardbox{background:linear-gradient(135deg,#
 const COLORS=[{key:'red',hex:'#f63c64',name:'الأحمر',cpuName:'المعلم شلبي'},{key:'green',hex:'#17c99d',name:'الأخضر',cpuName:'عم برعي'},{key:'yellow',hex:'#f5bc39',name:'الأصفر',cpuName:'عم حنفي'},{key:'blue',hex:'#428bee',name:'الأزرق',cpuName:'عم بندق'}];
 const TRACK=[[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0]];
 const START=[0,13,26,39];const LANES=[[[7,1],[7,2],[7,3],[7,4],[7,5]],[[1,7],[2,7],[3,7],[4,7],[5,7]],[[7,13],[7,12],[7,11],[7,10],[7,9]],[[13,7],[12,7],[11,7],[10,7],[9,7]]];
-const BASES=[[[1.85,1.85],[1.85,4.15],[4.15,1.85],[4.15,4.15]],[[1.85,10.85],[1.85,13.15],[4.15,10.85],[4.15,13.15]],[[10.85,10.85],[10.85,13.15],[13.15,10.85],[13.15,13.15]],[[10.85,1.85],[10.85,4.15],[13.15,1.85],[13.15,4.15]]];
+const BASES=[[[1.5,1.5],[1.5,3.5],[3.5,1.5],[3.5,3.5]],[[1.5,10.5],[1.5,12.5],[3.5,10.5],[3.5,12.5]],[[10.5,10.5],[10.5,12.5],[12.5,10.5],[12.5,12.5]],[[10.5,1.5],[10.5,3.5],[12.5,1.5],[12.5,3.5]]];
 const SAFE=new Set([0,8,13,21,26,34,39,47]);let active=[],mode='cpu',g=null,busy=false,audio=true,turnSerial=0;let onlineDb=null,onlineRef=null,onlineRoom='',onlineSeat=-1,onlineNames={},onlineReady=false,onlineHost=false,onlineLastVersion=-1;const onlineSid='ludo-'+Math.random().toString(36).slice(2,10);const AVATARS=[
  {id:'curly-man',name:'شاب كيرلي',cat:'men',x:0,y:0,emoji:'👨🏻'},
  {id:'fez-man',name:'معلم بالطربوش',cat:'cafe',x:33.3333,y:0,emoji:'👨🏻‍🦱'},
@@ -332,8 +349,15 @@ function current(){return g.order[g.turn]};function isCpu(p){return mode==='cpu'
 function moves(p,die){return g.pieces[p].map((st,k)=>({k,st,target:st===-1?(die===6?0:null):(st+die<=56?st+die:null)})).filter(v=>v.target!==null&&v.st!==56)}
 function positionOf(p,step){return (START[p]+step)%52}
 function render(){if(!g)return;const selected=current(),allowed=(g.phase==='choose'&&!busy&&(mode!=='online'||g.order.indexOf(selected)===onlineSeat))?moves(selected,g.die):[],ls=new Set(allowed.map(m=>m.k));$('players').innerHTML=g.order.map((p,i)=>{const c=COLORS[p],mine=(mode==='online'?g.order.indexOf(p)===onlineSeat:p===0),finished=g.winners.includes(p);const progress=g.pieces[p].filter(x=>x===56).length;return `<div class="player ${selected===p&&!finished?'active':''} ${finished?'finished':''}" style="--player-color:${c.hex}"><div class="ahwa-avatar" style="background-position:${avatarFor(p).x}% ${avatarFor(p).y}%" title="${avatarFor(p).name}"></div><div><div class="pname">${mode==='cpu'?(mine?'أنت':'المعلم شلبي'):mode==='online'?(g.playerNames?.[p]||('اللاعب '+(i+1))):'اللاعب '+(i+1)} ${finished?'🏆':''}</div><div class="pmeta">${c.name} · ${isCpu(p)?'كمبيوتر':mode==='online'?'أونلاين':'لاعب'} · ${progress}/4 في البيت</div></div><div class="pcount">${g.pieces[p].filter(x=>x>=0&&x<56).length}●</div></div>`}).join('');
-let html='';for(let i of g.order)g.pieces[i].forEach((st,k)=>{const [r,c]=loc(i,st,k);let overlap=0;if(st>=0&&st<51){for(let j=0;j<k;j++)if(g.pieces[i][j]===st)overlap++}let ox=overlap?((overlap%3)-1)*.12:0,oy=overlap?Math.floor(overlap/3)*.12:0;html+=`<div class="token ${COLORS[i].key} ${selected===i&&ls.has(k)?'canmove':''} ${st===56?'finish':''}" role="button" aria-label="قطعة ${COLORS[i].name} ${k+1}" data-p="${i}" data-k="${k}" style="left:${((c+.5+ox)/15)*100}%;top:${((r+.5+oy)/15)*100}%"></div>`});$('tokens').innerHTML=html;
-$('tokens').querySelectorAll('.token.canmove').forEach(el=>el.addEventListener('click',()=>playMove(+el.dataset.k)));
+let html='';for(let i of g.order)g.pieces[i].forEach((st,k)=>{
+ const [r,c]=loc(i,st,k);let overlap=0;
+ if(st>=0&&st<51){for(let j=0;j<k;j++)if(g.pieces[i][j]===st)overlap++}
+ const ox=overlap?((overlap%3)-1)*.12:0,oy=overlap?Math.floor(overlap/3)*.12:0;
+ const cx=(c+.5+ox)*50,cy=(r+.5+oy)*50;
+ const col=COLORS[i].hex,can=selected===i&&ls.has(k);
+ html+=`<g class="piece-svg ${can?'canmove':''}" data-p="${i}" data-k="${k}" role="button" aria-label="قطعة ${COLORS[i].name} ${k+1}" tabindex="${can?'0':'-1'}" style="cursor:${can?'pointer':'default'};opacity:${st===56?'.7':'1'}"><circle cx="${cx}" cy="${cy+3}" r="22" fill="#0007"/><circle cx="${cx}" cy="${cy}" r="20" fill="${col}" stroke="#ffffff" stroke-width="3"/><circle cx="${cx-5}" cy="${cy-6}" r="8" fill="#ffffff99"/></g>`;
+});$('tokens').innerHTML=html;
+$('tokens').querySelectorAll('.piece-svg.canmove').forEach(el=>{el.addEventListener('click',()=>playMove(+el.dataset.k));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();playMove(+el.dataset.k)}})});
 $('rollBtn').disabled=busy||g.phase!=='roll'||isCpu(current())||(mode==='online'&&g.order.indexOf(current())!==onlineSeat)||g.winners.length>=g.order.length-1;$('turnText').textContent=g.phase==='choose'?'👆 اختار القطعة المضيئة':g.phase==='roll'?(isCpu(current())?'🤖 الكمبيوتر بيفكر...':mode==='online'&&g.order.indexOf(current())!==onlineSeat?'⌛ مستني دور اللاعب الآخر':'🎲 دورك، ارمي النرد!'):'⌛ تنفيذ الحركة...';$('roundNum').textContent=g.round;$('capturesNum').textContent=g.captures;$('rollsNum').textContent=g.rolls;let leader=g.order.map(p=>({p,score:g.pieces[p].reduce((sum,x)=>sum+Math.max(0,x+1),0)})).sort((a,b)=>b.score-a.score)[0];$('leadNum').textContent=leader?COLORS[leader.p].name:'—'}
 function log(msg){let row=document.createElement('div');row.textContent=msg;$('log').prepend(row);while($('log').children.length>20)$('log').lastChild.remove()}
 function dice(val){const mapping={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};$('pips').innerHTML=Array.from({length:9},(_,i)=>`<span class="pip ${mapping[val].includes(i)?'on':''}"></span>`).join('')}
@@ -385,13 +409,15 @@ $('copyInvite').onclick=async()=>{
 };
 function populateInlineAvatars(){
  const grid=$('inlineAvatarGrid');if(!grid)return;
- grid.innerHTML=AVATARS.map(a=>`<button type="button" class="inline-avatar ${a.id===myAvatar?'selected':''}" data-photo="${a.id}" title="${a.name}" aria-label="${a.name}"><span class="ahwa-avatar" style="background-position:${a.x}% ${a.y}%"></span></button>`).join('');
- grid.querySelectorAll('[data-photo]').forEach(b=>b.onclick=()=>{
-   myAvatar=b.dataset.photo;try{localStorage.setItem('ahwa-ludo-avatar',myAvatar)}catch(e){}
-   populateInlineAvatars();if(g)render();
- });
+ const a=AVATARS.find(a=>a.id===myAvatar)||AVATARS[0];
+ grid.innerHTML=`<button type="button" class="photo-open-btn" id="photoOpenBtn" title="اضغط لاختيار صورة اللاعب"><span class="ahwa-avatar" style="background-position:${a.x}% ${a.y}%"></span><span>اضغط على صورتك لاختيار أفاتار</span><strong>▦ اختيار</strong></button>`;
+ grid.querySelector('button').onclick=()=>$('avatarBtnAhwa').click();
 }
 populateInlineAvatars();
+// Click your own portrait in competitors to change it.
+$('players').addEventListener('click',e=>{const portrait=e.target.closest('.ahwa-avatar');if(portrait&&e.target.closest('.player')=== $('players').querySelector('.player'))$('avatarBtnAhwa').click()});
+// Keep the portrait preview in sync whenever a selection is made.
+$('dialogBodyAhwa').addEventListener('click',e=>{if(e.target.closest('[data-avatar]')){setTimeout(()=>{populateInlineAvatars();$('ahwaDialog').classList.add('hidden')},0)}});
 const inviteRoom=new URLSearchParams(location.search).get('room');
 if(inviteRoom&&/^[A-Za-z0-9]{5,8}$/.test(inviteRoom)){
  const onlineOption=document.querySelector('#modeChoice [data-mode="online"]');
