@@ -1114,6 +1114,17 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
   .upcoming-items-clear{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 
+
+/* V15 - loosen editing constraints; original playing layout remains unchanged */
+body.ahwa-design .arena{overflow:visible!important;min-height:0!important;z-index:6!important}
+body.ahwa-design .layout{overflow:visible!important}
+body.ahwa-design #tableShell{max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;flex-shrink:0!important;overflow:visible!important}
+body.ahwa-design #tableShell .chess-felt{overflow:hidden!important}
+body.ahwa-design #board{max-width:none!important;max-height:none!important;flex-shrink:0!important}
+body.ahwa-design .side-panel,body.ahwa-design .left-panel{overflow:visible!important}
+body.ahwa-design #designSelection{z-index:3000!important}
+body.ahwa-design #designSelection .design-drag{touch-action:none;user-select:none}
+body.ahwa-design #designSelection .design-resize{touch-action:none}
 </style>
 <style>
 /* ===== V4.3 – Natural domino table, clean playing-first interface ===== */
@@ -1445,4 +1456,4 @@ body.ahwa-design .design-target.design-active{outline:3px solid #54f6c2!importan
 #designHelp{position:fixed;bottom:105px;left:16px;z-index:2200;display:none;background:#21160ef5;border:1px solid #d4a458;border-radius:9px;color:#ffe4af;padding:8px 12px;font:12px Tahoma}
 body.ahwa-design #designHelp{display:block}
 @media(max-width:850px){#ahwaDesignToggle{top:auto;bottom:105px;left:8px;padding:7px;font-size:10px}#designToolbar{top:6px;max-height:30vh;overflow-y:auto}#designHelp{bottom:72px;left:5px;font-size:10px}}
-</style><script src="./chess-design.js?v=14" defer></script><script type="module" src="./chess-runtime.js?v=11"></script></body></html>
+</style><script src="./chess-design.js?v=15" defer></script><script type="module" src="./chess-runtime.js?v=11"></script></body></html>

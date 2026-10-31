@@ -17,7 +17,8 @@ function initial(){return window.__AHWA_DESIGN_PRESET||load()}
 function setStyles(el,c){if(!el||!c)return;
  if(c.width)el.style.setProperty('width',c.width,'important');
  if(c.height)el.style.setProperty('height',c.height,'important');
- if(c.x||c.y)el.style.setProperty('transform',`translate(${c.x||0}px,${c.y||0}px)`,'important');else el.style.removeProperty('transform');
+ if(c.width||c.height){el.style.setProperty('max-width','none','important');el.style.setProperty('max-height','none','important');el.style.setProperty('flex-shrink','0','important');}
+ el.style.setProperty('transform',`translate(${Number(c.x)||0}px,${Number(c.y)||0}px)`,'important');
  if(c.hidden)el.style.setProperty('visibility','hidden','important');else el.style.removeProperty('visibility');
  el.style.position='relative';
  if(c.x||c.y)el.style.zIndex='40';
@@ -37,17 +38,17 @@ function toggle(){let enabled=document.body.classList.toggle('ahwa-design');get(
 function start(e,type){if(!current)return;e.preventDefault();e.stopPropagation();snapshot();let el=get(current),r=el.getBoundingClientRect(),c=state[current]||{};
  drag={type,id:current,px:e.clientX,py:e.clientY,x:c.x||0,y:c.y||0,w:r.width,h:r.height};e.target.setPointerCapture?.(e.pointerId)}
 function moving(e){if(!drag)return;e.preventDefault();let c=state[drag.id]||(state[drag.id]={});let dx=e.clientX-drag.px,dy=e.clientY-drag.py;
- if(drag.type==='move'){c.x=Math.round(drag.x+dx);c.y=Math.round(drag.y+dy)}else{c.width=Math.max(70,Math.round(drag.w+dx))+'px';c.height=Math.max(35,Math.round(drag.h+dy))+'px'}
+ if(drag.type==='move'){c.x=Math.round(drag.x+dx);c.y=Math.round(drag.y+dy)}else{const size=Math.max(180,Math.round(Math.max(drag.w+dx,drag.h+dy)));if(drag.id==='tableShell'||drag.id==='board'){c.width=size+'px';c.height=size+'px'}else{c.width=Math.max(70,Math.round(drag.w+dx))+'px';c.height=Math.max(35,Math.round(drag.h+dy))+'px'}}
  setStyles(get(drag.id),c);updateSelection()}
 function end(){if(drag){drag=null;localStorage.setItem(KEY,JSON.stringify(state))}}
-function changeSize(dim,v){if(!current||!v)return;snapshot();let c=state[current]||(state[current]={});c[dim]=Math.max(35,Number(v))+'px';apply();save()}
-function resetOne(){if(!current)return;snapshot();delete state[current];let el=get(current);if(el){['width','height','transform','visibility','z-index'].forEach(x=>el.style.removeProperty(x))}updateSelection();save()}
-function resetAll(){if(!confirm('ترجع كل عناصر الصفحة لأماكنها الأصلية؟'))return;snapshot();state={};for(let [id] of items){let el=get(id);if(el){['width','height','transform','visibility','z-index'].forEach(x=>el.style.removeProperty(x))}}save();updateSelection()}
+function changeSize(dim,v){if(!current||!v)return;snapshot();let c=state[current]||(state[current]={});const px=Math.max(100,Number(v))+'px';c[dim]=px;if(current==='tableShell'||current==='board')c[dim==='width'?'height':'width']=px;apply();save()}
+function resetOne(){if(!current)return;snapshot();delete state[current];let el=get(current);if(el){['width','height','max-width','max-height','flex-shrink','transform','visibility','z-index'].forEach(x=>el.style.removeProperty(x))}updateSelection();save()}
+function resetAll(){if(!confirm('ترجع كل عناصر الصفحة لأماكنها الأصلية؟'))return;snapshot();state={};for(let [id] of items){let el=get(id);if(el){['width','height','max-width','max-height','flex-shrink','transform','visibility','z-index'].forEach(x=>el.style.removeProperty(x))}}save();updateSelection()}
 function download(name,text,type){const a=document.createElement('a'),blob=new Blob([text],{type});a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
 function exportJSON(){download('ahwa-chess-layout.json',JSON.stringify(state,null,2),'application/json')}
 function exportHTML(){let html=document.documentElement.outerHTML;const preset='<script>window.__AHWA_DESIGN_PRESET='+JSON.stringify(state).replace(/</g,'\\u003c')+';<\\/script>';
  html=html.replace('</head>',preset.replace('<\\/script>','</script>')+'</head>');download('chess-designed.html','<!doctype html>\n'+html,'text/html;charset=utf-8')}
-function fileImport(e){let f=e.target.files?.[0];if(!f)return;f.text().then(txt=>{try{let o=JSON.parse(txt);if(!o||typeof o!=='object')throw Error();snapshot();state=o;for(let [id] of items){let el=get(id);if(el)['width','height','transform','visibility'].forEach(k=>el.style.removeProperty(k))}apply();save()}catch{alert('ملف تصميم غير صالح')}});e.target.value=''}
+function fileImport(e){let f=e.target.files?.[0];if(!f)return;f.text().then(txt=>{try{let o=JSON.parse(txt);if(!o||typeof o!=='object')throw Error();snapshot();state=o;for(let [id] of items){let el=get(id);if(el)['width','height','max-width','max-height','flex-shrink','transform','visibility'].forEach(k=>el.style.removeProperty(k))}apply();save()}catch{alert('ملف تصميم غير صالح')}});e.target.value=''}
 function init(){state=initial();
  const b=document.createElement('button');b.id='ahwaDesignToggle';b.type='button';b.textContent='🎨 تعديل التصميم';document.body.appendChild(b);b.addEventListener('click',toggle);
  let toolbar=document.createElement('div');toolbar.id='designToolbar';toolbar.innerHTML=`<strong>🎨 وضع التصميم</strong><button id="designSave" class="primary">💾 حفظ</button><button id="designUndo">↶ تراجع</button><button id="designResetOne">إعادة العنصر</button><button id="designResetAll">إعادة الكل</button><label>عرض <input id="designWidth" type="number" min="70" style="width:58px"></label><label>ارتفاع <input id="designHeight" type="number" min="35" style="width:58px"></label><button id="designHide">👁 إخفاء/إظهار</button><button id="designExportJSON">⬇ إعدادات</button><button id="designExportHTML">⬇ HTML</button><label>⬆ استيراد<input type="file" id="designImport" accept=".json,application/json" hidden></label><span id="designNote" style="display:none"></span>`;document.body.appendChild(toolbar);
@@ -55,7 +56,7 @@ function init(){state=initial();
  let help=document.createElement('div');help.id='designHelp';help.textContent='في وضع التصميم: اضغط العنصر، واسحب من شريطه الأخضر أو من زاوية التكبير';document.body.appendChild(help);
  for(let [id] of items){let el=get(id);if(!el)continue;el.classList.add('design-target');el.addEventListener('pointerdown',e=>{if(document.body.classList.contains('ahwa-design')){e.preventDefault();e.stopPropagation();choose(id)}},true)}
  get('designDragLabel').addEventListener('pointerdown',e=>start(e,'move'));box.querySelector('.design-resize').addEventListener('pointerdown',e=>start(e,'size'));window.addEventListener('pointermove',moving,true);window.addEventListener('pointerup',end,true);
- get('designSave').onclick=save;get('designUndo').onclick=()=>{if(!history.length)return;state=JSON.parse(history.pop());for(let [id] of items){let el=get(id);if(el)['width','height','transform','visibility'].forEach(x=>el.style.removeProperty(x))}apply();save()};get('designResetOne').onclick=resetOne;get('designResetAll').onclick=resetAll;
+ get('designSave').onclick=save;get('designUndo').onclick=()=>{if(!history.length)return;state=JSON.parse(history.pop());for(let [id] of items){let el=get(id);if(el)['width','height','max-width','max-height','flex-shrink','transform','visibility'].forEach(x=>el.style.removeProperty(x))}apply();save()};get('designResetOne').onclick=resetOne;get('designResetAll').onclick=resetAll;
  get('designWidth').addEventListener('change',e=>changeSize('width',e.target.value));get('designHeight').addEventListener('change',e=>changeSize('height',e.target.value));
  get('designHide').onclick=()=>{if(!current)return;snapshot();const c=state[current]||(state[current]={});c.hidden=!c.hidden;apply();save()};
  get('designExportJSON').onclick=exportJSON;get('designExportHTML').onclick=exportHTML;get('designImport').onchange=fileImport;
