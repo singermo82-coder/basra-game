@@ -3,6 +3,7 @@ const $=id=>document.getElementById(id);
 const chess=new Chess();
 let mode='cpu',difficulty='easy',selected=null,flipped=false,room='',myColor='w',db=null,roomRef=null,chatRef=null,thinking=false,remoteApplying=false,muted=false,chatMuted=false,radioUrl='';
 let name=localStorage.getItem('ahwa-name')||'محمد';
+let preferredColor=localStorage.getItem('ahwa-chess-color')||'w';
 let pieceTheme=localStorage.getItem('ahwa-chess-piece-theme')||'classic';
 let tableTheme=localStorage.getItem('ahwa-chess-table-theme')||'walnut';
 const pieceGlyph={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
@@ -52,15 +53,15 @@ let chess3D=null,loading3D=false,chess3DError=false;
 async function activate3D(){
  if(chess3D||loading3D)return;
  loading3D=true;chess3DError=false;
- const status=$('chess3dError');if(status)status.hidden=true;
+ 
  try{
-   const {createChess3D}=await import('./chess-3d.js?v=7');
+   const {createChess3D}=await import('./chess-3d.js?v=11');
    if(pieceTheme!=='3d'){loading3D=false;return}
    chess3D=createChess3D({mount:$('chess3dMount'),onSquare:squareClick}); if(chess3D.setTheme)chess3D.setTheme(tableTheme);
    document.body.classList.add('chess-3d-active');
    render();
  }catch(err){console.error('تعذر تفعيل 3D',err);chess3DError=true;document.body.classList.remove('chess-3d-active');
-   if(status){status.textContent='متصفحك أو اتصال الإنترنت منع تحميل المجسمات. الرقعة العادية متاحة للعب.';status.hidden=false;}
+   message('الشطرنج متاح بالعرض العادي');
  }
  loading3D=false;
 }
@@ -106,7 +107,7 @@ function render(){
   renderCaptured();
   sync3D();
 }
-function squareClick(id){if(thinking||chess.isGameOver())return;if(mode==='cpu'&&chess.turn()==='b')return;if(mode==='online'&&chess.turn()!==myColor)return;const piece=chess.get(id);if(piece&&piece.color===chess.turn()){selected=selected===id?null:id;render();return}const opts=selected?chess.moves({square:selected,verbose:true}).filter(m=>m.to===id):[];if(!opts.length){selected=null;render();return}const m=opts[0];if(m.flags.includes('p')){const popup=document.createElement('div');popup.className='chess-choice';popup.innerHTML='<span style="font-weight:700;color:#fff">ترقية البيدق:</span>';for(const q of ['q','r','b','n']){const btn=document.createElement('button');btn.innerHTML=pieceGlyph[chess.turn()+q];btn.onclick=()=>{popup.remove();commit({from:selected,to:id,promotion:q})};popup.appendChild(btn)}document.body.appendChild(popup)}else commit({from:selected,to:id,promotion:'q'})}
+function squareClick(id){if(thinking||chess.isGameOver())return;if(mode==='cpu'&&chess.turn()!==preferredColor)return;if(mode==='online'&&chess.turn()!==myColor)return;const piece=chess.get(id);if(piece&&piece.color===chess.turn()){selected=selected===id?null:id;render();return}const opts=selected?chess.moves({square:selected,verbose:true}).filter(m=>m.to===id):[];if(!opts.length){selected=null;render();return}const m=opts[0];if(m.flags.includes('p')){const popup=document.createElement('div');popup.className='chess-choice';popup.innerHTML='<span style="font-weight:700;color:#fff">ترقية البيدق:</span>';for(const q of ['q','r','b','n']){const btn=document.createElement('button');btn.innerHTML=pieceGlyph[chess.turn()+q];btn.onclick=()=>{popup.remove();commit({from:selected,to:id,promotion:q})};popup.appendChild(btn)}document.body.appendChild(popup)}else commit({from:selected,to:id,promotion:'q'})}
 async function commit(m){
   try{
     const before=chess.fen();
@@ -117,15 +118,18 @@ async function commit(m){
       try{const snap=await roomRef.child('game').once('value'); const value=snap.val()||{}; if(value.fen!==before){chess.load(value.fen||new Chess().fen()); render(); message('النقلة لم تُحفظ بسبب تزامن الدور. حاول تاني'); return} await roomRef.child('game').update({fen:chess.fen(),lastBy:myColor,updatedAt:Date.now()})}
       catch(e){chess.undo();render();message('مشكلة اتصال: '+e.message)}
     }
-    if(mode==='cpu'&&!chess.isGameOver()&&chess.turn()==='b')cpuMove();
+    if(mode==='cpu'&&!chess.isGameOver()&&chess.turn()!==preferredColor)cpuMove();
   }catch(e){message('النقلة غير قانونية: '+e.message)}
 }
 function cpuMove(){thinking=true;setTimeout(()=>{const moves=chess.moves({verbose:true});if(!moves.length){thinking=false;render();return}let pick;if(difficulty==='easy')pick=moves[Math.floor(Math.random()*moves.length)];else{const points={p:1,n:3,b:3,r:5,q:9,k:0};pick=moves.map(m=>({m,v:(m.captured?points[m.captured]*10:0)+(m.san.includes('+')?3:0)+(m.san.includes('#')?1000:0)+Math.random()*(difficulty==='medium'?6:2)})).sort((a,b)=>b.v-a.v)[0].m}thinking=false;commit({from:pick.from,to:pick.to,promotion:pick.promotion||'q'})},420)}
-window.newChessGame=async()=>{if(mode==='online'&&roomRef){if(!confirm('إعادة بدء مباراة الأونلاين لكل اللاعبين؟'))return;await roomRef.child('game').set({fen:new Chess().fen(),updatedAt:Date.now()});return}chess.reset();selected=null;render()};
+window.newChessGame=async()=>{if(mode==='online'&&roomRef){if(!confirm('إعادة بدء مباراة الأونلاين لكل اللاعبين؟'))return;await roomRef.child('game').set({fen:new Chess().fen(),updatedAt:Date.now()});return}chess.reset();selected=null;flipped=mode==='cpu'&&preferredColor==='b';render();if(mode==='cpu'&&preferredColor==='b')cpuMove()};
 window.newLocalGame=window.newChessGame;
 window.flipBoard=()=>{flipped=!flipped;render()};
 window.undoChess=()=>{if(mode==='online'){message('التراجع غير متاح في القعدة الأونلاين');return}if(mode==='cpu'){chess.undo();chess.undo()}else chess.undo();selected=null;render()};
-window.setMode=m=>{if(mode==='online'&&m!=='online'){roomRef?.off();chatRef?.off();room=''}mode=m;chess.reset();flipped=false;selected=null;render()};
+window.setMode=m=>{if(mode==='online'&&m!=='online'){roomRef?.off();chatRef?.off();room=''}mode=m;chess.reset();flipped=mode==='cpu'&&preferredColor==='b';selected=null;render();if(mode==='cpu'&&preferredColor==='b')cpuMove()};
+window.setChessColor=color=>{if(!['w','b'].includes(color))return;preferredColor=color;localStorage.setItem('ahwa-chess-color',color);if($('playerChessColor'))$('playerChessColor').value=color;if($('onlineChessColor'))$('onlineChessColor').value=color;if(mode==='cpu'){chess.reset();selected=null;flipped=color==='b';render();if(color==='b')cpuMove()}};
+window.toggle3DAuto=()=>{if(chess3D){const enabled=chess3D.toggleAutoRotate();if($('autoSpin3DBtn'))$('autoSpin3DBtn').textContent=enabled?'⏸ إيقاف الدوران':'▶ تشغيل الدوران'}};
+window.reset3DView=()=>{if(chess3D){chess3D.resetView();if($('autoSpin3DBtn'))$('autoSpin3DBtn').textContent='▶ تشغيل الدوران'}};
 window.setDifficulty=x=>{difficulty=x;localStorage.setItem('ahwa-chess-difficulty',x)};
 window.openModal=id=>{const x=$(id);if(x)x.classList.remove('hidden');if(id==='tableSkinsModal')renderTableSkins();if(id==='pieceSkinsModal')renderPieceSkins();if(id==='avatarModal')renderAvatarPicker();};
 window.closeModal=id=>{$(id)?.classList.add('hidden')};
@@ -168,7 +172,7 @@ window.chooseAvatar=id=>{if(!avatarById(id))return; localStorage.setItem('aq-che
 function applyAvatar(el,id){if(!el)return;const a=avatarById(id);el.classList.remove('avatar-sprite','avatar-photo');el.textContent='';el.style.backgroundImage=id==='teacher'?"url('./teacher-avatar.webp')":"url('./avatar-grid.webp')";el.style.backgroundSize=id==='teacher'?'cover':'400% 300%';el.style.backgroundPosition=id==='teacher'?'center':`${a?.x||0}% ${a?.y||0}%`;el.style.backgroundRepeat='no-repeat';el.style.display='block';el.style.fontSize='';} 
 async function connectDB(){if(db)return db; await new Promise((ok,fail)=>{if(window.firebase)return ok(); const sc=document.createElement('script'); sc.src='https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js'; sc.onload=ok; sc.onerror=fail; document.head.appendChild(sc)}); await new Promise((ok,fail)=>{if(firebase.database)return ok(); const sc=document.createElement('script'); sc.src='https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js'; sc.onload=ok; sc.onerror=fail; document.head.appendChild(sc)}); if(!firebase.apps.length)firebase.initializeApp({apiKey:'AIzaSyDVMg6O1jIDqH9EH51K9a1V19lJB-xRkFU',authDomain:'basra-game-2995a.firebaseapp.com',databaseURL:'https://basra-game-2995a-default-rtdb.firebaseio.com',projectId:'basra-game-2995a'}); db=firebase.database(); return db}
 function onlineInfo(t){if($('onlineMessage'))$('onlineMessage').textContent=t}
-async function startOnline(code,host){try{await connectDB(); room=code; mode='online'; myColor=host?'w':'b'; roomRef=db.ref('games/chess_'+code); roomRef.off(); roomRef.child('game').on('value',snap=>{const v=snap.val(); if(!v?.fen)return; try{chess.load(v.fen); selected=null; remoteApplying=true; flipped=myColor==='b'; render(); remoteApplying=false}catch(e){console.error(e)}}); chatRef=roomRef.child('chat'); chatRef.off(); const area=$('chatMessages')||$('chatFeed'); if(area)area.innerHTML=''; chatRef.limitToLast(60).on('child_added',x=>{const d=x.val(); if(d?.text)appendChat(d.name||'ضيف',d.text)}); onlineInfo('القعدة جاهزة! '+(host?'انسخ الكود وابعته لصاحبك':'دخلت القعدة. دورك بالأسود')); render()}catch(e){onlineInfo('تعذر الاتصال الأونلاين: '+e.message); message('تعذر الاتصال بالأونلاين')}}
-window.createOnlineRoom=async()=>{const code='CHS-'+Math.random().toString(36).slice(2,8).toUpperCase(); try{await connectDB(); await db.ref('games/chess_'+code).set({createdAt:Date.now(),host:name,game:{fen:new Chess().fen(),updatedAt:Date.now()}}); await startOnline(code,true)}catch(e){onlineInfo('فشل إنشاء القعدة: '+e.message)}};
+async function startOnline(code,host){try{await connectDB(); room=code; mode='online'; const info=(await db.ref('games/chess_'+code).once('value')).val()||{}; myColor=host?(info.hostColor||preferredColor):(info.hostColor==='b'?'w':'b'); roomRef=db.ref('games/chess_'+code); roomRef.off(); roomRef.child('game').on('value',snap=>{const v=snap.val(); if(!v?.fen)return; try{chess.load(v.fen); selected=null; remoteApplying=true; flipped=myColor==='b'; render(); remoteApplying=false}catch(e){console.error(e)}}); chatRef=roomRef.child('chat'); chatRef.off(); const area=$('chatMessages')||$('chatFeed'); if(area)area.innerHTML=''; chatRef.limitToLast(60).on('child_added',x=>{const d=x.val(); if(d?.text)appendChat(d.name||'ضيف',d.text)}); onlineInfo('القعدة جاهزة! '+(host?'انسخ الكود وابعته لصاحبك':'دخلت القعدة. لونك '+(myColor==='w'?'الأبيض':'الأسود'))); render()}catch(e){onlineInfo('تعذر الاتصال الأونلاين: '+e.message); message('تعذر الاتصال بالأونلاين')}}
+window.createOnlineRoom=async()=>{const code='CHS-'+Math.random().toString(36).slice(2,8).toUpperCase(); try{await connectDB(); await db.ref('games/chess_'+code).set({createdAt:Date.now(),host:name,hostColor:preferredColor,game:{fen:new Chess().fen(),updatedAt:Date.now()}}); await startOnline(code,true)}catch(e){onlineInfo('فشل إنشاء القعدة: '+e.message)}};
 window.joinOnlineRoom=async()=>{const code=($('onlineCode')?.value||'').trim().toUpperCase(); if(!/^CHS-[A-Z0-9]{6}$/.test(code)){onlineInfo('الكود لازم يكون على شكل CHS-ABC123'); return} try{await connectDB(); const snap=await db.ref('games/chess_'+code).once('value'); if(!snap.exists()){onlineInfo('القعدة دي مش موجودة'); return} await startOnline(code,false)}catch(e){onlineInfo('تعذر الدخول: '+e.message)}};
-window.addEventListener('load',()=>{muted=localStorage.getItem('ahwa-chess-muted')==='true'; difficulty=localStorage.getItem('ahwa-chess-difficulty')||'easy'; if($('difficulty'))$('difficulty').value=difficulty; if($('topProfileName'))$('topProfileName').textContent=name; document.body.classList.toggle('pieces-3d-mode',pieceTheme==='3d'); setTableSkin(tableTheme); render(); const q=new URLSearchParams(location.search).get('room'); if(q){openModal('onlineModal'); if($('onlineCode'))$('onlineCode').value=q; onlineInfo('اضغط دخول بالكود عشان تبدأ')}});
+window.addEventListener('load',()=>{muted=localStorage.getItem('ahwa-chess-muted')==='true'; difficulty=localStorage.getItem('ahwa-chess-difficulty')||'easy'; if($('difficulty'))$('difficulty').value=difficulty; if($('topProfileName'))$('topProfileName').textContent=name; document.body.classList.toggle('pieces-3d-mode',pieceTheme==='3d'); if($('playerChessColor'))$('playerChessColor').value=preferredColor;if($('onlineChessColor'))$('onlineChessColor').value=preferredColor;flipped=preferredColor==='b';setTableSkin(tableTheme);render();if(mode==='cpu'&&preferredColor==='b')cpuMove();const q=new URLSearchParams(location.search).get('room'); if(q){openModal('onlineModal'); if($('onlineCode'))$('onlineCode').value=q; onlineInfo('اضغط دخول بالكود عشان تبدأ')}});

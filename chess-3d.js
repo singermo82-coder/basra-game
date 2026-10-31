@@ -26,6 +26,8 @@ export function createChess3D({ mount, onSquare }) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.065;
   controls.enablePan = false;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.45;
   controls.minDistance = 9.2;
   controls.maxDistance = 15.5;
   controls.minPolarAngle = 0.58;
@@ -34,6 +36,10 @@ export function createChess3D({ mount, onSquare }) {
   controls.maxAzimuthAngle = Math.PI * 0.85;
   controls.target.set(0, 0.52, 0);
   controls.update();
+  const initialPosition=camera.position.clone();
+  const initialTarget=controls.target.clone();
+  function toggleAutoRotate(){controls.autoRotate=!controls.autoRotate;return controls.autoRotate}
+  function resetView(){controls.autoRotate=false;camera.position.copy(initialPosition);controls.target.copy(initialTarget);controls.update()}
 
   const hemi = new THREE.HemisphereLight(0xfff0d8, 0x2b3d49, 2.1);
   scene.add(hemi);
@@ -389,5 +395,5 @@ export function createChess3D({ mount, onSquare }) {
     renderer.domElement.remove();
   }
 
-  return { update, dispose, setTheme };
+  return { update, dispose, setTheme, toggleAutoRotate, resetView };
 }
