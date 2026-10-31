@@ -291,7 +291,91 @@
 
     const directFix=dom.createElement('script');
     directFix.textContent="/* Actual card elements are identified by the title and onscreen box, not a guessed CSS class. */\n(function () {\n  'use strict';\n  const norm = s => (s || '').replace(/[\\u200e\\u200f\\u2066-\\u2069]/g, '').replace(/\\s+/g, ' ').trim();\n  const games = ['بصرة','دومينو','شطرنج'];\n  const CSS = `\n  .ahwa-activated-card .ahwa-play-now-btn{background:linear-gradient(180deg,#12ad7e,#006d4c)!important;color:#fff!important;border:1px solid #65d6a4!important;box-shadow:inset 0 1px #ffffff50,0 3px 8px #0005!important;}\n  .ahwa-activated-card .ahwa-play-now-btn *{color:#fff!important;}\n  .ahwa-activated-card .ahwa-top-activated{background:linear-gradient(180deg,#008d67,#00543d)!important;color:#fff!important;border:1px solid #46cf9d!important;}\n  .ahwa-activated-card .ahwa-play-now-btn{cursor:pointer!important}\n  `;\n  if(!document.getElementById('ahwa-live-card-style')) {let st=document.createElement('style');st.id='ahwa-live-card-style';st.textContent=CSS;document.head.appendChild(st)}\n  function matchHeading(game) {\n    return [...document.querySelectorAll('h1,h2,h3,h4')].find(x => norm(x.textContent) === game);\n  }\n  function cardFor(heading) {\n    if(!heading)return null;\n    let n=heading;\n    while(n && n!==document.body){\n      const rect=n.getBoundingClientRect();\n      if(rect.width>=180 && rect.height>=200 && rect.width<=700 && rect.height<=750 && n.querySelector('img') && n.querySelectorAll('button,a').length<8) return n;\n      n=n.parentElement;\n    }\n    return heading.closest('article,.game-card,.card') || heading.parentElement;\n  }\n  function findLeaf(root,pattern){return [...root.querySelectorAll('*')].filter(n=>n.children.length===0&&pattern.test(norm(n.textContent)));}\n  function fixCard(game){\n    let card=cardFor(matchHeading(game));if(!card)return false;\n    card.classList.add('ahwa-activated-card');\n    const rect=card.getBoundingClientRect();\n    let leaves=findLeaf(card,/^(?:قريبًا|قريبا|العب الآن|← العب الآن|العب الآن ←|اللعبة الأصلية|لعبة متاحة|قريبًا في القعدة)$/u);\n    let top=leaves.find(n=>{const r=n.getBoundingClientRect();return r.top>rect.top&&r.top<rect.top+85&&r.width>0});\n    if(top){top.textContent='العب الآن';top.classList.add('ahwa-top-activated')}\n    // Choose the leaf located in the bottom strip, not the corner label.\n    let bottom=leaves.filter(n=>n!==top).sort((a,b)=>b.getBoundingClientRect().top-a.getBoundingClientRect().top)[0];\n    if(!bottom){\n       bottom=[...card.querySelectorAll('button,a,[role=\"button\"],div')].filter(n=>{\n         const r=n.getBoundingClientRect();return r.width>rect.width*.55&&r.height>=18&&r.height<=68&&r.top>rect.top+rect.height*.73;\n       }).sort((a,b)=>b.getBoundingClientRect().top-a.getBoundingClientRect().top)[0];\n    }\n    if(bottom){\n      bottom.textContent='العب الآن ←';\n      let box=bottom;\n      while(box.parentElement && box.parentElement!==card){let r=box.getBoundingClientRect();if(r.width>rect.width*.65&&r.height>21&&r.height<72)break;box=box.parentElement}\n      box.classList.add('ahwa-play-now-btn');\n      bottom.style.setProperty('color','#ffffff','important');\n      if(game==='شطرنج'){\n        box.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();window.location.href='./chess.html'},true);\n      }\n    }\n    if(game==='شطرنج'){\n      card.classList.remove('coming','soon','locked','disabled','unavailable');\n      card.querySelectorAll('a[href]').forEach(a=>a.setAttribute('href','./chess.html'));\n      card.style.cursor='pointer';\n      card.addEventListener('click',()=>{window.location.href='./chess.html'},false);\n    }\n    return !!bottom;\n  }\n  let passes=0;\n  function run(){games.forEach(fixCard);passes++}\n  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();\n  window.addEventListener('load',run,{once:true});\n  setTimeout(run,350);setTimeout(run,1200);setTimeout(run,2500);\n})();\n";
-    dom.body.appendChild(directFix);
+    // replaced by reliable pre-render DOM v5 card changes; previous timed version disabled
+    // dom.body.appendChild(directFix);
+
+    // v5: Change the actual source DOM synchronously before the homepage is displayed.
+    // No guesswork based on bounding boxes and no observer/timer race.
+    (function fixRealGameCards(){
+      const clean=t=>(t||'').replace(/[\u200e\u200f\u2066-\u2069\u0640]/g,'').replace(/\s+/g,' ').trim();
+      const labels=['بصرة','دومينو','شطرنج'];
+      const heads=[...dom.querySelectorAll('h1,h2,h3,h4,h5,[class*=title]')];
+      const uniq=arr=>[...new Set(arr)];
+      function headingFor(name){
+        return heads.find(el=>clean(el.textContent)===name)
+          || [...dom.querySelectorAll('body *')].find(el=>el.children.length===0&&clean(el.textContent)===name);
+      }
+      function gameBox(name){
+        const title=headingFor(name);if(!title)return null;
+        let node=title;
+        let fallback=null;
+        while(node&&node!==dom.body){
+          const txt=clean(node.textContent),img=node.querySelector('img');
+          const other=labels.filter(n=>n!==name&&txt.includes(n));
+          if(img&&!other.length&&txt.length<2000){
+            fallback=node;
+            if(node.querySelector('a,button,[role="button"]') || /قريب|العب الآن|اللعبة الأصلية|لعبة متاحة/.test(txt))return node;
+          }
+          node=node.parentElement;
+        }
+        return fallback||title.closest('article,.game-card,.game-tile,.card')||title.parentElement;
+      }
+      function textLeaves(root){
+        return [...root.querySelectorAll('*')].filter(el=>el.children.length===0&&clean(el.textContent));
+      }
+      const badgeWords=/^(?:اللعبة الأصلية|لعبة متاحة|قريبًا في القعدة|قريبا في القعدة|العب الآن)$/;
+      const soonWords=/^(?:قريبًا|قريبا|قريباً)$/;
+      for(const name of labels){
+        const card=gameBox(name);
+        if(!card)continue;
+        card.classList.add('ahwa-v5-fixed-card');
+        const leaves=textLeaves(card);
+        const badge=leaves.find(el=>badgeWords.test(clean(el.textContent)) && (!/قريب/.test(clean(el.textContent))||name==='شطرنج'));
+        if(badge){badge.textContent='العب الآن';badge.classList.add('ahwa-v5-active-badge')}
+        if(name==='شطرنج'){
+          const bottom=leaves.filter(el=>soonWords.test(clean(el.textContent)) && el!==badge).pop();
+          if(bottom){
+            bottom.textContent='العب الآن ←';
+            bottom.classList.add('ahwa-v5-active-cta');
+            const shell=bottom.closest('a,button,[role="button"]')||bottom.parentElement;
+            shell.classList.add('ahwa-v5-active-cta-shell');
+          }
+          card.classList.remove('soon','coming','disabled','unavailable','locked');
+          card.style.cursor='pointer';
+          card.querySelectorAll('a[href]').forEach(a=>a.setAttribute('href','chess.html'));
+          if(card.matches('a'))card.setAttribute('href','chess.html');
+          card.addEventListener('click',e=>{
+            if(e.target.closest('a[href]'))return;
+            location.href='chess.html';
+          });
+        }
+      }
+      // Handle badges containing an icon, and chess CTA containing decorative text.
+      const chessCard=gameBox('شطرنج');
+      if(chessCard){
+        const walker=dom.createTreeWalker(chessCard,NodeFilter.SHOW_TEXT);let node;
+        while((node=walker.nextNode())){
+          const t=clean(node.nodeValue);
+          if(/قريبًا في القعدة|قريبا في القعدة/.test(t))node.nodeValue=node.nodeValue.replace(/قريبًا في القعدة|قريبا في القعدة/g,'العب الآن');
+          else if(/^(?:[⏳⌛◆•\s]*)قريب(?:ًا|ا|اً)(?:[\s◆•]*)$/.test(t))node.nodeValue='العب الآن ←';
+        }
+      }
+      const style=dom.createElement('style');
+      style.textContent=`
+        .ahwa-v5-active-badge{background:#056848!important;color:white!important;border-color:#65d6a4!important;}
+        .ahwa-v5-active-cta,.ahwa-v5-active-cta-shell{background:linear-gradient(180deg,#12ad7e,#006d4c)!important;color:#fff!important;border:1px solid #65d6a4!important;cursor:pointer!important;}
+        .ahwa-v5-active-cta-shell *{color:#fff!important;}
+      `;
+      dom.head.appendChild(style);
+      // Plain-text DOM fixes provide a fallback when the original template uses nested spans.
+      ['بصرة','دومينو'].forEach(name=>{
+        const card=gameBox(name);if(!card)return;
+        const walker=dom.createTreeWalker(card,NodeFilter.SHOW_TEXT);let node;
+        while((node=walker.nextNode())){
+          if(/اللعبة الأصلية|لعبة متاحة/.test(clean(node.nodeValue)))node.nodeValue=node.nodeValue.replace(/اللعبة الأصلية|لعبة متاحة/g,'العب الآن');
+        }
+      });
+    })();
 
     document.open();document.write('<!doctype html>\n'+dom.documentElement.outerHTML);document.close();
   }catch(err){console.error('Home page loading failed:',err);const p=document.querySelector('#error');if(p)p.style.display='block';}
