@@ -88,6 +88,40 @@
       const cta=leaves.find(el=>/^(قريبًا|العب الآن|العب الآن ←|← العب الآن)$/u.test(el.textContent.trim())&&el!==top);
       if(cta){cta.innerHTML='<span dir="rtl">العب الآن <span aria-hidden="true">←</span></span>';cta.style.setProperty('background','linear-gradient(180deg,#0fa775,#00694d)','important');cta.style.setProperty('border-color','#64dcb0','important');cta.style.setProperty('color','#fff','important');}
     });
+    // Strong DOM-level text replacements: match the card by its actual game heading.
+    function findGameCard(label){
+      const h=[...dom.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.trim()===label);
+      return h?cardFor(h):null;
+    }
+    function leafNodes(card){return card?[...card.querySelectorAll('*')].filter(e=>e.children.length===0):[];}
+    function exactText(node){return (node?.textContent||'').replace(/[\u200e\u200f\u2066-\u2069]/g,'').trim();}
+    const activeNames=['شطرنج','بصرة','دومينو'];
+    activeNames.forEach(game=>{
+      const card=findGameCard(game);if(!card)return;
+      const leaves=leafNodes(card);
+      // Replace label on the top photographic thumbnail.
+      const badge=leaves.find(n=>/^(اللعبة الأصلية|لعبة متاحة|قريبًا في القعدة|لعبة متوفرة)$/u.test(exactText(n)));
+      if(badge)badge.textContent='العب الآن';
+      // Bottom CTA is selected by its containing button/link/last status element, not a generic first text match.
+      const existing=leaves.filter(n=>/^(قريبًا|العب الآن|العب الآن\s*[←↩]|[←↩]\s*العب الآن)$/u.test(exactText(n)));
+      const cta=existing.find(n=>n!==badge && /قريبًا|العب الآن/u.test(exactText(n)) && (n.closest('button,a,[class*="cta"],[class*="action"],[class*="status"],[class*="play"]') || n.parentElement));
+      const leaf=cta||existing.at(-1);
+      if(leaf){
+        leaf.textContent='العب الآن ←';
+        let box=leaf.closest('button,a,[class*="action"],[class*="play"],[class*="status"]')||leaf.parentElement||leaf;
+        box.style.setProperty('background','linear-gradient(180deg,#0aaa78,#006b4a)','important');
+        box.style.setProperty('border','1px solid #64dcb0','important');
+        box.style.setProperty('color','#fff','important');
+      }
+      if(game==='شطرنج'){
+        const links=card.querySelectorAll('a[href]');
+        links.forEach(a=>a.setAttribute('href','./chess.html'));
+        card.onclick=()=>location.assign('./chess.html');
+        card.style.cursor='pointer';
+      }
+    });
+    // Photo for snakes-and-ladders, user-supplied and embedded to avoid missing file paths.
+    // Preserve original snakes and ladders image until a matching photo is provided.
     // Stop old background music on the home page, without touching café sound effects or Shaabi FM.
     // Runs before the original page's inline scripts and event handlers.
     const noMusicGuard=dom.createElement('script');
