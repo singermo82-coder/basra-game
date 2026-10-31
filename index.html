@@ -52,6 +52,65 @@
       for(const link of chess.querySelectorAll('a[href]'))link.setAttribute('href','./chess.html');
     }
     let base=dom.head.querySelector('base');if(!base){base=dom.createElement('base');dom.head.prepend(base);}base.href='https://singermo82-coder.github.io/basra-game/';
+
+    // Compact in-page Sha3by FM audio-only player. No station page or iframe.
+    const style=dom.createElement('style');
+    style.textContent=`
+      #ahwaShaabiPlayer{position:fixed;left:12px;bottom:87px;z-index:45;direction:rtl;
+      display:flex;align-items:center;gap:8px;padding:7px 10px;background:linear-gradient(140deg,#351a0d,#140a06);
+      color:#fbe4ac;border:1px solid #c69648;border-radius:15px;box-shadow:0 8px 22px #000a;
+      font:700 12px Tahoma,Arial,sans-serif;max-width:min(93vw,340px)}
+      #ahwaShaabiPlayer .ahwa-radio-text{display:flex;flex-direction:column;gap:2px;min-width:88px}
+      #ahwaShaabiPlayer .ahwa-radio-text small{color:#d7b98b;font-size:10px;font-weight:400}
+      #ahwaShaabiPlayer button{border:1px solid #b78a48;color:#fbe7b3;border-radius:9px;
+      background:#372213;padding:6px 10px;cursor:pointer;font-size:13px}
+      #ahwaShaabiPlayer button.ahwa-radio-on{background:#08734d;color:white;border-color:#39b581}
+      #ahwaShaabiPlayer input[type=range]{width:66px;accent-color:#d9ac5d;cursor:pointer}
+      @media(max-width:680px){#ahwaShaabiPlayer{bottom:65px;left:5px;padding:5px 6px;gap:4px;
+      font-size:10px;max-width:calc(100vw - 10px)}#ahwaShaabiPlayer input[type=range]{width:43px}
+      #ahwaShaabiPlayer .ahwa-radio-text{min-width:60px}}
+    `;
+    dom.head.appendChild(style);
+    const player=dom.createElement('div');
+    player.id='ahwaShaabiPlayer';
+    player.innerHTML='<span aria-hidden="true">📻</span><span class="ahwa-radio-text"><strong>شعبي FM 95</strong><small id="ahwaShaabiStatus">جاهز للتشغيل</small></span><button type="button" id="ahwaShaabiToggle" aria-label="تشغيل الراديو">▶ تشغيل</button><input id="ahwaShaabiVolume" aria-label="مستوى صوت الراديو" type="range" min="0" max="100" value="55">';
+    dom.body.appendChild(player);
+    const playerCode=dom.createElement('script');
+    playerCode.textContent=`
+    (function(){
+      if(window.__ahwaShaabiReady)return;
+      window.__ahwaShaabiReady=true;
+      const stream='https://radio95.radioca.st/;';
+      const audio=new Audio();audio.preload='none';audio.volume=0.55;audio.src=stream;
+      const button=document.getElementById('ahwaShaabiToggle');
+      const status=document.getElementById('ahwaShaabiStatus');
+      const volume=document.getElementById('ahwaShaabiVolume');
+      if(!button||!status||!volume)return;
+      let userStopped=false;
+      function show(playing,msg){button.textContent=playing?'⏸ إيقاف':'▶ تشغيل';
+        button.classList.toggle('ahwa-radio-on',playing);button.setAttribute('aria-label',playing?'إيقاف الراديو':'تشغيل الراديو');
+        status.textContent=msg||(playing?'مباشر الآن':'جاهز للتشغيل');}
+      async function play(){
+        userStopped=false;
+        show(false,'جاري الاتصال...');
+        try{await audio.play();show(true,'🔴 مباشر الآن');}
+        catch(e){show(false,e.name==='NotAllowedError'?'اضغط تشغيل للسماع':'تعذّر تشغيل البث');}
+      }
+      button.addEventListener('click',function(e){e.stopPropagation();if(!audio.paused){userStopped=true;audio.pause();show(false,'متوقف');}else play();});
+      volume.addEventListener('input',()=>{audio.volume=Number(volume.value)/100;});
+      audio.addEventListener('playing',()=>show(true,'🔴 مباشر الآن'));
+      audio.addEventListener('waiting',()=>show(false,'جاري التحميل...'));
+      audio.addEventListener('error',()=>show(false,'البث غير متاح حاليًا'));
+      audio.addEventListener('pause',()=>{if(userStopped)show(false,'متوقف');});
+      // Browser autoplay rules: try once, then wait for first user gesture if blocked.
+      play();
+      document.addEventListener('pointerdown',function gesture(ev){
+        if(!userStopped&&audio.paused&&!ev.target.closest('#ahwaShaabiPlayer'))play();
+      },{capture:true,once:true});
+      window.addEventListener('pagehide',()=>audio.pause());
+    })();`;
+    dom.body.appendChild(playerCode);
+
     document.open();document.write('<!doctype html>\n'+dom.documentElement.outerHTML);document.close();
   }catch(err){console.error('Home page loading failed:',err);const p=document.querySelector('#error');if(p)p.style.display='block';}
 })();
