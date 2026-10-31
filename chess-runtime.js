@@ -54,7 +54,7 @@ async function activate3D(){
  loading3D=true;chess3DError=false;
  const status=$('chess3dError');if(status)status.hidden=true;
  try{
-   const {createChess3D}=await import('./chess-3d.js?v=6');
+   const {createChess3D}=await import('./chess-3d.js?v=7');
    if(pieceTheme!=='3d'){loading3D=false;return}
    chess3D=createChess3D({mount:$('chess3dMount'),onSquare:squareClick}); if(chess3D.setTheme)chess3D.setTheme(tableTheme);
    document.body.classList.add('chess-3d-active');
