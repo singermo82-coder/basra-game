@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://webisso.github.io" crossorigin>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <meta name="theme-color" content="#1a0f08">
-  <title>ع القهوة | ألعاب مصرية أونلاين — v7.8.3</title>
+  <title>ع القهوة | بصرة – واجهة محسنة وسرعة الاستجابة</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -473,6 +473,18 @@
 
   .creator-credit .mahaly-logo-mark{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border:1px solid #f4cf77;border-radius:8px 12px 8px 12px;background:linear-gradient(135deg,#8d281f,#3a100d 62%,#140705);color:#ffe8ad!important;font-weight:1000;box-shadow:inset 0 0 0 1px #fff2,0 2px 7px #0008;text-shadow:0 1px #300}
   .creator-credit .mahaly-logo-mark span{font-size:.9em}
+
+/* BASRA responsive rapid play & domino-like compact controls */
+body.game-active #handCards .hand-card{cursor:pointer;touch-action:manipulation;transition:transform .085s ease,opacity .085s ease,filter .085s ease!important;will-change:transform}
+body.game-active #handCards .hand-card.basra-card-sent{opacity:.23!important;transform:translateY(-36px) scale(.89)!important;filter:brightness(1.23)!important;pointer-events:none!important}
+body.game-active #handCards.basra-move-pending .hand-card:not(.basra-card-sent){pointer-events:none!important}
+body.game-active .game-actions-panel .game-action{min-height:36px!important;justify-content:center!important;padding:6px 9px!important;text-align:center!important}
+body.game-active .game-actions-panel .game-action span{white-space:normal}
+body.game-active .game-actions-panel h3{color:#ffe1a0!important}
+body.game-active .game-actions-panel{border:1px solid #c59953!important;box-shadow:0 5px 24px #0006!important}
+body.game-active #handCards .hand-card:active{transform:translateY(-12px) scale(1.02)!important}
+@media(max-width:800px){body.game-active .game-actions-panel .game-action{min-height:38px!important}}
+
 </style>
 
 <style id="v73-fullscreen-chat">
@@ -3357,8 +3369,8 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
           el.setAttribute('role', 'button');
           el.setAttribute('aria-label', 'العب ' + card.display);
           el.tabIndex = isMyTurn ? 0 : -1;
-          el.onclick = () => { if (isMyTurn && !isBusy) playCard(index); };
-          el.onkeydown = event => { if ((event.key === 'Enter' || event.key === ' ') && isMyTurn) { event.preventDefault(); playCard(index); } };
+          el.onclick = () => { if (isMyTurn && !isBusy) playCard(index, el); };
+          el.onkeydown = event => { if ((event.key === 'Enter' || event.key === ' ') && isMyTurn) { event.preventDefault(); playCard(index, el); } };
           handContainer.appendChild(el);
         });
       }
@@ -3721,8 +3733,16 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       }
     }
 
-    async function playCard(index) {
+    async function playCard(index, cardElement) {
       if (!myRoom || isBusy) return;
+      // Immediate local feedback while the authoritative Firebase CAS completes.
+      const clickedCard = cardElement || document.getElementById('handCards')?.children[index];
+      const hand = document.getElementById('handCards');
+      if (hand) hand.classList.add('basra-move-pending');
+      if (clickedCard) {
+        clickedCard.classList.add('basra-card-sent');
+        clickedCard.setAttribute('aria-busy', 'true');
+      }
       setBusy(true, 'جارٍ تنفيذ الحركة...');
       try {
         const outcome = await mutateRoomWithETag(current => applyCardToGame(current, myId, index), 'human-move');
@@ -3742,7 +3762,14 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       } catch (error) {
         console.error('[Basra move]', error);
         alert('تعذر حفظ الحركة. ' + explainMoveError(error));
-      } finally { setBusy(false); }
+      } finally {
+        if (hand) hand.classList.remove('basra-move-pending');
+        if (clickedCard && clickedCard.isConnected) {
+          clickedCard.classList.remove('basra-card-sent');
+          clickedCard.removeAttribute('aria-busy');
+        }
+        setBusy(false);
+      }
     }
 
     async function startNextRound() {
