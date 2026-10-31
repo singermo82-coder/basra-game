@@ -485,6 +485,24 @@ body.game-active .game-actions-panel{border:1px solid #c59953!important;box-shad
 body.game-active #handCards .hand-card:active{transform:translateY(-12px) scale(1.02)!important}
 @media(max-width:800px){body.game-active .game-actions-panel .game-action{min-height:38px!important}}
 
+
+/* Basra V4: Domino-inspired unified game shell. Keep basra state, scoring and cards intact. */
+@media (min-width:1051px) {
+ body.game-active .game-stage { grid-template-columns:minmax(188px,215px) minmax(0,1fr) minmax(226px,265px)!important; gap:8px!important; }
+ body.game-active .game-side-rail { order:0; }
+ body.game-active .game-main-column { order:0; }
+ body.game-active .game-chat-rail { order:0; }
+ body.game-active .game-actions-panel { border:1px solid #ae824c!important; background:linear-gradient(180deg,#2c1a10,#100905)!important; border-radius:17px!important; }
+ body.game-active .game-action { border:1px solid #7e5830!important; border-radius:11px!important; background:linear-gradient(110deg,#2d190e,#110905)!important; color:#ffe1a0!important; min-height:36px!important; text-align:right!important; }
+ body.game-active .game-action:hover { border-color:#e3b86e!important; }
+ body.game-active .game-topbar { border:1px solid #94672d!important; border-radius:15px!important; background:linear-gradient(95deg,#301d13,#140b07)!important; }
+ body.game-active .table-panel { border:3px solid #ab8143!important; border-radius:21px!important; }
+ body.game-active .table-surface { border-radius:16px!important; }
+ body.game-active .chat-panel { border:1px solid #a4773d!important; border-radius:17px!important; background:linear-gradient(155deg,#2a160d,#100906)!important; }
+}
+/* Keep the hand clickable even while the room update is in flight. */
+#handCards .basra-card-sent { opacity:.22!important; transform:translateY(-22px) scale(.92)!important; pointer-events:none; }
+
 </style>
 
 <style id="v73-fullscreen-chat">
@@ -3198,7 +3216,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         } finally {
           aiTurnInProgress = false;
         }
-      }, 650 + Math.random() * 450);
+      }, 140 + Math.random() * 85);
     }
 
     function aiReasonMessage(reason) {
@@ -3388,7 +3406,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       const activePlayer = curId && game.players ? game.players[curId] : null;
       if (game.status === 'playing' && activePlayer && activePlayer.isAI === true && curId !== myId) {
         showNotice('🤖 المعلم بيفكر في الحركة...', '');
-        queueAIMove(game, curId);
+        if (!window.__basraOptimistic) queueAIMove(game, curId);
       }
     }
 
@@ -3744,11 +3762,33 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         clickedCard.setAttribute('aria-busy', 'true');
       }
       setBusy(true, 'جارٍ تنفيذ الحركة...');
+      // Optimistic local move: respond on this very click while the remote CAS runs.
+      // Firebase remains authoritative; never persist this preview to the server directly.
+      const savedView = window.currentRenderedGame;
+      let optimistic = false;
+      if (savedView && savedView.status === 'playing') {
+        try {
+          const proposal = applyCardToGame(JSON.parse(JSON.stringify(savedView)), myId, index);
+          if (proposal && proposal.game) {
+            optimistic = true;
+            window.__basraOptimistic = true;
+            renderGame(proposal.game);
+            window.__basraOptimistic = false;
+            playSfx('card');
+          }
+        } catch (previewError) {
+          window.__basraOptimistic = false;
+          console.warn('[Basra preview]', previewError);
+        }
+      }
       try {
         const outcome = await mutateRoomWithETag(current => applyCardToGame(current, myId, index), 'human-move');
         if (outcome.committed && outcome.result === 'played') {
-          playSfx('card');
+          if (!optimistic) playSfx('card');
+          // Immediately reconcile the authoritative server snapshot.
+          if (outcome.game) renderGame(outcome.game);
         } else {
+          if (savedView) renderGame(savedView);
           const messages = {
             'not-turn': 'مش دورك حاليًا.',
             waiting: 'انتظر انضمام اللاعب الآخر.',
@@ -3760,6 +3800,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
           if (outcome.reason !== 'bad-card') alert(messages[outcome.reason] || 'تعذر تنفيذ الحركة: ' + aiReasonMessage(outcome.reason));
         }
       } catch (error) {
+        if (savedView) renderGame(savedView);
         console.error('[Basra move]', error);
         alert('تعذر حفظ الحركة. ' + explainMoveError(error));
       } finally {
