@@ -26,31 +26,72 @@
       return title.parentElement;
     }
     const chess=cardFor(chessTitle),domino=cardFor(dominoTitle);
-    // Reuse the exact enabled styling and button from the existing Domino card.
+    // Use Domino's active card classes, without altering any other game cards.
     if(domino&&chess){
-      const invalid=/\b(soon|coming|disabled|locked|unavailable|future)\b/gi;
-      chess.className=[...domino.classList].filter(x=>!invalid.test(x)).join(' ');
-      chess.classList.remove('soon','coming','disabled','locked');
-      const blueprints=[...domino.querySelectorAll('a,button,span,div')].filter(el=>el.children.length===0 && /العب الآن/.test(el.textContent));
-      const own=[...chess.querySelectorAll('a,button,span,div')].filter(el=>el.children.length===0 && /قريبًا/.test(el.textContent));
-      let button=own.at(-1);
-      if(button){
-        const reference=blueprints.at(-1);
-        if(reference){button.className=reference.className;button.setAttribute('style',reference.getAttribute('style')||'');}
-        button.innerHTML='<i></i> العب الآن ←';
-        button.style.setProperty('background','linear-gradient(180deg,#08ad78,#006f4f)','important');
-        button.style.setProperty('color','#ffffff','important');
-        button.style.setProperty('border-color','#5cdaa4','important');
+      chess.className=domino.className;
+      chess.classList.remove('soon','coming','disabled','locked','unavailable','future');
+      const textLeaves=(card)=>[...card.querySelectorAll('*')].filter(el=>!el.children.length);
+      const badge=(card)=>textLeaves(card).find(el=>/^(اللعبة الأصلية|لعبة متاحة|قريبًا في القعدة|العب الآن)$/u.test(el.textContent.trim()));
+      // The badge above the photo is separate from the green CTA at the bottom.
+      function setTopBadge(title){
+        const card=cardFor(title), leaf=textLeaves(card).find(el=>/^(اللعبة الأصلية|لعبة متاحة|قريبًا في القعدة)$/u.test(el.textContent.trim()));
+        if(leaf){leaf.textContent='العب الآن';}
       }
-      const badge=[...chess.querySelectorAll('*')].find(el=>el.children.length===0&&/قريبًا في القعدة/.test(el.textContent));
-      if(badge){badge.textContent='لعبة متاحة'; const domBadge=[...domino.querySelectorAll('*')].find(el=>el.children.length===0&&/لعبة متاحة/.test(el.textContent));if(domBadge)badge.className=domBadge.className;}
+      [titles.find(el=>el.textContent.trim()==='بصرة'),dominoTitle,chessTitle].filter(Boolean).forEach(setTopBadge);
+      const refCTA=textLeaves(domino).find(el=>/العب الآن/u.test(el.textContent.trim()) && !/^(العب الآن)$/u.test(el.textContent.trim()));
+      const oldCTA=textLeaves(chess).find(el=>/قريبًا/u.test(el.textContent.trim()) && !/قريبًا في القعدة/u.test(el.textContent.trim()));
+      if(oldCTA){
+        if(refCTA){oldCTA.className=refCTA.className; const st=refCTA.getAttribute('style');if(st)oldCTA.setAttribute('style',st);}
+        oldCTA.textContent='العب الآن ←';
+        oldCTA.style.setProperty('background','linear-gradient(180deg,#08ad78,#006f4f)','important');
+        oldCTA.style.setProperty('color','#ffffff','important');
+        oldCTA.style.setProperty('border-color','#5cdaa4','important');
+      }
       if(chess.tagName==='A')chess.setAttribute('href','./chess.html');
       else{
-        const a=dom.createElement('a');a.href='./chess.html';a.setAttribute('aria-label','العب شطرنج الآن');a.style.cssText='position:absolute;inset:0;z-index:10;cursor:pointer';
-        const pos=(chess.getAttribute('style')||'');chess.setAttribute('style',pos+';position:relative;cursor:pointer');chess.appendChild(a);
+        const link=chess.querySelector('a[href]');
+        if(link)link.href='./chess.html';
+        else{
+          const a=dom.createElement('a');a.href='./chess.html';a.setAttribute('aria-label','العب شطرنج الآن');
+          a.style.cssText='position:absolute;inset:0;z-index:10;cursor:pointer';
+          chess.style.position='relative';chess.style.cursor='pointer';chess.appendChild(a);
+        }
       }
       for(const link of chess.querySelectorAll('a[href]'))link.setAttribute('href','./chess.html');
     }
+    // Stop old background music on the home page, without touching café sound effects or Shaabi FM.
+    // Runs before the original page's inline scripts and event handlers.
+    const noMusicGuard=dom.createElement('script');
+    noMusicGuard.textContent=`
+    (function(){
+      const musicPattern=/(?:music|musical|soundtrack|background[-_ ]?(?:audio|song|music)|bgm|theme[-_ ]?(?:music|song)|موسيقى|أغاني|اغاني)/i;
+      const isRadio=(el)=>!!(el&&((el.id||'').includes('ahwaShaabi')||el.dataset&&el.dataset.ahwaRadio==='true'));
+      function isOldMusic(el){
+        if(!el||isRadio(el))return false;
+        const src=[el.currentSrc||'',el.src||'',el.getAttribute&&el.getAttribute('src')||'',el.id||'',el.className||''].join(' ');
+        const longLoop=el.loop===true||el.hasAttribute&&el.hasAttribute('autoplay');
+        return musicPattern.test(src)||longLoop;
+      }
+      const origPlay=HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play=function(){
+        if(this.tagName==='AUDIO'&&isOldMusic(this)){
+          try{this.pause();this.removeAttribute('autoplay');}catch(_){}
+          return Promise.resolve();
+        }
+        return origPlay.apply(this,arguments);
+      };
+      function stopOldMusic(){
+        document.querySelectorAll('audio').forEach(el=>{
+          if(isOldMusic(el)){try{el.pause();el.autoplay=false;el.removeAttribute('autoplay')}catch(_){}}
+        });
+      }
+      document.addEventListener('DOMContentLoaded',stopOldMusic,{once:true});
+      window.addEventListener('load',stopOldMusic,{once:true});
+      const mo=new MutationObserver(stopOldMusic);
+      mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','autoplay','loop']});
+      window.__ahwaNoBackgroundMusic=true;
+    })();`;
+    dom.head.prepend(noMusicGuard);
     let base=dom.head.querySelector('base');if(!base){base=dom.createElement('base');dom.head.prepend(base);}base.href='https://singermo82-coder.github.io/basra-game/';
 
     // Compact in-page Sha3by FM audio-only player. No station page or iframe.
@@ -81,7 +122,7 @@
       if(window.__ahwaShaabiReady)return;
       window.__ahwaShaabiReady=true;
       const stream='https://radio95.radioca.st/;';
-      const audio=new Audio();audio.preload='none';audio.volume=0.55;audio.src=stream;
+      const audio=new Audio();audio.dataset.ahwaRadio='true';audio.preload='none';audio.volume=0.55;audio.src=stream;
       const button=document.getElementById('ahwaShaabiToggle');
       const status=document.getElementById('ahwaShaabiStatus');
       const volume=document.getElementById('ahwaShaabiVolume');
