@@ -1945,6 +1945,25 @@ body.game-active .game-board .coming-games-inplay .mahaly-footer-wordmark strong
 @media (prefers-reduced-motion: reduce) {
   body.game-active .game-board .coming-games-inplay .coming-games-pill { animation:none!important; }
 }
+
+/* Ahwa Basra: active stacks, visual arrangement only, original game logic unchanged */
+body.game-active .table-surface{padding-left:clamp(120px,17%,178px)!important; overflow:visible!important; border-radius:19px!important;}
+body.game-active .table-surface:before{border-radius:14px!important;}
+body.game-active .table-label{flex:0 0 auto}
+body.game-active .basra-left-stacks{position:absolute;left:8px;top:9px;bottom:9px;width:clamp(106px,15%,156px);display:flex;flex-direction:column;justify-content:space-between;gap:6px;z-index:4;direction:rtl;pointer-events:none}
+body.game-active .basra-stack-box{border:1px solid #d8b16d88;background:linear-gradient(160deg,#1b1a13c9,#082b22dd);border-radius:10px;padding:7px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;flex:1 1 0;box-shadow:inset 0 1px 0 #fff1}
+body.game-active .basra-stack-box h4{margin:0 0 4px;font-size:clamp(9px,.73vw,12px);line-height:1.35;color:#ffe3a8;text-align:center}
+body.game-active .basra-stack-box .basra-stack-info{font-size:clamp(9px,.67vw,11px);color:#d9c8a0;white-space:nowrap}
+body.game-active .basra-stack-box .basra-stack-cards{position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:34px;width:100%;max-height:75px}
+body.game-active .basra-stack-cards .basra-pile-card{position:absolute;width:clamp(26px,2.3vw,39px);height:clamp(39px,3.3vw,55px);border:2px solid #f5e7c6;border-radius:4px;background:repeating-linear-gradient(45deg,#851828 0 5px,#a32b39 5px 9px);box-shadow:0 3px 7px #0008;transform:translate(calc((var(--n) - 2) * 3px),calc((var(--n) - 2) * -3px)) rotate(calc((var(--n) - 2) * 3deg))}
+body.game-active .basra-pile-card::before{content:'✦';display:grid;place-items:center;position:absolute;inset:5px;border:1px solid #f9cc77;color:#f9cc77;font-size:14px}
+body.game-active .basra-deck-box{flex:0 0 auto;min-height:122px;max-height:145px;background:linear-gradient(180deg,#283e2b,#0e2d20)}
+body.game-active .basra-deck-box .basra-stack-cards{min-height:56px}
+body.game-active .basra-deck-box[data-empty="true"] .basra-pile-card{display:none}
+body.game-active .table-area{margin-left:0!important;min-width:0!important;padding-inline:4px!important;align-content:center!important}
+body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
+@media(max-width:1000px){body.game-active .table-surface{padding-left:116px!important}body.game-active .basra-left-stacks{width:103px}}
+@media(max-width:610px){body.game-active .table-surface{padding-left:94px!important}body.game-active .basra-left-stacks{width:85px;left:5px}body.game-active .basra-stack-box{padding:4px 2px}body.game-active .basra-stack-box h4{font-size:8px}body.game-active .basra-stack-box .basra-stack-info{font-size:8px}body.game-active .basra-deck-box{min-height:100px;max-height:118px}body.game-active .table-area .card{--card-w:clamp(40px,10vw,57px)!important;--card-h:calc(var(--card-w) * 1.48)!important}}
 </style>
 
 </head>
@@ -2086,6 +2105,11 @@ body.game-active .game-board .coming-games-inplay .mahaly-footer-wordmark strong
         <div class="game-main-column">
           <section class="panel table-panel">
             <div class="table-surface">
+              <div class="basra-left-stacks" aria-label="كومة التوزيع والورق المأكول">
+                <div class="basra-stack-box"><h4>الورق اللي كسبه الخصم</h4><div class="basra-stack-cards" id="basraOpponentPile"></div><span class="basra-stack-info" id="basraOpponentPileCount">0 ورقة</span></div>
+                <div class="basra-stack-box basra-deck-box" id="basraDeckBox"><h4>كومة التوزيع</h4><div class="basra-stack-cards" id="basraDeckPile"></div><span class="basra-stack-info" id="basraDeckPileCount">0 ورقة</span></div>
+                <div class="basra-stack-box"><h4>الورق اللي كسبته</h4><div class="basra-stack-cards" id="basraMyPile"></div><span class="basra-stack-info" id="basraMyPileCount">0 ورقة</span></div>
+              </div>
               <div class="table-label"><span>طاولة القهوة</span><span class="table-live-tag">قعدة الشدة</span></div>
               <div class="table-area" id="tableCards"></div>
               <div class="table-caption">✦ قهوة • شدة • لمة حلوة ✦</div>
@@ -3184,6 +3208,34 @@ body.game-active .game-board .coming-games-inplay .mahaly-footer-wordmark strong
       return message.slice(0, 260);
     }
 
+    function renderBasraVisualPiles(game, mine, rival) {
+      // Read only; existing deal/capture logic stays completely unchanged.
+      const deck = cardsArray(game.deck).length;
+      const opp = rival ? cardsArray(rival.captured).length : 0;
+      const own = mine ? cardsArray(mine.captured).length : 0;
+      const data = [['basraDeckPile', 'basraDeckPileCount', deck],
+                    ['basraOpponentPile', 'basraOpponentPileCount', opp],
+                    ['basraMyPile', 'basraMyPileCount', own]];
+      for (const [pileId, labelId, count] of data) {
+        const pile = document.getElementById(pileId);
+        const label = document.getElementById(labelId);
+        if (!pile || !label) continue;
+        label.textContent = count + (count === 1 ? ' ورقة' : ' ورقات');
+        const visible = Math.min(count, 5);
+        if (pile.childElementCount !== visible) {
+          pile.replaceChildren();
+          for (let i = 0; i < visible; i++) {
+            const card = document.createElement('span');
+            card.className = 'basra-pile-card';
+            card.style.setProperty('--n', i);
+            pile.appendChild(card);
+          }
+        }
+      }
+      const dbox = document.getElementById('basraDeckBox');
+      if (dbox) dbox.dataset.empty = deck === 0 ? 'true' : 'false';
+    }
+
     function renderGame(game) {
       window.currentRenderedGame = game;
       const order = activeOrder(game);
@@ -3247,6 +3299,7 @@ body.game-active .game-board .coming-games-inplay .mahaly-footer-wordmark strong
       const opponentIds = order.filter(id => id !== myId);
       const opponent = opponentIds.length ? game.players[opponentIds[0]] : null;
       const opponentHandCount = opponent ? cardsArray(opponent.hand).length : 0;
+      renderBasraVisualPiles(game, myPlayer, opponent);
       document.getElementById('opponentCount').textContent = opponent ? `${opponentHandCount} ورقات` : 'بانتظار اللاعب الثاني';
       const opponentProfile = document.getElementById('opponentProfile');
       const opponentAvatar = document.getElementById('opponentAvatar');
