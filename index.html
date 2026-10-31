@@ -1,16 +1,58 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ع القهوة — تشغيل الشطرنج</title><style>body{background:#180b06;color:#ffdaa0;font:16px Cairo,Tahoma,Arial;text-align:center;padding:12vh 12px}a{color:#ffc86d}</style></head><body><p>☕ جاري فتح قعدة ع القهوة…</p><p id="fallback" hidden>تعذر تحميل التصميم القديم من GitHub. <a href="https://github.com/singermo82-coder/basra-game/history/main/index.html">سجل الصفحة الرئيسية</a></p>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ع القهوة | ألعاب مصرية أونلاين</title>
+<style>html,body{margin:0;min-height:100%;background:#1c0d08;color:#ffe1ab;font-family:Tahoma,Arial,sans-serif}#loading{position:fixed;inset:0;display:grid;place-items:center;background:#1c0d08;text-align:center;z-index:99999}#loading div{padding:24px;border:1px solid #b88e51;border-radius:16px}#loading a{color:#f8c26d}</style>
+</head><body><div id="loading"><div>☕ جاري فتح قعدة ع القهوة...<p id="error" style="display:none">تعذّر تحميل تصميم الصفحة الرئيسية. <a href="https://github.com/singermo82-coder/basra-game">افتح المشروع</a></p></div></div>
 <script>
-(async()=>{try{
-const source='https://raw.githubusercontent.com/singermo82-coder/basra-game/ab5c81279de9d2dc3b33ecbf07c42f9e1cbda6c3/index.html';
-const r=await fetch(source,{cache:'default'});if(!r.ok)throw Error('HTTP '+r.status);
-let html=await r.text();if(!/<html[\s>]/i.test(html))throw Error('invalid content');
-const patch=`<script>(function(){function activate(){let names=[...document.querySelectorAll('h2,h3,strong')];let title=names.find(n=>n.textContent.trim()==='شطرنج');if(!title)return;let card=title;for(let i=0;i<5&&card.parentElement;i++){if((card.textContent||'').includes('قريبًا')&&(card.textContent||'').length<380)break;card=card.parentElement;}if(!card||card===document.body)return;
-let badge=[...card.querySelectorAll('*')].find(x=>x.children.length===0&&x.textContent.trim()==='قريبًا في القعدة');if(badge)badge.textContent='لعبة متاحة';
-let btn=[...card.querySelectorAll('button,a,span,div')].find(x=>x.children.length===0&&x.textContent.trim()==='قريبًا');if(btn){btn.textContent='● العب الآن ←';btn.style.cssText+=';background:linear-gradient(180deg,#0eae75,#05744e)!important;color:#fff!important;cursor:pointer!important;';btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.href='./chess.html'});}
-if(card.tagName==='A'){card.href='./chess.html';}else{card.style.cursor='pointer';card.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.href='./chess.html';},true);}
-}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',activate,{once:true});else activate();})();<\/script>`;
-html=html.replace(/<head([^>]*)>/i,'<head$1><base href="https://singermo82-coder.github.io/basra-game/">');
-html=html.replace(/<\/body>/i,patch+'</body>');
-document.open();document.write(html);document.close();
-}catch(err){console.error(err);document.querySelector('#fallback').hidden=false;}})();
+(async()=>{
+  // Preserve the previously published home design instead of recreating it.
+  const original='https://raw.githubusercontent.com/singermo82-coder/basra-game/ab5c81279de9d2dc3b33ecbf07c42f9e1cbda6c3/index.html';
+  try {
+    const res=await fetch(original,{cache:'force-cache'});
+    if(!res.ok) throw new Error('Unable to load original: '+res.status);
+    const source=await res.text();
+    if(!/<html\b/i.test(source))throw new Error('Invalid original');
+    const dom=new DOMParser().parseFromString(source,'text/html');
+    const titles=[...dom.querySelectorAll('h2,h3,h4')];
+    const chessTitle=titles.find(el=>el.textContent.trim()==='شطرنج');
+    const dominoTitle=titles.find(el=>el.textContent.trim()==='دومينو');
+    if(!chessTitle||!dominoTitle)throw new Error('Cannot locate game cards');
+    function cardFor(title){
+      let el=title;
+      while(el&&el!==dom.body){
+        if(el.matches('article,.game-card,.card,.game,a[href],button[data-game]'))return el;
+        el=el.parentElement;
+      }
+      return title.parentElement;
+    }
+    const chess=cardFor(chessTitle),domino=cardFor(dominoTitle);
+    // Reuse the exact enabled styling and button from the existing Domino card.
+    if(domino&&chess){
+      const invalid=/\b(soon|coming|disabled|locked|unavailable|future)\b/gi;
+      chess.className=[...domino.classList].filter(x=>!invalid.test(x)).join(' ');
+      chess.classList.remove('soon','coming','disabled','locked');
+      const blueprints=[...domino.querySelectorAll('a,button,span,div')].filter(el=>el.children.length===0 && /العب الآن/.test(el.textContent));
+      const own=[...chess.querySelectorAll('a,button,span,div')].filter(el=>el.children.length===0 && /قريبًا/.test(el.textContent));
+      let button=own.at(-1);
+      if(button){
+        const reference=blueprints.at(-1);
+        if(reference){button.className=reference.className;button.setAttribute('style',reference.getAttribute('style')||'');}
+        button.innerHTML='<i></i> العب الآن ←';
+        button.style.setProperty('background','linear-gradient(180deg,#08ad78,#006f4f)','important');
+        button.style.setProperty('color','#ffffff','important');
+        button.style.setProperty('border-color','#5cdaa4','important');
+      }
+      const badge=[...chess.querySelectorAll('*')].find(el=>el.children.length===0&&/قريبًا في القعدة/.test(el.textContent));
+      if(badge){badge.textContent='لعبة متاحة'; const domBadge=[...domino.querySelectorAll('*')].find(el=>el.children.length===0&&/لعبة متاحة/.test(el.textContent));if(domBadge)badge.className=domBadge.className;}
+      if(chess.tagName==='A')chess.setAttribute('href','./chess.html');
+      else{
+        const a=dom.createElement('a');a.href='./chess.html';a.setAttribute('aria-label','العب شطرنج الآن');a.style.cssText='position:absolute;inset:0;z-index:10;cursor:pointer';
+        const pos=(chess.getAttribute('style')||'');chess.setAttribute('style',pos+';position:relative;cursor:pointer');chess.appendChild(a);
+      }
+      for(const link of chess.querySelectorAll('a[href]'))link.setAttribute('href','./chess.html');
+    }
+    let base=dom.head.querySelector('base');if(!base){base=dom.createElement('base');dom.head.prepend(base);}base.href='https://singermo82-coder.github.io/basra-game/';
+    document.open();document.write('<!doctype html>\n'+dom.documentElement.outerHTML);document.close();
+  }catch(err){console.error('Home page loading failed:',err);const p=document.querySelector('#error');if(p)p.style.display='block';}
+})();
 </script></body></html>
