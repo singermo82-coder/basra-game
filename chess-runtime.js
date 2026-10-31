@@ -22,7 +22,7 @@ const AVATARS=[
 ];
 let avatarCategory='all';
 const pieceNames={p:'بيدق',n:'حصان',b:'فيل',r:'قلعة',q:'وزير',k:'ملك'};
-const pieceThemes={classic:{name:'كلاسيك',desc:'ستايل واضح وتقليدي'},stone:{name:'حجري فاخر',desc:'إحساس خامة حجر / خشب'},gold:{name:'ذهبي',desc:'فخم ولامع'},'3d':{name:'3D مجسم',desc:'شكل مجسم أقرب للحقيقي'}};
+const pieceThemes={classic:{name:'كلاسيك',desc:'ستايل واضح وتقليدي'},stone:{name:'حجري فاخر',desc:'إحساس خامة حجر / خشب'},gold:{name:'ذهبي',desc:'فخم ولامع'},'3d':{name:'3D حقيقي',desc:'رقعة وقطع WebGL مجسمة'}};
 const tableThemes={walnut:{name:'جوز كلاسيك',desc:'خشب شطرنج دافئ',mini:'linear-gradient(135deg,#8b5b34,#3e2515 55%,#8b5b34)'},marble:{name:'رخام أنيق',desc:'ستايل احترافي هادئ',mini:'linear-gradient(135deg,#eee5d6,#8d7a65 60%,#d7ccbc)'},royal:{name:'أزرق ملكي',desc:'ستايل بطولة',mini:'linear-gradient(135deg,#6e542d,#1f3a57 58%,#6e542d)'},emerald:{name:'زمردي',desc:'طاولة قهوة راقية',mini:'linear-gradient(135deg,#8f6b3a,#234f43 58%,#8f6b3a)'},noir:{name:'أسود فاخر',desc:'قوي واحترافي',mini:'linear-gradient(135deg,#594121,#151515 58%,#4a3820)'}};
 const radioLinks={nagham:'https://www.naghamfm1053.com/ar',nogoum:'https://www.nogoumfm.net',nile:'https://www.nilefm.com',nrj:'https://www.nrjegypt.com',shaabi:'https://www.maspero.eg',aghani:'https://www.maspero.eg'};
 
@@ -48,6 +48,28 @@ function message(t){const x=$('gameDetail');if(x)x.textContent=t;}
 function pieceSpan(piece){const theme=pieceTheme in pieceThemes?pieceTheme:'classic';return theme==='3d'?`<img class="chess-piece chess-piece-3d" draggable="false" alt="${piece.color==='w'?'أبيض':'أسود'} ${pieceNames[piece.type]}" src="${svgPiece(piece.type,piece.color)}">`:`<span class="chess-piece ${piece.color==='w'?'white':'black'} theme-${theme}">${pieceGlyph[piece.color+piece.type]}</span>`}
 function computeCaptured(){const hist=chess.history({verbose:true});const white=[],black=[];for(const m of hist){if(m.captured){const g=pieceGlyph[(m.color==='w'?'b':'w')+m.captured];(m.color==='w'?white:black).push({glyph:g,color:m.color==='w'?'black':'white',type:m.captured});}}return {white,black};}
 function renderCaptured(){const caps=computeCaptured(), img=(p)=>pieceTheme==='3d'?`<img class=\"captured-piece-img\" alt=\"${pieceNames[p.type]}\" src=\"${svgPiece(p.type,p.color==='white'?'w':'b')}\">`:p.glyph;const w=$('capturedWhite'),b=$('capturedBlack');if(w)w.innerHTML=caps.white.length?caps.white.map(p=>`<span class=\"captured-piece ${p.color}\" title=\"${pieceNames[p.type]}\">${img(p)}</span>`).join(''):'<span class=\"muted small\">لا يوجد قطع مأخوذة</span>';if(b)b.innerHTML=caps.black.length?caps.black.map(p=>`<span class=\"captured-piece ${p.color}\" title=\"${pieceNames[p.type]}\">${img(p)}</span>`).join(''):'<span class=\"muted small\">لا يوجد قطع مأخوذة</span>';}
+let chess3D=null,loading3D=false,chess3DError=false;
+async function activate3D(){
+ if(chess3D||loading3D)return;
+ loading3D=true;chess3DError=false;
+ const status=$('chess3dError');if(status)status.hidden=true;
+ try{
+   const {createChess3D}=await import('./chess-3d.js?v=6');
+   if(pieceTheme!=='3d'){loading3D=false;return}
+   chess3D=createChess3D({mount:$('chess3dMount'),onSquare:squareClick}); if(chess3D.setTheme)chess3D.setTheme(tableTheme);
+   document.body.classList.add('chess-3d-active');
+   render();
+ }catch(err){console.error('تعذر تفعيل 3D',err);chess3DError=true;document.body.classList.remove('chess-3d-active');
+   if(status){status.textContent='متصفحك أو اتصال الإنترنت منع تحميل المجسمات. الرقعة العادية متاحة للعب.';status.hidden=false;}
+ }
+ loading3D=false;
+}
+function sync3D(){
+ if(pieceTheme==='3d'&&!chess3D&&!loading3D&&!chess3DError){activate3D();return}
+ if(chess3D&&pieceTheme==='3d'){
+  try{chess3D.update(chess,{selected,targets:selected?chess.moves({square:selected,verbose:true}).map(m=>m.to):[],flip:flipped})}catch(err){console.error(err)}
+ }
+}
 function render(){
   const board=$('board'); if(!board)return; board.innerHTML='';
   const canSelect=!chess.isGameOver()&&!thinking&&(mode!=='online'||chess.turn()===myColor);
@@ -82,6 +104,7 @@ function render(){
   applyAvatar($('meAvatar'), localStorage.getItem('aq-chess-avatar')||localStorage.getItem('aq-domino-avatar')||'curly-man');
   if($('opAvatar'))applyAvatar($('opAvatar'),'teacher');
   renderCaptured();
+  sync3D();
 }
 function squareClick(id){if(thinking||chess.isGameOver())return;if(mode==='cpu'&&chess.turn()==='b')return;if(mode==='online'&&chess.turn()!==myColor)return;const piece=chess.get(id);if(piece&&piece.color===chess.turn()){selected=selected===id?null:id;render();return}const opts=selected?chess.moves({square:selected,verbose:true}).filter(m=>m.to===id):[];if(!opts.length){selected=null;render();return}const m=opts[0];if(m.flags.includes('p')){const popup=document.createElement('div');popup.className='chess-choice';popup.innerHTML='<span style="font-weight:700;color:#fff">ترقية البيدق:</span>';for(const q of ['q','r','b','n']){const btn=document.createElement('button');btn.innerHTML=pieceGlyph[chess.turn()+q];btn.onclick=()=>{popup.remove();commit({from:selected,to:id,promotion:q})};popup.appendChild(btn)}document.body.appendChild(popup)}else commit({from:selected,to:id,promotion:'q'})}
 async function commit(m){
@@ -121,10 +144,14 @@ window.toggleChatPanel=()=>{const p=$('chatCard');if(p)p.classList.toggle('chat-
 window.sendQuick=t=>{const i=$('chatInput');if(i){i.value=t;sendChat()}};
 window.sendChat=async()=>{const i=$('chatInput')||$('chatMessage');if(!i)return;const msg=i.value.trim().slice(0,300);if(!msg)return;i.value='';if(chatRef){await chatRef.push({name,text:msg,at:Date.now()})}else appendChat(name,msg)};
 function appendChat(n,t){const area=$('chatMessages')||$('chatFeed');if(area){const d=document.createElement('div');d.className='chat-entry';d.textContent=n+': '+t;area.appendChild(d);area.scrollTop=area.scrollHeight}}
-function renderTableSkins(){const grid=$('tableSkinsGrid'); if(!grid)return; grid.innerHTML=Object.entries(tableThemes).map(([id,v])=>`<button type="button" class="table-skin-card" onclick="setTableSkin('${id}')"><div class="table-preview" style="background:${v.mini}"><span class="mini-board"></span><span class="mini-piece">♞</span></div><div class="table-caption"><strong>${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
-window.setTableSkin=k=>{tableTheme=k; localStorage.setItem('ahwa-chess-table-theme',k); document.body.classList.remove(...Object.keys(tableThemes).map(x=>'table-theme-'+x)); document.body.classList.add('table-theme-'+k); const vars={walnut:['#e7cfa6','#896444'],marble:['#f5ead6','#9aa0aa'],royal:['#f0dfbf','#58799a'],emerald:['#e6e4d0','#5e8967'],noir:['#dbccaa','#5a5246']}[k]||['#e8d1ab','#678260']; document.documentElement.style.setProperty('--chess-light',vars[0]); document.documentElement.style.setProperty('--chess-dark',vars[1]); render();};
-function renderPieceSkins(){const grid=$('pieceSkinsGrid'); if(!grid)return; grid.innerHTML=Object.entries(pieceThemes).map(([id,v])=>`<button type="button" class="piece-skin-card piece-theme-${id}" onclick="setPieceTheme('${id}')"><div class="piece-preview">${id==='3d'?['k','n','q'].map((p,i)=>`<img class="demo-piece demo-svg" src="${svgPiece(p,i===1?'b':'w')}">`).join(''):'<span class="demo-piece">♔</span><span class="demo-piece">♞</span><span class="demo-piece">♛</span>'}</div><div class="piece-caption"><strong>${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
-window.setPieceTheme=k=>{pieceTheme=k; localStorage.setItem('ahwa-chess-piece-theme',k); document.body.classList.toggle('pieces-3d-mode',k==='3d'); render();};
+function renderTableSkins(){const grid=$('tableSkinsGrid');if(!grid)return;grid.innerHTML=Object.entries(tableThemes).map(([id,v])=>`<button type="button" data-table="${id}" aria-pressed="${tableTheme===id}" class="table-skin-card ${tableTheme===id?'active':''}" onclick="setTableSkin('${id}')"><div class="table-preview"><span class="mini-board"></span><span class="mini-piece">♞</span></div><div class="table-caption"><strong>${tableTheme===id?'✓ ':''}${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
+window.setTableSkin=k=>{tableTheme=k; localStorage.setItem('ahwa-chess-table-theme',k); document.body.classList.remove(...Object.keys(tableThemes).map(x=>'table-theme-'+x)); document.body.classList.add('table-theme-'+k); const vars={walnut:['#e7cfa6','#896444'],marble:['#f5ead6','#9aa0aa'],royal:['#f0dfbf','#58799a'],emerald:['#e6e4d0','#5e8967'],noir:['#dbccaa','#5a5246']}[k]||['#e8d1ab','#678260']; document.documentElement.style.setProperty('--chess-light',vars[0]); document.documentElement.style.setProperty('--chess-dark',vars[1]); if(chess3D&&typeof chess3D.setTheme==='function')chess3D.setTheme(k); render();renderTableSkins();};
+function renderPieceSkins(){const grid=$('pieceSkinsGrid'); if(!grid)return; grid.innerHTML=Object.entries(pieceThemes).map(([id,v])=>`<button type="button" class="piece-skin-card piece-theme-${id} ${pieceTheme===id?'active':''}" onclick="setPieceTheme('${id}')"><div class="piece-preview">${id==='3d'?['k','n','q'].map((p,i)=>`<img class="demo-piece demo-svg" src="${svgPiece(p,i===1?'b':'w')}">`).join(''):'<span class="demo-piece">♔</span><span class="demo-piece">♞</span><span class="demo-piece">♛</span>'}</div><div class="piece-caption"><strong>${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
+window.setPieceTheme=k=>{if(!(k in pieceThemes))return;pieceTheme=k;localStorage.setItem('ahwa-chess-piece-theme',k);
+ document.body.classList.toggle('pieces-3d-mode',k==='3d');
+ if(k!=='3d'){if(chess3D){chess3D.dispose();chess3D=null}chess3DError=false;document.body.classList.remove('chess-3d-active');}
+ else if(chess3DError){chess3DError=false;}
+ render();renderPieceSkins();};
 function renderAvatarPicker(){const grid=$('avatarPickerGrid'); if(!grid)return; const selected=localStorage.getItem('aq-chess-avatar')||localStorage.getItem('aq-domino-avatar')||'curly-man'; const list=AVATARS.filter(a=>avatarCategory==='all'||a.cat===avatarCategory); grid.innerHTML=list.map(a=>`<button type="button" class="avatar-option ${a.id===selected?'active':''}" onclick="chooseAvatar('${a.id}')"><span class="avatar-choice-picture" style="background-image:url('./avatar-grid.webp');background-size:400% 300%;background-position:${a.x}% ${a.y}%"></span><strong>${a.name}</strong><small>${a.cat==='men'?'شباب':a.cat==='women'?'بنات':a.cat==='pets'?'حيوان أليف':'شخصية القهوة'}</small><span class="avatar-check">✓ تم الاختيار</span></button>`).join(''); document.querySelectorAll('[data-avatar-category]').forEach(b=>b.classList.toggle('active',b.dataset.avatarCategory===avatarCategory));}
 window.setAvatarCategory=cat=>{avatarCategory=cat; renderAvatarPicker();};
 window.chooseAvatar=id=>{if(!avatarById(id))return; localStorage.setItem('aq-chess-avatar',id); render(); renderAvatarPicker(); closeModal('avatarModal'); message('تم اختيار صورتك');};
