@@ -2078,7 +2078,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         <small id="gameModeHint" class="mode-hint">هنبدأ ضد المعلم تلقائيًا. لو كتبت كود قعدة، هتنضم لها أونلاين.</small>
       </div>
       <div class="input-group ai-difficulty-group" id="aiDifficultyGroup">
-        <label for="aiDifficulty">مستوى صعوبة المعلم زكي</label>
+        <label for="aiDifficulty">مستوى صعوبة المعلم شلبي</label>
         <select id="aiDifficulty" aria-describedby="aiDifficultyHint">
           <option value="calm">☕ معلم هادي — لعب مريح وأخطاء أحيانًا</option>
           <option value="tough">🔥 معلم تقيل — تركيز وحركات أذكى</option>
@@ -2116,7 +2116,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
           </section>
           <section class="panel opponent-panel">
             <div class="section-title"><h3>🎴 خصمك على القهوة</h3><span class="section-hint" id="opponentCount">بانتظار اللاعب الثاني</span></div>
-            <div class="opponent-profile" id="opponentProfile"><span class="opponent-profile-avatar" id="opponentAvatar" aria-hidden="true">🧓🏻</span><span class="opponent-profile-details"><strong id="opponentName">المعلم زكي</strong><small id="opponentState">خصمك جاهز للقعدة</small></span><span class="opponent-status-dot" aria-hidden="true"></span></div>
+            <div class="opponent-profile" id="opponentProfile"><span class="opponent-profile-avatar" id="opponentAvatar" aria-hidden="true">🧓🏻</span><span class="opponent-profile-details"><strong id="opponentName">المعلم شلبي</strong><small id="opponentState">خصمك جاهز للقعدة</small></span><span class="opponent-status-dot" aria-hidden="true"></span></div>
             <div class="back-cards" id="opponentCards"></div>
           </section>
           <section class="panel game-actions-panel">
@@ -2391,7 +2391,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
     let selectedAvatar = 'felah';
 
     function teacherAvatarSvg() {
-      return `<img class="teacher-avatar-art avatar-photo-img" src="${TEACHER_ZAKI_PHOTO}" alt="المعلم زكي" loading="eager" decoding="async">`;
+      return `<img class="teacher-avatar-art avatar-photo-img" src="${TEACHER_ZAKI_PHOTO}" alt="المعلم شلبي" loading="eager" decoding="async">`;
     }
     const initialTeacherAvatar = document.getElementById('opponentAvatar');
     if (initialTeacherAvatar) initialTeacherAvatar.innerHTML = teacherAvatarSvg();
@@ -2510,7 +2510,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         const old = players[id] || {};
         nextPlayers[id] = {
           id,
-          name: old.name || (old.isAI ? 'المعلم زكي' : 'لاعب'),
+          name: old.name || (old.isAI ? 'المعلم شلبي' : 'لاعب'),
           avatar: old.avatar || (old.isAI ? 'teacher' : 'felah'),
           score: Number(old.score) || 0,
           isAI: old.isAI === true,
@@ -2999,7 +2999,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
           let startingPlayerId = null;
           if (playWithAI) {
             const aiId = 'ai_' + myRoom;
-            players[aiId] = { id: aiId, name: 'المعلم زكي', avatar: 'teacher', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, basraPoints: 0, basraMarkers: [], isAI: true, aiLevel: selectedAiDifficulty || 'calm' };
+            players[aiId] = { id: aiId, name: 'المعلم شلبي', avatar: 'teacher', score: 0, hand: deck.splice(0, 4), captured: [], basras: 0, basraPoints: 0, basraMarkers: [], isAI: true, aiLevel: selectedAiDifficulty || 'calm' };
             turnOrder.push(aiId);
             table = takeInitialTable(deck); // both four-card hands first, then four on the table
             deferOpeningJacks(deck, Object.values(players).map(player => player.hand), table);
@@ -3337,7 +3337,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       const opponentState = document.getElementById('opponentState');
       if (opponent) {
         opponentProfile.classList.remove('waiting');
-        opponentName.textContent = String(opponent.name || (opponent.isAI ? 'المعلم زكي' : 'اللاعب الآخر')).slice(0, 20);
+        opponentName.textContent = String(opponent.name || (opponent.isAI ? 'المعلم شلبي' : 'اللاعب الآخر')).slice(0, 20);
         opponentState.textContent = `${Number(opponent.score)||0} نقطة · ${opponentHandCount} ورقات${curId === opponentIds[0] && game.status === 'playing' ? ' · دوره' : ''}`;
         opponentAvatar.replaceChildren();
         if (opponent.isAI === true) opponentAvatar.innerHTML = teacherAvatarSvg();
