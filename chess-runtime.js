@@ -146,7 +146,17 @@ window.sendChat=async()=>{const i=$('chatInput')||$('chatMessage');if(!i)return;
 function appendChat(n,t){const area=$('chatMessages')||$('chatFeed');if(area){const d=document.createElement('div');d.className='chat-entry';d.textContent=n+': '+t;area.appendChild(d);area.scrollTop=area.scrollHeight}}
 function renderTableSkins(){const grid=$('tableSkinsGrid');if(!grid)return;grid.innerHTML=Object.entries(tableThemes).map(([id,v])=>`<button type="button" data-table="${id}" aria-pressed="${tableTheme===id}" class="table-skin-card ${tableTheme===id?'active':''}" onclick="setTableSkin('${id}')"><div class="table-preview"><span class="mini-board"></span><span class="mini-piece">♞</span></div><div class="table-caption"><strong>${tableTheme===id?'✓ ':''}${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
 window.setTableSkin=k=>{tableTheme=k; localStorage.setItem('ahwa-chess-table-theme',k); document.body.classList.remove(...Object.keys(tableThemes).map(x=>'table-theme-'+x)); document.body.classList.add('table-theme-'+k); const vars={walnut:['#e7cfa6','#896444'],marble:['#f5ead6','#9aa0aa'],royal:['#f0dfbf','#58799a'],emerald:['#e6e4d0','#5e8967'],noir:['#dbccaa','#5a5246']}[k]||['#e8d1ab','#678260']; document.documentElement.style.setProperty('--chess-light',vars[0]); document.documentElement.style.setProperty('--chess-dark',vars[1]); if(chess3D&&typeof chess3D.setTheme==='function')chess3D.setTheme(k); render();renderTableSkins();};
-function renderPieceSkins(){const grid=$('pieceSkinsGrid'); if(!grid)return; grid.innerHTML=Object.entries(pieceThemes).map(([id,v])=>`<button type="button" class="piece-skin-card piece-theme-${id} ${pieceTheme===id?'active':''}" onclick="setPieceTheme('${id}')"><div class="piece-preview">${id==='3d'?['k','n','q'].map((p,i)=>`<img class="demo-piece demo-svg" src="${svgPiece(p,i===1?'b':'w')}">`).join(''):'<span class="demo-piece">♔</span><span class="demo-piece">♞</span><span class="demo-piece">♛</span>'}</div><div class="piece-caption"><strong>${v.name}</strong><small>${v.desc}</small></div></button>`).join('');}
+function renderPieceSkins(){
+ const grid=$('pieceSkinsGrid');if(!grid)return;
+ const glyphs=['k','q','n','r','b','p'];
+ const buildPreview=id=>glyphs.map((p,i)=>{
+   const color=i%2===0?'w':'b';
+   return id==='3d'
+     ? `<img class="preview-figure" draggable="false" src="${svgPiece(p,color)}" alt="${pieceNames[p]}">`
+     : `<span class="preview-figure chess-piece ${color==='w'?'white':'black'} theme-${id}">${pieceGlyph[color+p]}</span>`;
+ }).join('');
+ grid.innerHTML=Object.entries(pieceThemes).map(([id,v])=>`<button type="button" aria-pressed="${pieceTheme===id}" class="piece-skin-card piece-theme-${id} ${pieceTheme===id?'active':''}" onclick="setPieceTheme('${id}')"><div class="piece-preview chess-preview-six">${buildPreview(id)}</div><div class="piece-caption"><strong>${pieceTheme===id?'✓ ':''}${v.name}</strong><small>${v.desc}</small></div></button>`).join('');
+}
 window.setPieceTheme=k=>{if(!(k in pieceThemes))return;pieceTheme=k;localStorage.setItem('ahwa-chess-piece-theme',k);
  document.body.classList.toggle('pieces-3d-mode',k==='3d');
  if(k!=='3d'){if(chess3D){chess3D.dispose();chess3D=null}chess3DError=false;document.body.classList.remove('chess-3d-active');}
