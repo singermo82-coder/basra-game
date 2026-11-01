@@ -258,6 +258,15 @@ body.ludo-board-neon .center-arena>.boardbox{background:linear-gradient(135deg,#
 @keyframes ahwaDiceToss{0%{left:5%;top:5%;transform:scale(.75) rotate(-450deg)}37%{left:52%;top:34%;transform:scale(1.3) rotate(115deg)}62%{left:44%;top:46%;transform:scale(.92) rotate(290deg)}79%{left:50%;top:40%;transform:scale(1.12) rotate(347deg)}100%{left:49%;top:45%;transform:scale(1) rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.throw-dice{animation:none;left:49%;top:45%}}
 
+
+/* V9 - parked dice and cheerful capture animation */
+.throw-dice.parked-dice{animation:none!important;left:49%!important;top:45%!important;transform:rotate(7deg)!important;filter:drop-shadow(0 3px 5px #0008)}
+.capture-flash{position:absolute;inset:0;z-index:35;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;background:radial-gradient(circle at center,#ffc84c4d,transparent 62%);animation:captureFade 1.25s ease-out both}
+.capture-shock{font-size:clamp(50px,9vw,105px);animation:capturePop .55s cubic-bezier(.1,1.8,.4,1) both;filter:drop-shadow(0 5px 9px #0008)}
+.capture-message{border:2px solid #ffda79;color:#fff2c6;background:#31150ee8;padding:7px 18px;border-radius:20px;font-weight:900;font-size:clamp(13px,2.6vw,24px);text-shadow:0 2px 3px #0009}
+@keyframes capturePop{0%{transform:scale(.1) rotate(-25deg)}60%{transform:scale(1.3) rotate(12deg)}100%{transform:scale(1) rotate(0deg)}}
+@keyframes captureFade{0%{opacity:0}18%{opacity:1}75%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.capture-flash,.capture-shock{animation:none!important}.capture-flash{opacity:1}}
 </style><link rel="stylesheet" href="./ahwa-mobile-play.css?v=2"></head><body><div class="shell">
 <header class="domino-header">
 <div class="brand-ahwa"><img class="brand-plaque" src="./logo-plaque.webp" alt="ع القهوة" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><div class="brand-fallback">☕</div><div><div class="brand-name">ع القهوة</div><div class="brand-sub">من ملاهي | ألعاب مصرية أونلاين</div></div></div>
@@ -337,7 +346,7 @@ function diceImpactSound(){
   });
  }catch(e){console.debug('Dice audio:',e)}
 }
-let lastShownOnlineRoll=0;
+let lastShownOnlineRoll=0;let lastShownOnlineCapture=-1;
 function visualDiceThrow(value,withSound=true){
  const board=document.getElementById('board');if(!board)return;
  const prior=board.querySelector('.throw-dice');if(prior)prior.remove();
@@ -346,7 +355,7 @@ function visualDiceThrow(value,withSound=true){
  el.innerHTML='<span class="throw-pips">'+Array.from({length:9},(_,i)=>'<i class="throw-pip '+(map[value]?.includes(i)?'on':'')+'"></i>').join('')+'</span>';
  board.appendChild(el);
  if(withSound)diceImpactSound();
- window.setTimeout(()=>{el.remove();dice(value)},850);
+ window.setTimeout(()=>{dice(value); if(!g||g.phase!=='choose')el.remove();},850);
 }
 
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
@@ -373,7 +382,27 @@ function normalizeOnlineGame(game){
  }));
  return {...game,order,pieces,winners:Array.isArray(game.winners)?game.winners:Object.values(game.winners||{}).map(Number),phase:game.phase||'roll',turn:Number(game.turn)||0,die:Number(game.die)||1,lastDie:Number(game.lastDie)||Number(game.die)||1,round:Number(game.round)||1,rolls:Number(game.rolls)||0,captures:Number(game.captures)||0};
 }
-function render(){if(!g)return;const selected=current(),allowed=(g.phase==='choose'&&!busy&&(mode!=='online'||g.order.indexOf(selected)===onlineSeat))?moves(selected,g.die):[],ls=new Set(allowed.map(m=>m.k));$('players').innerHTML=g.order.map((p,i)=>{const c=COLORS[p],mine=(mode==='online'?g.order.indexOf(p)===onlineSeat:p===0),finished=g.winners.includes(p);const progress=g.pieces[p].filter(x=>x===56).length;return `<div class="player ${selected===p&&!finished?'active':''} ${finished?'finished':''}" style="--player-color:${c.hex}"><div class="ahwa-avatar" style="background-position:${avatarFor(p).x}% ${avatarFor(p).y}%" title="${avatarFor(p).name}"></div><div><div class="pname">${mode==='cpu'?(mine?'أنت':'المعلم شلبي'):mode==='online'?(g.playerNames?.[p]||('اللاعب '+(i+1))):'اللاعب '+(i+1)} ${finished?'🏆':''}</div><div class="pmeta">${c.name} · ${isCpu(p)?'كمبيوتر':mode==='online'?'أونلاين':'لاعب'} · ${progress}/4 في البيت</div></div><div class="pcount">${g.pieces[p].filter(x=>x>=0&&x<56).length}●</div></div>`}).join('');
+function syncVisibleDice(){
+ const board=document.getElementById('board');if(!board||!g)return;
+ const present=board.querySelector('.throw-dice');
+ if(g.phase!=='choose'){if(present)present.remove();return;}
+ if(!present){
+  const value=g.lastDie||g.die||1;
+  const map={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+  const el=document.createElement('div');el.className='throw-dice parked-dice';el.setAttribute('aria-hidden','true');
+  el.innerHTML='<span class="throw-pips">'+Array.from({length:9},(_,i)=>'<i class="throw-pip '+(map[value]?.includes(i)?'on':'')+'"></i>').join('')+'</span>';
+  board.appendChild(el);
+ }
+}
+function captureMoment(name){
+ const board=document.getElementById('board');if(!board)return;
+ board.querySelectorAll('.capture-flash').forEach(x=>x.remove());
+ const overlay=document.createElement('div');overlay.className='capture-flash';
+ overlay.innerHTML='<div class="capture-shock">💥</div><div class="capture-message">🔥 '+(name||'اتاكلت قطعة!')+' 🔥</div>';
+ board.appendChild(overlay);sound('capture');
+ window.setTimeout(()=>overlay.remove(),1300);
+}
+function render(){if(!g)return;syncVisibleDice();const selected=current(),allowed=(g.phase==='choose'&&!busy&&(mode!=='online'||g.order.indexOf(selected)===onlineSeat))?moves(selected,g.die):[],ls=new Set(allowed.map(m=>m.k));$('players').innerHTML=g.order.map((p,i)=>{const c=COLORS[p],mine=(mode==='online'?g.order.indexOf(p)===onlineSeat:p===0),finished=g.winners.includes(p);const progress=g.pieces[p].filter(x=>x===56).length;return `<div class="player ${selected===p&&!finished?'active':''} ${finished?'finished':''}" style="--player-color:${c.hex}"><div class="ahwa-avatar" style="background-position:${avatarFor(p).x}% ${avatarFor(p).y}%" title="${avatarFor(p).name}"></div><div><div class="pname">${mode==='cpu'?(mine?'أنت':'المعلم شلبي'):mode==='online'?(g.playerNames?.[p]||('اللاعب '+(i+1))):'اللاعب '+(i+1)} ${finished?'🏆':''}</div><div class="pmeta">${c.name} · ${isCpu(p)?'كمبيوتر':mode==='online'?'أونلاين':'لاعب'} · ${progress}/4 في البيت</div></div><div class="pcount">${g.pieces[p].filter(x=>x>=0&&x<56).length}●</div></div>`}).join('');
 let html='';for(let i of g.order)g.pieces[i].forEach((st,k)=>{
  const [r,c]=loc(i,st,k);
  let overlap=0;
@@ -402,7 +431,7 @@ function celebrate(){sound('win');for(let i=0;i<65;i++){let el=document.createEl
 async function roll(){if(mode==='online'){await onlineRoll();return;}if(!g||g.phase!=='roll'||busy)return;const mine=current();busy=true;render();$('dice').classList.add('rolling');diceImpactSound();await delay(540);const val=1+Math.floor(Math.random()*6);g.rolls++;g.die=val;g.lastDie=val;dice(val);visualDiceThrow(val,false);$('dice').classList.remove('rolling');if(val===6){g.sixes++;if(g.sixes===3){log('٣ ستات ورا بعض! الدور اتلغى');burst('٣ ستات!');busy=false;nextPlayer();render();scheduleCpu();return}}else g.sixes=0;
 const avail=moves(mine,val);if(!avail.length){log(`${COLORS[mine].name} رمى ${val} · مفيش حركة`);busy=false;if(val!==6)nextPlayer();render();scheduleCpu();return}g.phase='choose';busy=false;render();if(isCpu(mine)){await delay(310);let chosen=chooseAi(mine,avail);playMove(chosen.k)}else if(avail.length===1){await delay(100);playMove(avail[0].k)}}
 function chooseAi(p,arr){function score(m){let t=m.target;if(t===56)return 250;if(m.st===-1)return 70;if(t<51){const target=positionOf(p,t);let captures=0;for(const q of g.order){if(q===p)continue;captures+=g.pieces[q].filter(st=>st>=0&&st<=50&&positionOf(q,st)===target).length}if(!SAFE.has(target)&&captures) return 180+captures*40;}return t+Math.random()*32}return arr.slice().sort((a,b)=>score(b)-score(a))[0]}
-async function playMove(k){if(mode==='online'){await onlineMove(k);return;}if(!g||g.phase!=='choose'||busy)return;const p=current(),m=moves(p,g.die).find(x=>x.k===k);if(!m)return;busy=true;g.phase='moving';g.pieces[p][k]=m.target;sound('move');render();await delay(280);let captured=false;if(m.target<51&&m.target>=0){const target=positionOf(p,m.target);if(!SAFE.has(target)){for(let q of g.order){if(q===p)continue;for(let j=0;j<4;j++){let st=g.pieces[q][j];if(st>=0&&st<=50&&positionOf(q,st)===target){g.pieces[q][j]=-1;captured=true;g.captures++}}}}}if(captured){burst('🔥 اتاكلت!');sound('capture');log(`${COLORS[p].name} أكل قطعة منافسه!`)}if(m.target===56){burst('🏠 وصلت!');log(`${COLORS[p].name} دخل قطعة البيت`)}if(g.pieces[p].every(x=>x===56)){g.winners.push(p);celebrate();$('winnerText').textContent=`👑 ${mode==='cpu'?(p===0?'أنت كسبت!':COLORS[p].cpuName+' كسب!'):'اللاعب '+(g.order.indexOf(p)+1)+' كسب!'}`;$('winnerDesc').textContent='المواجهة خلصت.. البطل وصل بأربع قطع!';$('winOverlay').classList.remove('hidden');busy=false;render();return}
+async function playMove(k){if(mode==='online'){await onlineMove(k);return;}if(!g||g.phase!=='choose'||busy)return;const p=current(),m=moves(p,g.die).find(x=>x.k===k);if(!m)return;busy=true;g.phase='moving';g.pieces[p][k]=m.target;sound('move');render();await delay(280);let captured=false;if(m.target<51&&m.target>=0){const target=positionOf(p,m.target);if(!SAFE.has(target)){for(let q of g.order){if(q===p)continue;for(let j=0;j<4;j++){let st=g.pieces[q][j];if(st>=0&&st<=50&&positionOf(q,st)===target){g.pieces[q][j]=-1;captured=true;g.captures++}}}}}if(captured){burst('🔥 اتاكلت!');captureMoment('اتاكلت قطعة!');log(`${COLORS[p].name} أكل قطعة منافسه!`)}if(m.target===56){burst('🏠 وصلت!');log(`${COLORS[p].name} دخل قطعة البيت`)}if(g.pieces[p].every(x=>x===56)){g.winners.push(p);celebrate();$('winnerText').textContent=`👑 ${mode==='cpu'?(p===0?'أنت كسبت!':COLORS[p].cpuName+' كسب!'):'اللاعب '+(g.order.indexOf(p)+1)+' كسب!'}`;$('winnerDesc').textContent='المواجهة خلصت.. البطل وصل بأربع قطع!';$('winOverlay').classList.remove('hidden');busy=false;render();return}
 const again=g.die===6||captured||m.target===56;if(again){g.phase='roll';g.die=1;log(`${COLORS[p].name} له رمية إضافية 🎲`)}else nextPlayer();busy=false;render();scheduleCpu()}
 function scheduleCpu(){if(mode==='online')return;if(!g||busy||g.phase!=='roll'||!isCpu(current()))return;const serial=++turnSerial;setTimeout(()=>{if(g&&serial===turnSerial&&!busy&&g.phase==='roll'&&isCpu(current()))roll()},550)}
 function start(){if(document.querySelector('#modeChoice .selected')?.dataset.mode==='online')return;const n=+document.querySelector('#countChoice .selected').dataset.n;mode=document.querySelector('#modeChoice .selected').dataset.mode;active=[0,1,2,3].slice(0,n);if(n===2)active=[0,2];if(n===3)active=[0,1,2];g={order:active,turn:0,phase:'roll',die:1,lastDie:1,sixes:0,pieces:Array.from({length:4},()=>Array(4).fill(-1)),winners:[],round:1,captures:0,rolls:0};turnSerial++;busy=false;$('log').innerHTML='';log('المباراة بدأت! ستة علشان تطلع القطعة 🎲');$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');dice(1);render();scheduleCpu()}
@@ -480,7 +509,7 @@ async function joinOnlineRoom(){
  }catch(e){ludoErr(e)}
 }
 
-function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;lastShownOnlineRoll=0;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;if(onlineSeats(s)===s.max)startFullRoom(ref);return}if(s.status==='playing'&&s.game){try{g=normalizeOnlineGame(s.game);if(!g)throw Error('بيانات المباراة غير مكتملة');active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');if(g.rolls>lastShownOnlineRoll){lastShownOnlineRoll=g.rolls;dice(g.lastDie||g.die||1);visualDiceThrow(g.lastDie||g.die||1,true)}else dice(g.lastDie||g.die||1);render();$('turnBannerAhwa').textContent='🎲 '+(g.playerNames?.[g.order[g.turn]]||'اللاعب الحالي')+' — الدور الحالي';$('onlineStatus').textContent=msg;}catch(err){console.error('Online render:',err);$('onlineStatus').textContent='تعذر عرض المباراة: '+err.message;}}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
+function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;lastShownOnlineRoll=0;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;if(onlineSeats(s)===s.max)startFullRoom(ref);return}if(s.status==='playing'&&s.game){try{g=normalizeOnlineGame(s.game);if(!g)throw Error('بيانات المباراة غير مكتملة');active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');if(g.captures>lastShownOnlineCapture){if(lastShownOnlineCapture>=0)captureMoment('اتاكلت قطعة!');lastShownOnlineCapture=g.captures;}if(g.rolls>lastShownOnlineRoll){lastShownOnlineRoll=g.rolls;dice(g.lastDie||g.die||1);visualDiceThrow(g.lastDie||g.die||1,true)}else dice(g.lastDie||g.die||1);render();$('turnBannerAhwa').textContent='🎲 '+(g.playerNames?.[g.order[g.turn]]||'اللاعب الحالي')+' — الدور الحالي';$('onlineStatus').textContent=msg;}catch(err){console.error('Online render:',err);$('onlineStatus').textContent='تعذر عرض المباراة: '+err.message;}}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
 function makeFullOnlineGame(state){const n=state.max;const order=n===2?[0,2]:n===3?[0,1,2]:[0,1,2,3];const ids={};const names={};for(let i=0;i<n;i++){const p=order[i],person=state.players[String(i)];ids[p]=person?.avatar||'curly-man';names[p]=person?.name||'لاعب'}return {order,turn:0,phase:'roll',die:1,lastDie:1,sixes:0,pieces:Array.from({length:4},()=>Array(4).fill(-1)),winners:[],round:1,captures:0,rolls:0,avatarIds:ids,playerNames:names}}
 function maybeStartRoom(s){if(s.status==='waiting'&&onlineSeats(s)===s.max){s.game=makeFullOnlineGame(s);s.status='playing';s.version=(s.version||0)+1}return s}
 // Host starts once all required seats are filled.
