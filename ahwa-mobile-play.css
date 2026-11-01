@@ -1,0 +1,50 @@
+/* AHWA mobile play layout. Desktop layout intentionally unchanged. */
+@media (pointer:coarse) and (max-width:950px), (max-width:760px) {
+ html{ -webkit-text-size-adjust:100%; }
+ body{overflow-x:hidden!important;touch-action:pan-y;}
+ button,[role=button],select{touch-action:manipulation}
+ button, input,select{font-size:max(14px,1em)}
+ #aq-mobile-fullscreen{position:fixed!important;left:max(10px,env(safe-area-inset-left))!important;bottom:max(12px,env(safe-area-inset-bottom))!important;z-index:2147483000!important;width:52px!important;height:52px!important;border:2px solid #e9bf71!important;border-radius:15px!important;background:#29170ef2!important;color:#ffe4ad!important;font-size:23px!important;box-shadow:0 5px 18px #0009!important;display:grid!important;place-items:center!important;padding:0!important}
+ body.aq-game-basra main.container{width:100%!important;max-width:100%!important;margin:0!important;padding:6px!important;min-width:0!important}
+ body.aq-game-basra #board{width:100%!important;max-width:100%!important;min-width:0!important}
+ body.aq-game-basra .game-stage{width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+ body.aq-game-basra .table-area{width:100%!important;min-height:125px!important;max-width:100%!important;gap:5px!important}
+ body.aq-game-basra .hand-cards{width:100%!important;max-width:100%!important;min-height:100px!important;justify-content:center!important;gap:4px!important;overflow:visible!important}
+ body.aq-game-basra .hand-cards .card,body.aq-game-basra .table-area .card{flex-shrink:0!important;touch-action:manipulation}
+ body.aq-game-domino #app, body.aq-game-chess #app{max-width:100%!important;width:100%!important;min-width:0!important;overflow-x:hidden!important}
+ body.aq-game-domino .layout,body.aq-game-chess .layout{width:100%!important;max-width:100%!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:5px!important;overflow:visible!important}
+ body.aq-game-domino .arena,body.aq-game-chess .arena{width:100%!important;min-width:0!important;max-width:100%!important;flex:1 1 auto!important;order:0!important;margin:0!important;padding:4px!important}
+ body.aq-game-domino #leftPanel,body.aq-game-domino #sidePanel,body.aq-game-chess #leftPanel,body.aq-game-chess #sidePanel{max-width:100%!important;min-width:0!important;order:2!important}
+ body.aq-game-domino .table-shell{width:100%!important;max-width:100%!important;min-width:0!important;min-height:35dvh!important;overflow:hidden!important}
+ body.aq-game-domino .chain-viewport{width:100%!important;max-width:100%!important;min-height:100px!important}
+ body.aq-game-domino .hand-zone,body.aq-game-domino .hand-track{width:100%!important;max-width:100%!important;min-height:100px!important}
+ body.aq-game-domino .hand-track{overflow-x:auto!important;scroll-snap-type:x proximity;scrollbar-width:thin}
+ body.aq-game-domino .hand-track>*{scroll-snap-align:center}
+ body.aq-game-chess .table-shell{width:100%!important;min-width:0!important;max-width:100%!important;min-height:0!important;padding:4px!important}
+ body.aq-game-chess .chess-viewport{width:min(100%,calc(100dvh - 205px))!important;max-width:100%!important;aspect-ratio:1!important;height:auto!important;min-height:0!important;margin-inline:auto!important}
+ body.aq-game-chess #board{width:100%!important;height:100%!important;max-width:100%!important;aspect-ratio:1!important}
+ body.aq-game-ludo .shell{width:100%!important;max-width:100%!important;min-height:100dvh!important;height:auto!important;max-height:none!important;display:flex!important;flex-direction:column!important;overflow:visible!important;padding:5px!important}
+ body.aq-game-ludo .domino-header{height:auto!important;max-width:100%!important;min-width:0!important}
+ body.aq-game-ludo .main,body.aq-game-ludo .main.no-chat{width:100%!important;max-width:100%!important;height:auto!important;display:flex!important;flex-direction:column!important;gap:6px!important;overflow:visible!important}
+ body.aq-game-ludo .center-arena{order:0!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important}
+ body.aq-game-ludo .center-arena>.boardbox{width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;padding:4px!important;margin:0!important;display:flex!important;justify-content:center!important}
+ body.aq-game-ludo .board{box-sizing:border-box!important;width:min(100%,calc(100dvh - 160px))!important;max-width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:1!important;flex:0 1 auto!important}
+ body.aq-game-ludo .token{width:5.2%!important;height:5.2%!important}
+ body.aq-game-ludo .center-arena>.cardpane{width:100%!important;min-height:80px!important;overflow:visible!important}
+ body.aq-game-ludo .ludo-dice-actions button,body.aq-game-ludo #rollBtn{min-height:46px!important;font-size:15px!important}
+ body.aq-game-ludo #rightSidebar{order:1!important;width:100%!important;max-width:100%!important;overflow:visible!important}
+ body.aq-game-ludo #chatSidebar{order:2!important;width:100%!important;max-width:100%!important}
+ body.aq-game-ludo .bottom-hub{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:64px!important}
+ body.aq-game-skrew .shell{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:100dvh!important;overflow:visible!important;padding:6px!important}
+ body.aq-game-skrew main.board{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:calc(100dvh - 195px)!important;overflow:visible!important}
+ body.aq-game-skrew .cards,body.aq-game-skrew #myCards{display:flex!important;gap:6px!important;justify-content:center!important;align-items:center!important;flex-wrap:nowrap!important;min-width:0!important;max-width:100%!important}
+ body.aq-game-skrew button.card{min-width:0!important;flex:0 1 auto!important;touch-action:manipulation}
+ body.aq-game-skrew #deckButton,body.aq-game-skrew #discardButton{min-height:100px!important;touch-action:manipulation}
+ body.aq-game-skrew .foot button{min-height:44px!important}
+}
+@media (max-width:950px) and (orientation:landscape) and (pointer:coarse){
+ body.aq-game-ludo .shell{height:100dvh!important;min-height:0!important;overflow:auto!important}
+ body.aq-game-ludo .board{width:min(65vw,calc(100dvh - 100px))!important;max-width:100%!important}
+ body.aq-game-ludo .center-arena>.boardbox{justify-content:flex-start!important}
+ body.aq-game-chess .chess-viewport{width:min(70vw,calc(100dvh - 70px))!important}
+}
