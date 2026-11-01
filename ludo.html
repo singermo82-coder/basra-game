@@ -281,7 +281,7 @@ const COLORS=[{key:'red',hex:'#f63c64',name:'الأحمر',cpuName:'المعلم
 const TRACK=[[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0]];
 const START=[0,13,26,39];const LANES=[[[7,1],[7,2],[7,3],[7,4],[7,5]],[[1,7],[2,7],[3,7],[4,7],[5,7]],[[7,13],[7,12],[7,11],[7,10],[7,9]],[[13,7],[12,7],[11,7],[10,7],[9,7]]];
 const BASE_CENTERS=[[[1.95,1.95],[1.95,4.05],[4.05,1.95],[4.05,4.05]],[[1.95,10.95],[1.95,13.05],[4.05,10.95],[4.05,13.05]],[[10.95,10.95],[10.95,13.05],[13.05,10.95],[13.05,13.05]],[[10.95,1.95],[10.95,4.05],[13.05,1.95],[13.05,4.05]]];
-const SAFE=new Set([0,8,13,21,26,34,39,47]);let active=[],mode='cpu',g=null,busy=false,audio=true,turnSerial=0;let onlineDb=null,onlineRef=null,onlineRoom='',onlineSeat=-1,onlineNames={},onlineReady=false,onlineHost=false,onlineLastVersion=-1;const onlineSid='ludo-'+Math.random().toString(36).slice(2,10);const AVATARS=[
+const SAFE=new Set([0,8,13,21,26,34,39,47]);let active=[],mode='cpu',g=null,busy=false,audio=true,turnSerial=0;let onlineDb=null,onlineRef=null,onlineRoom='',onlineSeat=-1,onlineNames={},onlineReady=false,onlineHost=false,onlineLastVersion=-1;const onlineSid=(()=>{let v=sessionStorage.getItem('ahwa-ludo-session');if(!v){v='ludo-'+Math.random().toString(36).slice(2,12);sessionStorage.setItem('ahwa-ludo-session',v)}return v})();const AVATARS=[
  {id:'curly-man',name:'شاب كيرلي',cat:'men',x:0,y:0,emoji:'👨🏻'},
  {id:'fez-man',name:'معلم بالطربوش',cat:'cafe',x:33.3333,y:0,emoji:'👨🏻‍🦱'},
  {id:'hijab-woman',name:'بنت بالحجاب',cat:'women',x:66.6667,y:0,emoji:'👩🏻'},
@@ -348,14 +348,62 @@ function showSetup(){if(mode==='online'){if(onlineRef)onlineRef.off();onlineRef=
 for(const group of ['countChoice','modeChoice']){$(group).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;for(const x of $(group).querySelectorAll('button'))x.classList.toggle('selected',x===b)})}
 
 // Firebase realtime multiplayer: authoritative transactions, one seat per browser session.
-function ludoErr(err){$('onlineStatus').textContent='تعذر الاتصال: '+String(err?.message||err);console.warn(err)}
-async function initOnline(){if(onlineDb)return onlineDb;await new Promise((resolve,reject)=>{if(window.firebase)return resolve();let n=0;function load(url){const sc=document.createElement('script');sc.src=url;sc.onload=()=>{if(++n===2)resolve()};sc.onerror=()=>reject(new Error('تعذر تحميل Firebase'));document.head.appendChild(sc)}load('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');load('https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js')});const cfg={apiKey:'AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I',authDomain:'basra-game-2995a.firebaseapp.com',databaseURL:'https://basra-game-2995a-default-rtdb.firebaseio.com',projectId:'basra-game-2995a',storageBucket:'basra-game-2995a.firebasestorage.app',messagingSenderId:'1024179389498',appId:'1:1024179389498:web:3ba98f053d49bfa1676103'};if(!firebase.apps.length)firebase.initializeApp(cfg);onlineDb=firebase.database();return onlineDb}
+function ludoErr(err){$('onlineStatus').textContent=(err?.code==='PERMISSION_DENIED'||err?.code==='permission-denied'?'صلاحيات Firebase تمنع الدخول للغرف. يحتاج صاحب المشروع مراجعة قواعد Realtime Database: ':'تعذر الاتصال: ')+String(err?.message||err);console.warn(err)}
+async function initOnline(){
+ if(onlineDb)return onlineDb;
+ const loadScript=(url)=>new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src=url;sc.onload=resolve;sc.onerror=()=>reject(Error('تعذّر تحميل خدمة الغرف. تحقق من الإنترنت'));document.head.appendChild(sc)});
+ if(!window.firebase?.initializeApp)await loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+ if(!window.firebase?.database)await loadScript('https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js');
+ const cfg={apiKey:'AIzaSyAc21tJsinRp3I-op4gtthSj9SiZmQOt3I',authDomain:'basra-game-2995a.firebaseapp.com',databaseURL:'https://basra-game-2995a-default-rtdb.firebaseio.com',projectId:'basra-game-2995a',storageBucket:'basra-game-2995a.firebasestorage.app',messagingSenderId:'1024179389498',appId:'1:1024179389498:web:3ba98f053d49bfa1676103'};
+ if(!firebase.apps.length)firebase.initializeApp(cfg);
+ onlineDb=firebase.database();
+ return onlineDb;
+}
 const roomKey=()=>Math.random().toString(36).slice(2,8).toUpperCase();
 function nickname(){return ($('onlineNickname').value||'لاعب القهوة').trim().slice(0,22)}
 function onlineSeats(s){return s?.players?Object.keys(s.players).length:0}
 function makeOnlineState(n){return {max:n,created:Date.now(),status:'waiting',players:{'0':{id:onlineSid,name:nickname(),avatar:myAvatar}},game:null,version:0}}
-async function createOnlineRoom(){try{const db=await initOnline(),n=Number(document.querySelector('#countChoice .selected').dataset.n);const code=roomKey();const ref=db.ref('ahwaLudoRooms/'+code);const res=await ref.transaction(old=>old?undefined:makeOnlineState(n),undefined,false);if(!res.committed)throw Error('الكود مش متاح، جرّب مرة أخرى');onlineHost=true;onlineSeat=0;onlineNames={0:nickname()};watchRoom(ref,code)}catch(e){ludoErr(e)}}
-async function joinOnlineRoom(){try{const db=await initOnline(),code=$('onlineRoomCode').value.toUpperCase().trim().replace(/[^A-Z0-9]/g,'');if(!code)throw Error('اكتب كود الغرفة');const ref=db.ref('ahwaLudoRooms/'+code);let chosen=-1;const result=await ref.transaction(s=>{if(!s||s.status!=='waiting')return;const existing=Object.entries(s.players||{}).find(([k,v])=>v.id===onlineSid);if(existing){chosen=+existing[0];return s}if(onlineSeats(s)>=s.max)return;for(let i=0;i<s.max;i++)if(!s.players[String(i)]){chosen=i;break}if(chosen<0)return;s.players[String(chosen)]={id:onlineSid,name:nickname(),avatar:myAvatar};s.version=(s.version||0)+1;return s},undefined,false);if(!result.committed||chosen<0)throw Error('الغرفة غير موجودة أو ممتلئة أو بدأت بالفعل');onlineHost=false;onlineSeat=chosen;watchRoom(ref,code)}catch(e){ludoErr(e)}}
+async function createOnlineRoom(){try{
+ $('onlineStatus').textContent='جاري إنشاء الغرفة...';
+ const db=await initOnline(),n=Number(document.querySelector('#countChoice .selected').dataset.n);
+ let code,ref,created=false;
+ for(let attempt=0;attempt<4&&!created;attempt++){
+   code=roomKey();ref=db.ref('ahwaLudoRooms/'+code);
+   const res=await ref.transaction(old=>old?undefined:makeOnlineState(n),undefined,false);
+   created=res.committed;
+ }
+ if(!created)throw Error('تعذّر اختيار كود جديد. حاول مرة أخرى');
+ $('onlineRoomCode').value=code;
+ onlineHost=true;onlineSeat=0;onlineNames={0:nickname()};watchRoom(ref,code);
+ const shareUrl=new URL(window.location.href);shareUrl.searchParams.set('room',code);
+ const box=$('onlineStatus');box.textContent='تم إنشاء الغرفة '+code+' — انسخ الكود أو رابط الدعوة: ';
+ const link=document.createElement('button');link.type='button';link.textContent='📋 نسخ رابط الدعوة';link.style='margin:4px;padding:6px 10px;border-radius:8px';link.onclick=async()=>{try{await navigator.clipboard.writeText(shareUrl.toString());link.textContent='✅ تم نسخ الرابط'}catch(e){prompt('انسخ رابط الدعوة:',shareUrl.toString())}};box.appendChild(link);
+ }catch(e){ludoErr(e)} }
+async function joinOnlineRoom(){try{
+ $('onlineStatus').textContent='جاري البحث عن الغرفة...';
+ const db=await initOnline(),code=$('onlineRoomCode').value.toUpperCase().trim().replace(/[^A-Z0-9]/g,'');
+ if(!code)throw Error('اكتب كود الغرفة الذي أرسله صاحب الغرفة');
+ const ref=db.ref('ahwaLudoRooms/'+code);
+ const initial=await ref.get();
+ if(!initial.exists())throw Error('الكود '+code+' غير موجود. لازم صاحب الغرفة يضغط إنشاء غرفة أولًا ويبعتلك الكود الجديد');
+ const state=initial.val();
+ if(state.status!=='waiting')throw Error('المباراة بدأت بالفعل. اطلب من صاحب الغرفة إنشاء غرفة جديدة');
+ if(onlineSeats(state)>=state.max&&!Object.values(state.players||{}).some(v=>v.id===onlineSid))throw Error('الغرفة اكتمل عدد لاعبيها');
+ let chosen=-1;
+ const result=await ref.transaction(s=>{
+  if(!s||s.status!=='waiting')return;
+  s.players=s.players||{};
+  const existing=Object.entries(s.players).find(([k,v])=>v.id===onlineSid);
+  if(existing){chosen=+existing[0];return s}
+  if(onlineSeats(s)>=s.max)return;
+  for(let i=0;i<s.max;i++)if(!s.players[String(i)]){chosen=i;break}
+  if(chosen<0)return;
+  s.players[String(chosen)]={id:onlineSid,name:nickname(),avatar:myAvatar};s.version=(s.version||0)+1;return s;
+ },undefined,false);
+ if(!result.committed||chosen<0)throw Error('تعذّر الانضمام. تأكد أن الغرفة ما زالت مفتوحة وغير ممتلئة');
+ onlineHost=false;onlineSeat=chosen;watchRoom(ref,code);
+ }catch(e){ludoErr(e)} }
+
 function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;return}if(s.status==='playing'&&s.game){g=s.game;active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');dice(g.die||1);render();$('onlineStatus').textContent=msg}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
 function makeFullOnlineGame(state){const n=state.max;const order=n===2?[0,2]:n===3?[0,1,2]:[0,1,2,3];const ids={};const names={};for(let i=0;i<n;i++){const p=order[i],person=state.players[String(i)];ids[p]=person?.avatar||'curly-man';names[p]=person?.name||'لاعب'}return {order,turn:0,phase:'roll',die:1,sixes:0,pieces:Array.from({length:4},()=>Array(4).fill(-1)),winners:[],round:1,captures:0,rolls:0,avatarIds:ids,playerNames:names}}
 function maybeStartRoom(s){if(s.status==='waiting'&&onlineSeats(s)===s.max){s.game=makeFullOnlineGame(s);s.status='playing';s.version=(s.version||0)+1}return s}
@@ -368,6 +416,7 @@ async function onlineMove(k){if(!g||g.phase!=='choose'||busy)return;busy=true;re
 // Permission for rolling and moving is enforced by Firebase transactions and room seats.
 const oldWatch=watchRoom;watchRoom=function(ref,code){oldWatch(ref,code);if(onlineHost){ref.on('value',snap=>{const v=snap.val();if(v?.status==='waiting'&&onlineSeats(v)===v.max)triggerRoomStart()})}};
 $('createRoom').onclick=createOnlineRoom;$('joinRoom').onclick=joinOnlineRoom;
+try{const invite=new URLSearchParams(location.search).get('room');if(invite){$('onlineRoomCode').value=invite.toUpperCase().replace(/[^A-Z0-9]/g,'');}}catch(e){}
 $('modeChoice').addEventListener('click',()=>{$('onlineBox').classList.toggle('show',document.querySelector('#modeChoice .selected')?.dataset.mode==='online');$('startBtn').style.display=document.querySelector('#modeChoice .selected')?.dataset.mode==='online'?'none':''});
 $('avatarBtnAhwa').onclick=()=>{const choices=AVATARS.map(a=>`<button class="avatar-pick ${a.id===myAvatar?'chosen':''}" data-avatar="${a.id}"><span class="ahwa-avatar ahwa-avatar-mini" style="background-position:${a.x}% ${a.y}%"></span>${a.name}</button>`).join('');const title=$('dialogTitleAhwa'),body=$('dialogBodyAhwa');title.textContent='اختار أفاتارك من صور الدومينو';body.innerHTML=`<div class="avatar-pick-grid">${choices}</div>`;$('ahwaDialog').classList.remove('hidden');body.querySelectorAll('[data-avatar]').forEach(btn=>btn.onclick=()=>{myAvatar=btn.dataset.avatar;localStorage.setItem('ahwa-ludo-avatar',myAvatar);body.querySelectorAll('.avatar-pick').forEach(b=>b.classList.toggle('chosen',b===btn));if(g)render()})};
 
