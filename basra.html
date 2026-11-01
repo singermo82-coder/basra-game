@@ -503,6 +503,22 @@ body.game-active #handCards .hand-card:active{transform:translateY(-12px) scale(
 /* Keep the hand clickable even while the room update is in flight. */
 #handCards .basra-card-sent { opacity:.22!important; transform:translateY(-22px) scale(.92)!important; pointer-events:none; }
 
+
+/* Mobile-friendly game scores and Basra celebration */
+.players-list .player-meta{display:flex!important;align-items:center;gap:6px;flex-wrap:wrap;font-size:clamp(12px,1.2vw,15px)!important;color:#fff3d4!important;line-height:1.7!important}
+.players-list .ahwa-score-pill{font-size:clamp(15px,1.4vw,19px)!important;font-weight:900!important;color:#fff3cf!important;background:#4f2d11;border:1px solid #e5b85d;border-radius:9px;padding:3px 10px;white-space:nowrap}
+.players-list .ahwa-hand-count{white-space:nowrap;color:#ead7b3}
+.players-list .ahwa-basra-count{font-size:clamp(13px,1.2vw,17px)!important;font-weight:900!important;color:#ffe5a1!important;background:#6d2b18;border:1px solid #ef9e43;border-radius:9px;padding:4px 9px;white-space:normal!important;line-height:1.5}
+.ahwa-basra-celebration{position:fixed;z-index:10000;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;background:transparent;opacity:0;transition:opacity .25s}
+.ahwa-basra-celebration.visible{opacity:1}
+.ahwa-basra-celebration-content{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 34px;border:2px solid #ffd175;border-radius:22px;background:linear-gradient(150deg,#693115ed,#22120eed);box-shadow:0 7px 45px #000a,0 0 30px #e2a64555;transform:scale(.72) rotate(-5deg);transition:transform .36s cubic-bezier(.2,1.6,.4,1);font-weight:900;color:#ffe8a5;text-shadow:0 2px 5px #0008}
+.ahwa-basra-celebration.visible .ahwa-basra-celebration-content{transform:scale(1) rotate(0)}
+.ahwa-basra-celebration-content strong{font-size:clamp(32px,9vw,70px);line-height:1.3}
+.ahwa-basra-celebration-content span{font-size:clamp(24px,6vw,38px);color:#fff}
+.ahwa-basra-celebration-content small{font-size:clamp(13px,3vw,19px)}
+.ahwa-basra-fire{font-size:clamp(26px,7vw,45px);animation:basraPop .55s ease-in-out both}
+@keyframes basraPop{50%{transform:scale(1.3) rotate(8deg)}}
+@media(prefers-reduced-motion:reduce){.ahwa-basra-celebration-content,.ahwa-basra-celebration{transition:none}.ahwa-basra-fire{animation:none}}
 </style>
 
 <style id="v73-fullscreen-chat">
@@ -2587,15 +2603,18 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       return search(0, target, []);
     }
 
-    // القانون المعدّل للكومي (7♦): إذا كان مجموع الأرض أكبر من 1، أو فيها صورة (J/Q/K)،
-    // يتصرف مثل الولد ويأخذ كل الورق، لكن الأكل عادي بلا بصرة. إذا كانت الأرض أُس/1 فقط،
-    // فلا يستخدم حركة المسح الخاصة، ويُعامل كرقم 7 عادي للمطابقة/المجموع.
+    // الكومي 7 كاروه يأكل كل الأرض مثل الولد، مهما كانت الأوراق الموجودة.
+    // يُحتسب بصرة فقط إذا كانت الأرض صورة واحدة، أو أوراقًا رقمية مجموعها <= 10 دون صور.
     function isKoumiSpecialCapture(table) {
+      return cardsArray(table).length > 0;
+    }
+    function isKoumiBasraFloor(table) {
       const floor = cardsArray(table);
       if (!floor.length) return false;
-      if (floor.some(card => numericValue(card) === null)) return true;
-      const total = floor.reduce((sum, card) => sum + numericValue(card), 0);
-      return total > 1;
+      if (floor.length === 1 && isPicture(floor[0])) return true;
+      if (floor.some(isPicture)) return false;
+      const values = floor.map(numericValue);
+      return values.every(value => value !== null) && values.reduce((sum, value) => sum + value, 0) <= 10;
     }
 
     function findCapturedIndices(played, table) {
@@ -2624,12 +2643,12 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       return [...picked].sort((a, b) => a - b);
     }
 
-    // البصرة العادية = 10 نقاط إذا أخذت الورقة كل الأرض وكان مجموع أرقام الأرض يساوي قيمة الورقة.
-    // بصرة الولد على ولد واحد تظل 30 نقطة. الكومي الذي يمسح الأرض لا يُسجل بصرة في القانون الجديد.
+    // البصرة العادية 10 نقاط، والولد أمام ولد واحد 30 نقطة.
+    // الكومي 7♦: صورة واحدة، أو كل الأرض أوراق رقمية مجموعها <= 10، = 10 نقاط.
     function isBasraCapture(played, tableBefore, capturedIndices) {
       const floor = cardsArray(tableBefore);
       if (!floor.length || !capturedIndices.length || capturedIndices.length !== floor.length) return false;
-      if (isSevenOfDiamonds(played)) return false;
+      if (isSevenOfDiamonds(played)) return isKoumiBasraFloor(floor);
       if (String(played.val) === 'J' && floor.length === 1 && String(floor[0].val) === 'J') return true;
       // المحافظة على البصرة عند مطابقة صورة واحدة أو ورقة رقمية واحدة.
       if (floor.length === 1 && floor[0].val === played.val) return true;
@@ -3099,6 +3118,11 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       } else {
         player.basraPoints = Math.max(0, Number(player.basraPoints));
       }
+      const candidate = player.hand[index];
+      // الكومي لا يجوز تنزيله على أرض فارغة إلا إن كان آخر ورقة في يد اللاعب.
+      if (isSevenOfDiamonds(candidate) && cardsArray(game.table).length === 0 && player.hand.length > 1) {
+        return { reason: 'koumi-empty-floor' };
+      }
       const played = player.hand.splice(index, 1)[0];
       game.table = cardsArray(game.table);
       const tableBefore = game.table.slice();
@@ -3143,6 +3167,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       let best = -Infinity;
       let bestIndices = [];
       hand.forEach((card, index) => {
+        if (isSevenOfDiamonds(card) && !cardsArray(table).length && hand.length > 1) return;
         const captured = findCapturedIndices(card, table);
         let score = 0;
         if (captured.length) {
@@ -3169,7 +3194,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         if (score > best) { best = score; bestIndices = [index]; }
         else if (Math.abs(score - best) < 0.0001) bestIndices.push(index);
       });
-      return bestIndices[Math.floor(Math.random() * bestIndices.length)] ?? 0;
+      return bestIndices.length ? bestIndices[Math.floor(Math.random() * bestIndices.length)] : -1;
     }
 
     function aiStateSignature(game, aiId) {
@@ -3193,6 +3218,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
             const aiPlayer = current.players && current.players[currentId];
             if (currentId !== aiId || !aiPlayer || aiPlayer.isAI !== true) return { reason: 'not-ai-turn' };
             const index = chooseAICard(current, aiId);
+            if (index < 0) return { reason: 'no-legal-move' };
             return applyCardToGame(current, aiId, index);
           }, 'ai-move');
           if (result.committed && result.result === 'played') {
@@ -3266,7 +3292,26 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       if (dbox) dbox.dataset.empty = deck === 0 ? 'true' : 'false';
     }
 
+    let lastBasraScores = new Map(), lastBasraRoom = '', basraScoresInitialized = false;
+    function showBasraCelebration(points, name) {
+      const el=document.createElement('div');el.className='ahwa-basra-celebration';
+      el.innerHTML=`<div class="ahwa-basra-celebration-content"><div class="ahwa-basra-fire">🔥✨</div><strong>بَصْرَة!</strong><span>+${points} نقطة</span><small></small></div>`;
+      el.querySelector('small').textContent=name;
+      document.body.appendChild(el);
+      requestAnimationFrame(()=>el.classList.add('visible'));
+      setTimeout(()=>{el.classList.remove('visible');setTimeout(()=>el.remove(),450)},1750);
+      playSfx('callout');
+    }
     function renderGame(game) {
+      if (lastBasraRoom !== myRoom) {lastBasraRoom=myRoom;lastBasraScores=new Map();basraScoresInitialized=false;}
+      const currentBasraScores=new Map(Object.entries(game.players||{}).map(([id,p])=>[id,Number(p.basraPoints)||0]));
+      if (basraScoresInitialized && !window.__basraOptimistic) {
+        for (const [id,points] of currentBasraScores) {
+          const previous=lastBasraScores.get(id);
+          if(previous!==undefined && points>previous) showBasraCelebration(points-previous,game.players[id]?.name||'اللاعب');
+        }
+      }
+      if (!window.__basraOptimistic) {lastBasraScores=currentBasraScores;basraScoresInitialized=true;}
       window.currentRenderedGame = game;
       const order = activeOrder(game);
       const myPlayer = game.players && game.players[myId];
@@ -3303,7 +3348,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         name.textContent = player.name + (id === myId ? ' (أنت)' : '');
         const meta = document.createElement('span');
         meta.className = 'player-meta';
-        meta.textContent = `${Number(player.score)||0} نقطة · ${cardsArray(player.hand).length} ورقة`;
+        meta.innerHTML = `<strong class="ahwa-score-pill">🏆 ${Number(player.score)||0} نقطة</strong> <span class="ahwa-hand-count">🃏 ${cardsArray(player.hand).length} ورقة</span>`;
         details.append(name, meta);
         if (player.isAI === true) { const tag = document.createElement('span'); tag.className = 'teacher-tag'; tag.textContent = 'المعلم'; details.appendChild(tag); }
         mainLine.append(avatar, details);
@@ -3318,7 +3363,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
         cardsArray(player.basraMarkers).forEach((marker, markerIndex) => {
           const markerCard = makeCardElement(marker, false); markerCard.classList.add('basra-marker-card'); markerCard.title = `بصرة رقم ${markerIndex + 1}`; markers.appendChild(markerCard);
         });
-        const basraCount = document.createElement('span'); basraCount.className = 'capture-count'; basraCount.textContent = `بصرات: ${Number(player.basras)||0} · ${Number(player.basraPoints ?? ((Number(player.basras)||0)*10))||0} نقطة`;
+        const basraCount = document.createElement('span'); basraCount.className = 'capture-count ahwa-basra-count'; basraCount.textContent = `🔥 ${Number(player.basras)||0} بصرة · +${Number(player.basraPoints ?? ((Number(player.basras)||0)*10))||0} نقطة`;
         captureRow.append(pile, count, basraCount, markers);
         item.append(mainLine, captureRow);
         document.getElementById('playersList').appendChild(item);
@@ -3754,6 +3799,12 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
     async function playCard(index, cardElement) {
       if (!myRoom || isBusy) return;
       // Immediate local feedback while the authoritative Firebase CAS completes.
+      const visible = window.currentRenderedGame;
+      const currentHand = cardsArray(visible?.players?.[myId]?.hand);
+      if (isSevenOfDiamonds(currentHand[index]) && cardsArray(visible?.table).length === 0 && currentHand.length > 1) {
+        showNotice('مينفعش تنزل الكومي على أرض فاضية إلا لو آخر ورقة في إيدك.', 'bad');
+        return;
+      }
       const clickedCard = cardElement || document.getElementById('handCards')?.children[index];
       const hand = document.getElementById('handCards');
       if (hand) hand.classList.add('basra-move-pending');
@@ -3794,6 +3845,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
             waiting: 'انتظر انضمام اللاعب الآخر.',
             'not-playing': 'لا يمكن لعب ورقة في هذه المرحلة.',
             'bad-card': 'الورقة لم تعد في يدك؛ حدّثت اللعبة، جرّب مرة أخرى.',
+            'koumi-empty-floor': 'مينفعش تنزل الكومي على أرض فاضية إلا لو آخر ورقة في إيدك.',
             conflict: 'تغيرت حالة اللعبة بالتزامن. حاول مرة أخرى.',
             'missing-room': 'الغرفة لم تعد موجودة على الخادم. أنشئ غرفة جديدة.'
           };
