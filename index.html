@@ -7,6 +7,14 @@
 @media(max-width:680px){.foot{height:auto;grid-template-columns:1fr;justify-items:center;gap:7px}.radio-group{justify-self:center}.credit{justify-self:center}.motto{display:none}}
 
 @media(min-width:1100px) and (min-height:820px){.card{height:calc((100dvh - 234px)/2);max-height:365px;min-height:275px}}@media(max-width:950px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr}.tea{display:none}.logo{height:95px}.card{height:330px}.foot{grid-template-columns:1fr auto;}.motto{display:none}}@media(max-width:520px){.shell{width:100%;padding:8px}.cards{gap:7px}.card{height:235px;border-radius:12px}.photo{height:65%}.body h2{font-size:14px}.play{font-size:10px;padding:3px}.state{font-size:8px}.hero{margin-bottom:7px}.logo{height:76px}.mark strong{font-size:30px}.cup{font-size:26px;width:43px;height:43px}.tagline{font-size:10px}.tagline:before,.tagline:after{width:20px}.credit strong{font-size:16px}.sound{font-size:9px}}
+
+/* V3: keep Mahlahy text fully inside its credit plaque */
+.foot{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr)}
+.foot .credit{box-sizing:border-box;justify-self:end;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-width:110px;max-width:100%;width:130px;min-height:42px;padding:3px 6px;overflow:hidden;white-space:nowrap}
+.foot .credit strong{font-size:clamp(15px,1.35vw,19px);line-height:1.1;white-space:nowrap;display:block;max-width:100%}
+.radio-status{max-width:130px}
+@media(max-width:800px){.foot{height:auto;min-height:53px;grid-template-columns:1fr auto}.foot .motto{display:none}.radio-group{min-width:0;flex-wrap:wrap;justify-content:center}.radio-status{max-width:100px}}
+@media(max-width:500px){.foot{grid-template-columns:1fr}.foot .credit{justify-self:center}}
 </style></head><body><main class="shell"><header class="hero"><div class="logo"><div class="cup">☕</div><div class="mark"><small>قعدة ولعب على أصوله</small><strong>ع القهوة</strong><span>ألعاب مصرية أونلاين</span></div></div><div class="tea"><small>نداء القهوة</small><strong>هات الشاي وتعالى</strong><span>القعدة لسه ما خلصتش!</span></div></header><div class="tagline">اختار لعبتك، جهّز الشاي، وابدأ القعدة</div><section class="cards" aria-label="الألعاب">
 <article class="card"><div class="photo"><img src="basra.webp" alt="لعبة البصرة"><span class="state">✦ اللعبة الأصلية</span></div><div class="body live"><h2>بصرة</h2><a class="play" href="basra.html">● العب الآن ←</a></div></article>
 <article class="card"><div class="photo"><img src="domino.webp" alt="لعبة الدومينو"><span class="state">لعبة متاحة</span></div><div class="body live"><h2>دومينو</h2><a class="play" href="domino.html">● العب الآن ←</a></div></article>
@@ -18,29 +26,53 @@
 <article class="card"><div class="photo"><img src="bank-el-haz.jpg" alt="بنك الحظ"><span class="state">قريبًا في القعدة</span></div><div class="body"><h2>بنك الحظ</h2><span class="play disabled">● قريبًا</span></div></article>
 </section><footer class="foot"><div class="motto">☕ قهوة بلدي... واللعب على أصوله!</div><div class="radio-group"><button class="sound" id="sound" type="button" aria-pressed="false">▶ تشغيل شعبي FM</button><input class="radio-volume" id="radioVolume" type="range" min="0" max="100" value="45" aria-label="مستوى صوت الراديو"><span class="radio-status" id="radioStatus" aria-live="polite">جاري تجهيز الإذاعة...</span></div><div class="credit">تصميم وتطوير<strong>ملاهي 🎮</strong></div></footer></main><audio id="ambience" src="https://radio95.radioca.st/" preload="none" playsinline></audio>
 <script>
+// Live broadcaster audio plays in this page only; never open a separate site/tab.
 const radio=document.getElementById('ambience');
 const toggle=document.getElementById('sound');
 const status=document.getElementById('radioStatus');
 const volume=document.getElementById('radioVolume');
-radio.volume=0.45;
-volume.addEventListener('input',()=>radio.volume=Number(volume.value)/100);
-function paint(){
- const playing=!radio.paused;
- toggle.textContent=playing?'⏸ إيقاف شعبي FM':'▶ تشغيل شعبي FM';
- toggle.setAttribute('aria-pressed',String(playing));
- if(playing) status.textContent='🔴 شعبي FM 95 مباشر';
+let stoppedByUser=false;
+let autoplayBlocked=false;
+let connecting=false;
+radio.volume=.45;
+radio.preload='auto';
+volume.addEventListener('input',()=>{radio.volume=Number(volume.value)/100});
+function updateRadio(){
+ const on=!radio.paused && !radio.ended;
+ toggle.textContent=on?'⏸ إيقاف شعبي FM':'▶ تشغيل شعبي FM';
+ toggle.setAttribute('aria-pressed',String(on));
+ if(on){status.textContent='🔴 شعبي FM مباشر';autoplayBlocked=false;}
 }
 async function startRadio(){
- status.textContent='جاري الاتصال بشعبي FM...';
- try{ await radio.play();paint(); }
- catch(err){status.textContent='اضغط تشغيل للاستماع';paint();}
+ if(connecting||stoppedByUser)return;
+ connecting=true;
+ status.textContent='جاري توصيل شعبي FM...';
+ try{
+   await radio.play();
+   updateRadio();
+ }catch(e){
+   autoplayBlocked=e.name==='NotAllowedError';
+   status.textContent=autoplayBlocked?'اضغط أي مكان للتشغيل':'تعذّر البث؛ اضغط لإعادة المحاولة';
+   updateRadio();
+ }finally{connecting=false;}
 }
+function clickPlay(){stoppedByUser=false;startRadio()}
 toggle.addEventListener('click',()=>{
- if(radio.paused) startRadio();
- else {radio.pause();status.textContent='تم إيقاف الإذاعة';paint();}
+ if(!radio.paused){stoppedByUser=true;radio.pause();status.textContent='متوقف';updateRadio();}
+ else clickPlay();
 });
-radio.addEventListener('playing',paint);
-radio.addEventListener('pause',paint);
-radio.addEventListener('error',()=>{status.textContent='تعذّر الاتصال بالبث، جرّب مرة أخرى';paint();});
-window.addEventListener('load',startRadio);
+// Browsers often restrict unmuted autoplay. Start on first user gesture if blocked.
+function gestureStart(e){
+ if(!radio.paused||stoppedByUser||!autoplayBlocked)return;
+ if(e.target===toggle)return;
+ clickPlay();
+}
+document.addEventListener('pointerdown',gestureStart,{passive:true});
+document.addEventListener('keydown',gestureStart);
+radio.addEventListener('playing',updateRadio);
+radio.addEventListener('pause',updateRadio);
+radio.addEventListener('error',()=>{
+ status.textContent='تعذّر تحميل البث حاليًا';updateRadio();
+});
+window.addEventListener('DOMContentLoaded',startRadio);
 </script></body></html>
