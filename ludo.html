@@ -368,7 +368,7 @@ async function createOnlineRoom(){try{
  const db=await initOnline(),n=Number(document.querySelector('#countChoice .selected').dataset.n);
  let code,ref,created=false;
  for(let attempt=0;attempt<4&&!created;attempt++){
-   code=roomKey();ref=db.ref('ahwaLudoRooms/'+code);
+   code=roomKey();ref=db.ref('games/ludo_'+code);
    const res=await ref.transaction(old=>old?undefined:makeOnlineState(n),undefined,false);
    created=res.committed;
  }
@@ -386,7 +386,7 @@ async function joinOnlineRoom(){
   const db=await initOnline();
   const code=$('onlineRoomCode').value.toUpperCase().trim().replace(/[^A-Z0-9]/g,'');
   if(!code)throw Error('اكتب كود الغرفة الذي أرسله صاحب الغرفة');
-  const ref=db.ref('ahwaLudoRooms/'+code);
+  const ref=db.ref('games/ludo_'+code);
   const initial=await ref.get();
   if(!initial.exists())throw Error('الغرفة '+code+' غير موجودة. صاحب الغرفة لازم ينشئ غرفة ويبعت الكود الجديد');
   const first=initial.val();
@@ -484,17 +484,11 @@ byId('startBtn').addEventListener('click',reflect);byId('resetBtn').addEventList
     aghani:{name:'إذاعة الأغاني 105.8',subtitle:'أصل الطرب المصري — ماسبيرو',embed:'https://www.maspero.eg/stream/13',official:'https://www.maspero.eg/stream/13',officialLabel:'فتح بث إذاعة الأغاني ↗'}
   };
   let currentStation='shaabi';
-  let ambienceEnabled=true;
-  let sfxEnabled=true;
-  const ambience=new Audio('./cafe-ambience.wav');
-  ambience.loop=true; ambience.volume=.34;
-  const cupFx=new Audio('./cup-saucer.wav'); cupFx.volume=.6;
-  const playFx=()=>{ if(!sfxEnabled) return; try{cupFx.currentTime=0; cupFx.play().catch(()=>{});}catch(e){} };
-  const startAmbience=()=>{ if(!ambienceEnabled) return; try{ ambience.play().catch(()=>{}); }catch(e){} };
-  document.addEventListener('click', startAmbience, {once:true});
-  const oldStart = byId('startBtn'); if(oldStart) oldStart.addEventListener('click', ()=>setTimeout(startAmbience,100));
-  document.querySelectorAll('button').forEach(b=>{ if(!b.dataset.nofx){ b.addEventListener('click',()=>setTimeout(playFx,0)); }});
-
+  // Cafe background ambience and cup/clinking sounds permanently removed.
+  let ambienceEnabled=false, sfxEnabled=false;
+  const ambience={play:()=>Promise.resolve(),pause:()=>{},set currentTime(v){}};
+  const playFx=()=>{};
+  const startAmbience=()=>{};
   function selectStation(key){
     currentStation=key;
     const st=STATIONS[key]; if(!st) return;
@@ -514,9 +508,8 @@ byId('startBtn').addEventListener('click',reflect);byId('resetBtn').addEventList
     byId('stopRadioBtn').onclick=stopRadio;
   }
   function openSound(){
-    openDlg('🔊 ضبط الصوت ومؤثرات القهوة', `<div class="switch-row"><div><label>أجواء القهوة</label><small>صوت القهوة الخلفي الهادئ</small></div><input type="checkbox" id="ambienceToggle" ${ambienceEnabled?'checked':''}></div><div class="switch-row"><div><label>مؤثرات القهوة</label><small>صوت الفناجين والتنبيهات الخفيفة</small></div><input type="checkbox" id="sfxToggle" ${sfxEnabled?'checked':''}></div><div class="switch-row"><div><label>محطة الراديو الافتراضية</label><small>هتظهر أول ما تفتح مشغل الراديو</small></div><select id="defaultStationSel" style="background:#120e0b;color:#fff;border:1px solid #d0a85b80;border-radius:10px;padding:8px;font:inherit">${Object.entries(STATIONS).map(([k,v])=>`<option value="${k}" ${currentStation===k?'selected':''}>${v.name}</option>`).join('')}</select></div><div class="radio-bottom"><button class="btn" id="testCupBtn">اختبار مؤثر القهوة</button><button class="btn gold" id="saveSoundPrefs">حفظ الإعدادات</button></div>`);
-    byId('testCupBtn').onclick=playFx;
-    byId('saveSoundPrefs').onclick=()=>{ ambienceEnabled=byId('ambienceToggle').checked; sfxEnabled=byId('sfxToggle').checked; currentStation=byId('defaultStationSel').value; if(ambienceEnabled) startAmbience(); else {ambience.pause(); ambience.currentTime=0;} const icon=byId('soundIconAhwa'); if(icon) icon.textContent=(ambienceEnabled||sfxEnabled)?'🔊':'🔇'; dlg.classList.add('hidden'); };
+    openDlg('🔊 إعدادات الراديو', `<div class="switch-row"><div><label>محطة الراديو الافتراضية</label><small>بدون أصوات القهوة أو الفناجين</small></div><select id="defaultStationSel" style="background:#120e0b;color:#fff;border:1px solid #d0a85b80;border-radius:10px;padding:8px;font:inherit">${Object.entries(STATIONS).map(([k,v])=>`<option value="${k}" ${currentStation===k?'selected':''}>${v.name}</option>`).join('')}</select></div><button class="btn gold" id="saveSoundPrefs">حفظ</button>`);
+    byId('saveSoundPrefs').onclick=()=>{currentStation=byId('defaultStationSel').value;dlg.classList.add('hidden');};
   }
 
   // override buttons to Ahwa behavior
