@@ -24,55 +24,64 @@
 <article class="card"><div class="photo"><img src="scro-new.jpg" alt="سكرو"><span class="state">قريبًا في القعدة</span></div><div class="body"><h2>سكرو</h2><span class="play disabled">● قريبًا</span></div></article>
 <article class="card"><div class="photo"><img src="uno-new.jpg" alt="أونو"><span class="state">قريبًا في القعدة</span></div><div class="body"><h2>أونو</h2><span class="play disabled">● قريبًا</span></div></article>
 <article class="card"><div class="photo"><img src="bank-el-haz.jpg" alt="بنك الحظ"><span class="state">قريبًا في القعدة</span></div><div class="body"><h2>بنك الحظ</h2><span class="play disabled">● قريبًا</span></div></article>
-</section><footer class="foot"><div class="motto">☕ قهوة بلدي... واللعب على أصوله!</div><div class="radio-group"><button class="sound" id="sound" type="button" aria-pressed="false">▶ تشغيل شعبي FM</button><input class="radio-volume" id="radioVolume" type="range" min="0" max="100" value="45" aria-label="مستوى صوت الراديو"><span class="radio-status" id="radioStatus" aria-live="polite">جاري تجهيز الإذاعة...</span></div><div class="credit">تصميم وتطوير<strong>ملاهي 🎮</strong></div></footer></main><audio id="ambience" src="https://radio95.radioca.st/" preload="none" playsinline></audio>
+</section><footer class="foot"><div class="motto">☕ قهوة بلدي... واللعب على أصوله!</div><div class="radio-group"><button class="sound" id="sound" type="button" aria-pressed="false">▶ تشغيل شعبي FM</button><input class="radio-volume" id="radioVolume" type="range" min="0" max="100" value="45" aria-label="مستوى صوت الراديو"><span class="radio-status" id="radioStatus" aria-live="polite">جاري تجهيز الإذاعة...</span></div><div class="credit">تصميم وتطوير<strong>ملاهي 🎮</strong></div></footer></main><audio id="ambience" preload="auto" playsinline></audio>
 <script>
-// Live broadcaster audio plays in this page only; never open a separate site/tab.
+// Direct broadcast: no iframe, popup or separate station page.
 const radio=document.getElementById('ambience');
 const toggle=document.getElementById('sound');
 const status=document.getElementById('radioStatus');
 const volume=document.getElementById('radioVolume');
-let stoppedByUser=false;
-let autoplayBlocked=false;
-let connecting=false;
-radio.volume=.45;
+// Two independently listed HTTPS routes to SHA3BY FM 95.
+const streams=['https://radio95.radioca.st/;','https://radio95.radioca.st/','https://radio95.radioca.st/stream'];
+let streamIndex=0,stoppedByUser=false, blocked=false, retrying=false;
+radio.volume=.65;
+volume.value=65;
 radio.preload='auto';
-volume.addEventListener('input',()=>{radio.volume=Number(volume.value)/100});
-function updateRadio(){
- const on=!radio.paused && !radio.ended;
- toggle.textContent=on?'⏸ إيقاف شعبي FM':'▶ تشغيل شعبي FM';
- toggle.setAttribute('aria-pressed',String(on));
- if(on){status.textContent='🔴 شعبي FM مباشر';autoplayBlocked=false;}
+volume.addEventListener('input',()=>radio.volume=Number(volume.value)/100);
+function ui(message){
+ const playing=!radio.paused && radio.readyState>=2;
+ toggle.textContent=playing?'⏸ إيقاف شعبي FM':'▶ تشغيل شعبي FM';
+ toggle.setAttribute('aria-pressed',String(playing));
+ if(message)status.textContent=message;
+ else if(playing)status.textContent='🔴 شعبي FM مباشر';
 }
-async function startRadio(){
- if(connecting||stoppedByUser)return;
- connecting=true;
- status.textContent='جاري توصيل شعبي FM...';
- try{
-   await radio.play();
-   updateRadio();
- }catch(e){
-   autoplayBlocked=e.name==='NotAllowedError';
-   status.textContent=autoplayBlocked?'اضغط أي مكان للتشغيل':'تعذّر البث؛ اضغط لإعادة المحاولة';
-   updateRadio();
- }finally{connecting=false;}
+function setStream(i){streamIndex=i;radio.src=streams[i];radio.load()}
+async function playRadio(userGesture=false){
+ if(stoppedByUser&&!userGesture)return;
+ if(userGesture)stoppedByUser=false;
+ if(!radio.currentSrc)setStream(streamIndex);
+ status.textContent='جاري الاتصال بإذاعة شعبي...';
+ try{await radio.play();blocked=false;ui('🔴 شعبي FM مباشر')}
+ catch(e){
+   if(e.name==='NotAllowedError'){
+     blocked=true;ui('🔊 اضغط تشغيل للسماح بالصوت في Chrome');return;
+   }
+   ui('تعذّر تشغيل البث، جاري تجربة رابط بديل');
+   fallback();
+ }
 }
-function clickPlay(){stoppedByUser=false;startRadio()}
+function fallback(){
+ if(stoppedByUser||retrying)return;
+ if(streamIndex+1>=streams.length){ui('تعذّر الاتصال بالإذاعة — اضغط لإعادة المحاولة');return}
+ retrying=true;
+ setStream(streamIndex+1);
+ retrying=false;
+ playRadio();
+}
 toggle.addEventListener('click',()=>{
- if(!radio.paused){stoppedByUser=true;radio.pause();status.textContent='متوقف';updateRadio();}
- else clickPlay();
+ if(!radio.paused){stoppedByUser=true;radio.pause();ui('الإذاعة متوقفة');}
+ else{streamIndex=0;setStream(0);playRadio(true)}
 });
-// Browsers often restrict unmuted autoplay. Start on first user gesture if blocked.
-function gestureStart(e){
- if(!radio.paused||stoppedByUser||!autoplayBlocked)return;
- if(e.target===toggle)return;
- clickPlay();
+// Autoplay with sound is browser-controlled; first interaction retries only if blocked.
+function onGesture(e){
+ if(!blocked||stoppedByUser||e.target===toggle)return;
+ blocked=false;playRadio(true);
 }
-document.addEventListener('pointerdown',gestureStart,{passive:true});
-document.addEventListener('keydown',gestureStart);
-radio.addEventListener('playing',updateRadio);
-radio.addEventListener('pause',updateRadio);
-radio.addEventListener('error',()=>{
- status.textContent='تعذّر تحميل البث حاليًا';updateRadio();
-});
-window.addEventListener('DOMContentLoaded',startRadio);
+document.addEventListener('pointerdown',onGesture,{passive:true});
+document.addEventListener('keydown',onGesture);
+radio.addEventListener('playing',()=>ui('🔴 شعبي FM مباشر'));
+radio.addEventListener('waiting',()=>ui('جاري تحميل الصوت...'));
+radio.addEventListener('error',fallback);
+radio.addEventListener('pause',()=>{if(stoppedByUser)ui('الإذاعة متوقفة')});
+window.addEventListener('DOMContentLoaded',()=>{setStream(0);playRadio()});
 </script></body></html>
