@@ -385,51 +385,82 @@ async function joinOnlineRoom(){
   status.textContent='جاري البحث عن الغرفة...';
   const db=await initOnline();
   const code=$('onlineRoomCode').value.toUpperCase().trim().replace(/[^A-Z0-9]/g,'');
-  if(!code)throw Error('اكتب كود الغرفة الذي أرسله صاحب الغرفة');
+  if(code.length!==6)throw Error('الكود لازم يكون 6 حروف وأرقام');
   const ref=db.ref('games/ludo_'+code);
-  const initial=await ref.get();
-  if(!initial.exists())throw Error('الغرفة '+code+' غير موجودة. صاحب الغرفة لازم ينشئ غرفة ويبعت الكود الجديد');
-  const first=initial.val();
-  if(first.status!=='waiting' && !Object.values(first.players||{}).some(p=>p.id===onlineSid))throw Error('المباراة بدأت بالفعل، اطلب كود غرفة جديدة');
-  if(onlineSeats(first)>=first.max && !Object.values(first.players||{}).some(p=>p.id===onlineSid))throw Error('الغرفة ممتلئة بالفعل');
-  let denial='';
-  const result=await ref.transaction(s=>{
-   if(!s){denial='الغرفة اتحذفت';return;}
-   s.players=s.players||{};
-   const prior=Object.entries(s.players).find(([seat,p])=>p.id===onlineSid);
-   if(prior)return s;
-   if(s.status!=='waiting'){denial='المباراة بدأت بالفعل';return;}
-   if(onlineSeats(s)>=s.max){denial='الغرفة ممتلئة';return;}
-   let seat=-1;
-   for(let i=0;i<s.max;i++)if(!s.players[String(i)]){seat=i;break;}
-   if(seat<0){denial='لا يوجد مكان متاح';return;}
-   s.players[String(seat)]={id:onlineSid,name:nickname(),avatar:myAvatar};
-   s.version=(s.version||0)+1;
-   // The last joining player starts the game, even if host disconnects.
-   if(onlineSeats(s)===s.max){s.game=makeFullOnlineGame(s);s.status='playing';s.version++;}
-   return s;
-  },undefined,false);
-  if(!result.committed)throw Error(denial||'لم ينجح تسجيل اللاعب. تأكد أن الغرفة مفتوحة ثم حاول مجددًا');
-  const saved=result.snapshot.val();
-  const found=Object.entries(saved?.players||{}).find(([seat,p])=>p.id===onlineSid);
-  if(!found)throw Error('لم يتم العثور على اللاعب بعد الحفظ. أعد المحاولة');
-  onlineHost=(Number(found[0])===0);onlineSeat=Number(found[0]);
+  let s=(await ref.once('value')).val();
+  if(!s)throw Error('الكود غير موجود. اطلب من صاحب الغرفة كودًا جديدًا');
+  if(s.status!=='waiting'&&!Object.values(s.players||{}).some(p=>p.id===onlineSid))throw Error('المباراة بدأت بالفعل');
+  const existing=Object.entries(s.players||{}).find(([seat,p])=>p?.id===onlineSid);
+  let seat=existing?Number(existing[0]):-1;
+  if(seat<0){
+   for(let attempts=0;attempts<Math.min(6,s.max+2);attempts++){
+    if(s.status!=='waiting')throw Error('المباراة بدأت قبل تسجيلك');
+    seat=Array.from({length:s.max},(_,i)=>i).find(i=>!s.players?.[String(i)]);
+    if(seat===undefined)throw Error('الغرفة ممتلئة');
+    const player={id:onlineSid,name:nickname(),avatar:myAvatar};
+    // Transaction on an EMPTY individual seat succeeds without a cached room.
+    const slot=ref.child('players').child(String(seat));
+    const result=await slot.transaction(value=>value===null?player:undefined,undefined,false);
+    const confirmed=(await slot.once('value')).val();
+    if(result.committed&&confirmed?.id===onlineSid)break;
+    s=(await ref.once('value')).val();
+    if(!s)throw Error('الغرفة مش متاحة على الخادم');
+    seat=-1;
+   }
+   if(seat<0)throw Error('تعذر تسجيل اللاعب؛ حاول مرة أخرى');
+  }
+  s=(await ref.once('value')).val();
+  if(s?.players?.[String(seat)]?.id!==onlineSid)throw Error('الخادم لم يؤكد تسجيلك في الغرفة');
+  onlineHost=seat===0;onlineSeat=seat;
   watchRoom(ref,code);
-  status.textContent='✅ تم دخول الغرفة '+code+' — '+onlineSeats(saved)+'/'+saved.max+' لاعبين';
+  status.textContent='✅ اتسجلت في الغرفة '+code+' — '+onlineSeats(s)+'/'+s.max+' لاعبين';
+  if(s.status==='waiting'&&onlineSeats(s)===s.max)await startFullRoom(ref);
  }catch(e){ludoErr(e)}
 }
 
-function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;return}if(s.status==='playing'&&s.game){g=s.game;active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');dice(g.die||1);render();$('onlineStatus').textContent=msg}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
+function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;if(onlineSeats(s)===s.max)startFullRoom(ref);return}if(s.status==='playing'&&s.game){g=s.game;active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');dice(g.die||1);render();$('onlineStatus').textContent=msg}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
 function makeFullOnlineGame(state){const n=state.max;const order=n===2?[0,2]:n===3?[0,1,2]:[0,1,2,3];const ids={};const names={};for(let i=0;i<n;i++){const p=order[i],person=state.players[String(i)];ids[p]=person?.avatar||'curly-man';names[p]=person?.name||'لاعب'}return {order,turn:0,phase:'roll',die:1,sixes:0,pieces:Array.from({length:4},()=>Array(4).fill(-1)),winners:[],round:1,captures:0,rolls:0,avatarIds:ids,playerNames:names}}
 function maybeStartRoom(s){if(s.status==='waiting'&&onlineSeats(s)===s.max){s.game=makeFullOnlineGame(s);s.status='playing';s.version=(s.version||0)+1}return s}
 // Host starts once all required seats are filled.
-async function triggerRoomStart(){if(!onlineHost||!onlineRef)return;await onlineRef.transaction(s=>{if(!s)return;s=maybeStartRoom(s);return s},undefined,false)}
-async function onlineTx(mutator){if(!onlineRef||!onlineReady)return;try{const res=await onlineRef.transaction(s=>{if(!s||s.status!=='playing'||!s.game)return;if(s.players?.[String(onlineSeat)]?.id!==onlineSid)return;const p=s.game.order[s.game.turn];const owner=s.game.order.indexOf(p);if(owner!==onlineSeat)return;if(!mutator(s.game,p))return;s.version=(s.version||0)+1;return s},undefined,false);if(!res.committed){console.debug('الحركة لم تُعتمد');return}}catch(e){console.warn(e);alert('تعذر إرسال الحركة: '+(e.message||e))}}
+let ludoStartingRoom=false;
+async function startFullRoom(ref){
+ if(ludoStartingRoom)return;
+ ludoStartingRoom=true;
+ try{
+  const s=(await ref.once('value')).val();
+  if(!s||s.status!=='waiting'||onlineSeats(s)!==s.max)return;
+  const game=makeFullOnlineGame(s);
+  // A server-acknowledged multi-path update; do not transaction() at the room root.
+  await ref.update({game,status:'playing',version:(s.version||0)+1,startedAt:Date.now()});
+ }catch(e){ludoErr(e)}finally{ludoStartingRoom=false}
+}
+async function triggerRoomStart(){if(!onlineRef)return;await startFullRoom(onlineRef)}
+async function onlineTx(mutator){
+ if(!onlineRef||!onlineReady)return;
+ try{
+  const serverState=(await onlineRef.once('value')).val();
+  if(!serverState||serverState.status!=='playing'||!serverState.game)throw Error('تعذر قراءة المباراة من الخادم');
+  const result=await onlineRef.transaction(current=>{
+   // Firebase can initially call a transaction with null before its local cache is filled.
+   // Use the freshly fetched state instead of falsely treating the room as deleted.
+   const s=current===null?JSON.parse(JSON.stringify(serverState)):current;
+   if(!s||s.status!=='playing'||!s.game)return;
+   if(s.players?.[String(onlineSeat)]?.id!==onlineSid)return;
+   const p=s.game.order[s.game.turn];
+   if(s.game.order.indexOf(p)!==onlineSeat)return;
+   if(!mutator(s.game,p))return;
+   s.version=(s.version||0)+1;
+   return s;
+  },undefined,false);
+  if(!result.committed)console.debug('الحركة لم تُعتمد؛ أعد المحاولة');
+ }catch(e){ludoErr(e)}
+}
+
 function onlineNext(gm){gm.turn=(gm.turn+1)%gm.order.length;gm.phase='roll';gm.die=1;gm.sixes=0;while(gm.winners.includes(gm.order[gm.turn]))gm.turn=(gm.turn+1)%gm.order.length}
 async function onlineRoll(){if(!g||g.phase!=='roll'||busy)return;busy=true;render();await onlineTx((gm,p)=>{if(gm.phase!=='roll')return false;const val=1+Math.floor(Math.random()*6);gm.rolls++;gm.die=val;gm.sixes=val===6?gm.sixes+1:0;if(gm.sixes===3){onlineNext(gm);return true}const avail=gm.pieces[p].map((st,k)=>({k,st,target:st===-1?(val===6?0:null):(st+val<=56?st+val:null)})).filter(v=>v.target!==null&&v.st!==56);if(avail.length){gm.phase='choose'}else if(val!==6)onlineNext(gm);return true});busy=false}
 async function onlineMove(k){if(!g||g.phase!=='choose'||busy)return;busy=true;render();await onlineTx((gm,p)=>{if(gm.phase!=='choose')return false;const st=gm.pieces[p][k],target=st===-1?(gm.die===6?0:null):(st+gm.die<=56?st+gm.die:null);if(target===null||st===56)return false;gm.pieces[p][k]=target;let captured=false;if(target>=0&&target<51){const pos=(START[p]+target)%52;if(!SAFE.has(pos))for(const q of gm.order){if(q===p)continue;for(let j=0;j<4;j++){const other=gm.pieces[q][j];if(other>=0&&other<=50&&(START[q]+other)%52===pos){gm.pieces[q][j]=-1;captured=true;gm.captures++}}}}if(gm.pieces[p].every(x=>x===56)){gm.winners.push(p);gm.phase='finished'}else if(gm.die===6||captured||target===56){gm.phase='roll';gm.die=1}else onlineNext(gm);return true});busy=false;render()}
 // Permission for rolling and moving is enforced by Firebase transactions and room seats.
-const oldWatch=watchRoom;watchRoom=function(ref,code){oldWatch(ref,code);if(onlineHost){ref.on('value',snap=>{const v=snap.val();if(v?.status==='waiting'&&onlineSeats(v)===v.max)triggerRoomStart()})}};
+// Room starts automatically after the final seat is registered and verified.
 $('createRoom').onclick=createOnlineRoom;$('joinRoom').onclick=joinOnlineRoom;
 try{const invite=new URLSearchParams(location.search).get('room');if(invite){$('onlineRoomCode').value=invite.toUpperCase().replace(/[^A-Z0-9]/g,'');}}catch(e){}
 $('modeChoice').addEventListener('click',()=>{$('onlineBox').classList.toggle('show',document.querySelector('#modeChoice .selected')?.dataset.mode==='online');$('startBtn').style.display=document.querySelector('#modeChoice .selected')?.dataset.mode==='online'?'none':''});
