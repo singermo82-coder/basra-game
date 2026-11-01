@@ -1,31 +1,59 @@
-/* راديو ع القهوة: مزاج رايق — shared across all game pages */
+/* ع القهوة — محطة مزاج رايق داخل واجهة الراديو الأصلية، بلا نوافذ عائمة */
 (()=>{'use strict';
-const FILE='ahwa-calm-radio.mp3', K='ahwa_mazag_radio_v1';
-let stored={};try{stored=JSON.parse(sessionStorage.getItem(K)||'{}')}catch{}
-const audio=document.createElement('audio');audio.src=FILE;audio.loop=true;audio.preload='metadata';audio.volume=Math.max(0,Math.min(1,Number(stored.volume??0.35)));
-audio.style.display='none';document.body.appendChild(audio);
-const style=document.createElement('style');style.textContent=`
-#mazag-fab{position:fixed;z-index:2147482000;bottom:18px;left:18px;background:linear-gradient(145deg,#d4a456,#86531f);color:#20150b;border:2px solid #f6d390;border-radius:40px;padding:11px 17px;font:700 14px Tahoma,Arial;box-shadow:0 6px 22px #0009;cursor:pointer}
-#mazag-panel{position:fixed;z-index:2147482001;bottom:74px;left:18px;width:min(345px,calc(100vw - 36px));padding:17px;background:linear-gradient(155deg,#332014,#150f0c);border:1px solid #dfb678;border-radius:18px;color:#f8e5c0;box-shadow:0 14px 50px #000b;font:14px Tahoma,Arial;text-align:right;direction:rtl}
-#mazag-panel[hidden]{display:none!important}#mazag-panel button{border:1px solid #d4aa72;border-radius:9px;background:#6a4527;color:#fff1db;padding:9px 12px;cursor:pointer;font:700 14px Tahoma,Arial}#mazag-panel input{width:100%;accent-color:#edb963}#mazag-status{font-size:12px;color:#dabf96;margin:9px 0}#mazag-row{display:flex;align-items:center;gap:10px;margin:12px 0}#mazag-panel h3{margin:0 0 8px;color:#f3c679;font-size:18px}
-#mazag-choice{background:linear-gradient(145deg,#79502b,#362212)!important;color:#ffe5ad!important;border:1px solid #d6a456!important;border-radius:10px!important;padding:9px!important;width:100%!important;margin:6px 0!important;cursor:pointer}
-@media(max-width:650px){#mazag-fab{bottom:10px;left:9px;padding:9px 12px;font-size:12px}#mazag-panel{left:9px;bottom:60px;width:min(345px,calc(100vw - 18px))}}`;
-document.head.appendChild(style);
-const fab=document.createElement('button');fab.id='mazag-fab';fab.type='button';fab.textContent='📻 مزاج رايق';fab.title='راديو ع القهوة — مزاج رايق';
-const panel=document.createElement('section');panel.id='mazag-panel';panel.hidden=true;panel.innerHTML=`<h3>📻 راديو ع القهوة | مزاج رايق</h3><div>🌙 موسيقى هادية — محطة مستقلة</div><div id="mazag-status" role="status">اضغط تشغيل للاستماع</div><div id="mazag-row"><button id="mazag-play" type="button">▶ تشغيل</button><button id="mazag-restart" type="button">↺ من الأول</button><button id="mazag-close" type="button" aria-label="إغلاق">✕</button></div><label for="mazag-volume">🔊 مستوى الصوت <span id="mazag-percent">35%</span></label><input id="mazag-volume" type="range" min="0" max="100" value="35"><div style="font-size:11px;margin-top:10px;opacity:.8">الموسيقى تتكرر تلقائيًا، ويمكنك التحكم فيها أثناء اللعب.</div>`;
-document.body.append(fab,panel);
-const $=(id)=>document.getElementById(id),status=$('mazag-status'),play=$('mazag-play'),vol=$('mazag-volume');vol.value=Math.round(audio.volume*100);$('mazag-percent').textContent=vol.value+'%';
-function save(){try{sessionStorage.setItem(K,JSON.stringify({volume:audio.volume,position:audio.currentTime||0,playing:!audio.paused}))}catch{}}
-function ui(){play.textContent=audio.paused?'▶ تشغيل':'⏸ إيقاف مؤقت';status.textContent=audio.error?'تعذّر العثور على ملف الموسيقى ahwa-calm-radio.mp3':audio.paused?'المحطة متوقفة — اضغط تشغيل':'♫ مزاج رايق شغّال دلوقتي';fab.textContent=audio.paused?'📻 مزاج رايق':'♫ مزاج رايق • شغال';save()}
-function show(){panel.hidden=!panel.hidden;if(!panel.hidden)ui()}
-async function start(){try{if(typeof window.stopRadio==='function')window.stopRadio()}catch{};try{await audio.play()}catch{status.textContent='اضغط تشغيل مرة ثانية، وتأكد أن ملف MP3 موجود بجوار صفحة اللعبة.'}ui()}
-function pause(){audio.pause();ui()}
-fab.addEventListener('click',show);$('mazag-close').addEventListener('click',()=>panel.hidden=true);play.addEventListener('click',()=>audio.paused?start():pause());$('mazag-restart').addEventListener('click',()=>{audio.currentTime=0;start()});vol.addEventListener('input',()=>{audio.volume=Number(vol.value)/100;$('mazag-percent').textContent=vol.value+'%';save()});
-audio.addEventListener('play',ui);audio.addEventListener('pause',ui);audio.addEventListener('error',ui);audio.addEventListener('loadedmetadata',()=>{if(Number.isFinite(stored.position)&&stored.position>0&&stored.position<audio.duration){audio.currentTime=stored.position}ui()},{once:true});
-setInterval(()=>{if(!audio.paused)save()},5000);
-function addStation(){const grids=document.querySelectorAll('.radio-station-grid');grids.forEach(grid=>{if(grid.querySelector('#mazag-choice'))return;const btn=document.createElement('button');btn.id='mazag-choice';btn.type='button';btn.innerHTML='<strong>🌙 مزاج رايق — إذاعتنا الخاصة</strong><small style="display:block">موسيقى هادية • تسجيلك الخاص</small>';btn.addEventListener('click',()=>{panel.hidden=false;start();const modal=grid.closest('.overlay');if(modal){/* keep modal for station selection */}});grid.prepend(btn)})}
-addStation();
-// Resuming automatically across pages is browser-dependent; a user click guarantees playback.
-if(stored.playing){fab.textContent='📻 مزاج رايق • اضغط للاستكمال';fab.addEventListener('click',()=>{if(stored.playing&&audio.paused)status.textContent='اضغط تشغيل لاستكمال الموسيقى'}, {once:true})}
-ui();
+const FILE='./ahwa-calm-radio.mp3', KEY='ahwa_mazag_settings_v3';
+let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch{}
+const audio=document.createElement('audio');audio.src=FILE;audio.loop=true;audio.preload='metadata';audio.volume=typeof saved.volume==='number'?Math.max(0,Math.min(1,saved.volume)):.45;document.body.appendChild(audio);
+const css=document.createElement('style');css.textContent=`
+.mazag-radio-button{background:linear-gradient(135deg,#715020,#302012)!important;border:2px solid #e5bf74!important;color:#ffe4a0!important;cursor:pointer}
+.mazag-radio-player{direction:rtl;text-align:right;display:none;position:relative;padding:22px;margin:8px 0;background:radial-gradient(circle at 50% 0%,#52331e,#170e09 75%);border:1px solid #d8b077;border-radius:16px;color:#ffe4ac;min-height:180px}
+.mazag-radio-player.active{display:block}.mazag-radio-player h3{margin:0 0 9px;font-size:21px;color:#ffd88b}.mazag-radio-player p{font-size:13px;line-height:1.7;color:#e6c99a;margin:7px 0 13px}
+.mazag-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.mazag-controls button{background:#96632d;border:1px solid #f7d38b;border-radius:12px;padding:12px 20px;color:white;cursor:pointer;font-weight:bold}.mazag-controls input{width:min(190px,100%);accent-color:#e5b86e}.mazag-radio-player .mazag-msg{font-size:12px;color:#ffdc9b;display:block;margin-top:13px}
+.mazag-standalone-open{position:fixed;z-index:2000;bottom:12px;right:12px;padding:12px 18px;border:1px solid #e8b76b;background:#301e13;color:#ffe3a5;border-radius:22px;font-weight:bold;cursor:pointer}
+.mazag-full-overlay{display:none;position:fixed;inset:0;z-index:29999;background:#000b;align-items:center;justify-content:center;padding:20px}.mazag-full-overlay.show{display:flex}.mazag-full-card{width:min(700px,95vw);max-height:90vh;overflow:auto;background:#25150e;color:#ffe4ad;border:2px solid #c99b56;border-radius:20px;padding:24px;direction:rtl}.mazag-full-card>button{float:left;background:#4f2a18;color:white;border:1px solid #b98b48;border-radius:8px;padding:10px 15px;cursor:pointer}
+`;document.head.appendChild(css);
+function save(){try{localStorage.setItem(KEY,JSON.stringify({volume:audio.volume,playing:!audio.paused,position:audio.currentTime||0}))}catch{}}
+function player(){const wrap=document.createElement('div');wrap.className='mazag-radio-player';wrap.innerHTML=`<h3>🌙 راديو ع القهوة | مزاج رايق</h3><p>موسيقى مصرية هادية، محطة خاصة ضمن راديو القهوة.</p><div class="mazag-controls"><button class="mazag-toggle" type="button">▶ تشغيل المحطة</button><label>🔊 الصوت <input class="mazag-vol" type="range" min="0" max="100" value="${Math.round(audio.volume*100)}"></label><span class="mazag-percent">${Math.round(audio.volume*100)}%</span></div><span class="mazag-msg" role="status">اضغط تشغيل لسماع المحطة</span>`;
+const btn=wrap.querySelector('.mazag-toggle'),status=wrap.querySelector('.mazag-msg'),vol=wrap.querySelector('.mazag-vol');
+btn.onclick=()=>audio.paused?audio.play().catch(()=>{status.textContent='تعذر التشغيل: تأكد من فتح الموقع بعد رفع ملف الصوت.'}):audio.pause();vol.oninput=()=>{audio.volume=Number(vol.value)/100;document.querySelectorAll('.mazag-vol').forEach(v=>v.value=vol.value);update()};
+function update(){btn.textContent=audio.paused?'▶ تشغيل المحطة':'⏸ إيقاف مؤقت';if(audio.error){status.textContent='⚠️ ملف الصوت غير موجود: ahwa-calm-radio.mp3';}else{status.textContent=audio.paused?'المحطة جاهزة — اضغط تشغيل':'♫ محطة مزاج رايق شغّالة الآن';}wrap.querySelector('.mazag-percent').textContent=Math.round(audio.volume*100)+'%';save()}
+audio.addEventListener('play',update);audio.addEventListener('pause',update);audio.addEventListener('error',update);update();return wrap;}
+function activate(wrap,grid){document.querySelectorAll('.mazag-radio-player').forEach(p=>p.classList.toggle('active',p===wrap));grid?.querySelectorAll('.radio-station').forEach(b=>b.classList.toggle('active',b.dataset.station==='mazag'));const label=document.getElementById('radioNowLabel');if(label)label.textContent='📻 مزاج رايق — إذاعتنا الخاصة';const hint=document.getElementById('radioNowHint');if(hint)hint.textContent='موسيقى هادية • تشغيل محلي من ملفات المنصة';const link=document.getElementById('radioOfficialLink');if(link)link.style.display='none';const frame=document.getElementById('radioFrame');if(frame)frame.src='about:blank';const placeholder=document.getElementById('radioFramePlaceholder');if(placeholder)placeholder.classList.add('hidden');audio.play().catch(()=>{});}
+const grids=[...document.querySelectorAll('.radio-station-grid')];
+if(grids.length){
+  const grid=grids[0];
+  const btn=document.createElement('button');
+  btn.className='radio-station mazag-radio-button';
+  btn.dataset.station='mazag';btn.type='button';
+  btn.innerHTML='<span>🌙 محطة خاصة</span><strong>مزاج رايق</strong><small>موسيقى مصرية هادية</small>';
+  grid.prepend(btn);
+  const wrap=player();
+  const frameWrap=document.querySelector('.radio-frame-wrap');
+  if(frameWrap){
+    frameWrap.parentNode.insertBefore(wrap,frameWrap);
+    btn.onclick=()=>{activate(wrap,grid);frameWrap.style.display='none'};
+    const oldSelect=window.selectRadioStation;
+    if(typeof oldSelect==='function')window.selectRadioStation=function(...args){
+      audio.pause();wrap.classList.remove('active');frameWrap.style.display='';
+      const link=document.getElementById('radioOfficialLink');if(link)link.style.display='';
+      return oldSelect.apply(this,args);
+    };
+    const oldStop=window.stopRadio;
+    if(typeof oldStop==='function')window.stopRadio=function(...args){
+      audio.pause();wrap.classList.remove('active');frameWrap.style.display='';
+      return oldStop.apply(this,args);
+    };
+  } else {
+    grid.after(wrap);
+    btn.onclick=()=>activate(wrap,grid);
+  }
+}else{
+  const launch=document.createElement('button');launch.type='button';launch.className='mazag-standalone-open';launch.textContent='📻 راديو القهوة';
+  const overlay=document.createElement('section');overlay.className='mazag-full-overlay';
+  overlay.innerHTML='<div class="mazag-full-card"><button type="button" aria-label="إغلاق">✕</button><h2>📻 راديو ع القهوة</h2></div>';
+  const wrap=player();wrap.classList.add('active');overlay.querySelector('.mazag-full-card').append(wrap);
+  overlay.querySelector('button').onclick=()=>overlay.classList.remove('show');
+  launch.onclick=()=>overlay.classList.add('show');document.body.append(launch,overlay);
+}
+// حفظ التفضيل، وعدم إعادة التشغيل تلقائيًا بسبب سياسات المتصفحات
+if(saved.position>0)audio.addEventListener('loadedmetadata',()=>{if(saved.position<audio.duration)audio.currentTime=saved.position},{once:true});window.addEventListener('pagehide',save);
 })();
