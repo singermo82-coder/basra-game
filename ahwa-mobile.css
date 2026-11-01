@@ -1,0 +1,24 @@
+/* Ahwa mobile-app layer: avoids changing game logic */
+:root{--ahwa-tap:46px}
+html{ -webkit-text-size-adjust:100%;overscroll-behavior-y:contain }
+body{ -webkit-tap-highlight-color:transparent }
+button, a, [role="button"] {touch-action:manipulation}
+.ahwa-app-tools{position:fixed;z-index:2147483000;left:max(10px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-start;gap:7px;direction:rtl;pointer-events:none}
+.ahwa-app-tools>*{pointer-events:auto}
+.ahwa-app-button{min-width:46px;min-height:46px;padding:9px 12px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #ffdf94;border-radius:14px;background:linear-gradient(145deg,#61371d,#1b100b);color:#ffe3a4;font:800 14px Tahoma,Arial,sans-serif;box-shadow:0 5px 18px #000b;cursor:pointer;white-space:nowrap}
+.ahwa-app-button:focus-visible{outline:3px solid white;outline-offset:3px}
+.ahwa-app-tools .ahwa-install{display:none}
+.ahwa-app-tools .ahwa-install.available{display:flex}
+.ahwa-app-message{display:none;border:1px solid #e6bd72;border-radius:12px;color:#fff2ca;background:#25160ef5;padding:9px 12px;font:600 12px Tahoma,Arial,sans-serif;max-width:min(280px,85vw);line-height:1.65}
+.ahwa-app-message.visible{display:block}
+@media (max-width:800px){
+ html,body{max-width:100%;min-height:100%;}
+ button,select,input:not([type=range]),a[role=button]{min-height:40px}
+ .ahwa-app-tools{left:max(7px,env(safe-area-inset-left));bottom:max(7px,env(safe-area-inset-bottom))}
+ .ahwa-app-button{min-width:48px;min-height:48px;font-size:13px;padding:8px 10px}
+ body.ahwa-game-page{padding-bottom:env(safe-area-inset-bottom)}
+ body.ahwa-game-page .ahwa-app-tools{opacity:.97}
+}
+@media (display-mode:standalone){.ahwa-app-tools .ahwa-install{display:none!important}}
+
+@media (max-width:800px){body.ahwa-game-page button{font-size:max(12px,1em)}body.ahwa-game-page input,body.ahwa-game-page select{font-size:max(14px,1em)}}
