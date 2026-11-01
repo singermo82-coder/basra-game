@@ -403,21 +403,49 @@ function captureMoment(name){
  window.setTimeout(()=>overlay.remove(),1300);
 }
 function render(){if(!g)return;syncVisibleDice();const selected=current(),allowed=(g.phase==='choose'&&!busy&&(mode!=='online'||g.order.indexOf(selected)===onlineSeat))?moves(selected,g.die):[],ls=new Set(allowed.map(m=>m.k));$('players').innerHTML=g.order.map((p,i)=>{const c=COLORS[p],mine=(mode==='online'?g.order.indexOf(p)===onlineSeat:p===0),finished=g.winners.includes(p);const progress=g.pieces[p].filter(x=>x===56).length;return `<div class="player ${selected===p&&!finished?'active':''} ${finished?'finished':''}" style="--player-color:${c.hex}"><div class="ahwa-avatar" style="background-position:${avatarFor(p).x}% ${avatarFor(p).y}%" title="${avatarFor(p).name}"></div><div><div class="pname">${mode==='cpu'?(mine?'أنت':'المعلم شلبي'):mode==='online'?(g.playerNames?.[p]||('اللاعب '+(i+1))):'اللاعب '+(i+1)} ${finished?'🏆':''}</div><div class="pmeta">${c.name} · ${isCpu(p)?'كمبيوتر':mode==='online'?'أونلاين':'لاعب'} · ${progress}/4 في البيت</div></div><div class="pcount">${g.pieces[p].filter(x=>x>=0&&x<56).length}●</div></div>`}).join('');
-let html='';for(let i of g.order)g.pieces[i].forEach((st,k)=>{
- const [r,c]=loc(i,st,k);
- let overlap=0;
- if(st>=0&&st<51){for(let j=0;j<k;j++)if(g.pieces[i][j]===st)overlap++}
- const ox=overlap?((overlap%3)-1)*.12:0,oy=overlap?Math.floor(overlap/3)*.12:0;
- const x=(c+ox)*50,y=(r+oy)*50,color=COLORS[i].hex;
- const clickable=selected===i&&ls.has(k);
- // SVG pieces and base circles share the *same 750x750 coordinate space*.
- html+=`<g class="ludo-svg-piece ${clickable?'canmove':''}" data-p="${i}" data-k="${k}" role="button" tabindex="${clickable?'0':'-1'}" aria-label="قطعة ${COLORS[i].name} ${k+1}" transform="translate(${x} ${y})" style="${clickable?'cursor:pointer':'cursor:default'}">
- <circle r="19" fill="${color}" stroke="#fff4df" stroke-width="3"/>
- <circle r="13" fill="${color}" stroke="#3b240b66" stroke-width="1.4"/>
- <ellipse cx="-5" cy="-6" rx="7" ry="5" fill="#ffffffb5"/>
- ${clickable?'<circle r="23" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4"/>':''}
+// Group pieces by player and actual board square. A stack is a single clickable
+// surface but retains the underlying pieces' separate game-state entries.
+const stacks=new Map();
+for(const i of g.order){
+ for(let k=0;k<g.pieces[i].length;k++){
+  const st=g.pieces[i][k], pos=loc(i,st,k);
+  const key=st===-1||st===56?`single:${i}:${k}`:`square:${i}:${pos[0].toFixed(4)}:${pos[1].toFixed(4)}`;
+  if(!stacks.has(key))stacks.set(key,{i,st,pos,pieces:[]});
+  stacks.get(key).pieces.push(k);
+ }
+}
+// On protected squares different teams can share a square; show both visibly.
+const squareColors=new Map();
+for(const stack of stacks.values()){
+ if(stack.st<0||stack.st>=56)continue;
+ const key=stack.pos.map(v=>v.toFixed(4)).join(':');
+ if(!squareColors.has(key))squareColors.set(key,[]);
+ squareColors.get(key).push(stack);
+}
+let html='';
+for(const stack of stacks.values()){
+ const {i,st,pos,pieces}=stack;
+ const activePieces=pieces.filter(k=>selected===i&&ls.has(k));
+ const clickable=activePieces.length>0;
+ const k=clickable?activePieces[0]:pieces[0];
+ let [r,c]=pos;
+ if(st>=0&&st<56){
+  const shares=squareColors.get(pos.map(v=>v.toFixed(4)).join(':'))||[];
+  if(shares.length>1){
+   const idx=shares.indexOf(stack),angle=2*Math.PI*idx/shares.length;
+   c+=Math.cos(angle)*.16;r+=Math.sin(angle)*.16;
+  }
+ }
+ const color=COLORS[i].hex,count=pieces.length;
+ const label=count>1?`${count} قطع ${COLORS[i].name} فوق بعضها`:`قطعة ${COLORS[i].name} ${k+1}`;
+ const x=c*50,y=r*50;
+ html+=`<g class="ludo-svg-piece ${clickable?'canmove':''} ${count>1?'piece-stack':''}" data-p="${i}" data-k="${k}" role="button" tabindex="${clickable?'0':'-1'}" aria-label="${label}" transform="translate(${x} ${y})" style="${clickable?'cursor:pointer':'cursor:default'}">
+ ${count>1?`<circle cy="3" r="19" fill="${color}" stroke="#302014" stroke-width="3"/><circle cy="-2" r="19" fill="${color}" stroke="#fff1cf" stroke-width="3"/><circle cy="-5" r="13" fill="${color}" stroke="#25120877" stroke-width="1.5"/>`:`<circle r="19" fill="${color}" stroke="#fff4df" stroke-width="3"/><circle r="13" fill="${color}" stroke="#3b240b66" stroke-width="1.4"/>`}
+ <ellipse cx="-5" cy="${count>1?-10:-6}" rx="7" ry="5" fill="#ffffffb5"/>
+ ${count>1?`<circle cx="15" cy="-16" r="11" fill="#26150d" stroke="#ffe1a0" stroke-width="2"/><text x="15" y="-12" text-anchor="middle" font-size="13" font-weight="900" fill="#fff4d0">${count}</text>`:''}
+ ${clickable?'<circle r="25" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4"/>':''}
  </g>`;
-});
+}
 $('svgTokens').innerHTML=html;const playerCountTag=$('onlinePlayerCount');if(playerCountTag)playerCountTag.textContent=mode==='online'?'('+g.order.length+' لاعبين)':'';
 $('svgTokens').querySelectorAll('.ludo-svg-piece.canmove').forEach(el=>{
  el.addEventListener('click',()=>playMove(+el.dataset.k));
@@ -509,7 +537,7 @@ async function joinOnlineRoom(){
  }catch(e){ludoErr(e)}
 }
 
-function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;lastShownOnlineRoll=0;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;if(onlineSeats(s)===s.max)startFullRoom(ref);return}if(s.status==='playing'&&s.game){try{g=normalizeOnlineGame(s.game);if(!g)throw Error('بيانات المباراة غير مكتملة');active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');if(g.captures>lastShownOnlineCapture){if(lastShownOnlineCapture>=0)captureMoment('اتاكلت قطعة!');lastShownOnlineCapture=g.captures;}if(g.rolls>lastShownOnlineRoll){lastShownOnlineRoll=g.rolls;dice(g.lastDie||g.die||1);visualDiceThrow(g.lastDie||g.die||1,true)}else dice(g.lastDie||g.die||1);render();$('turnBannerAhwa').textContent='🎲 '+(g.playerNames?.[g.order[g.turn]]||'اللاعب الحالي')+' — الدور الحالي';$('onlineStatus').textContent=msg;}catch(err){console.error('Online render:',err);$('onlineStatus').textContent='تعذر عرض المباراة: '+err.message;}}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
+function watchRoom(ref,code){if(onlineRef)onlineRef.off();onlineRef=ref;onlineRoom=code;mode='online';onlineReady=false;lastShownOnlineRoll=0;ref.on('value',snap=>{const s=snap.val();if(!s){$('onlineStatus').textContent='الغرفة اتقفلت';return}onlineNames={};Object.entries(s.players||{}).forEach(([seat,p])=>onlineNames[seat]=p.name);let msg=`كود الغرفة: ${code} · اللاعبين ${onlineSeats(s)}/${s.max}`;if(s.status==='waiting'){msg+=' · مستنيين باقي اللاعبين';if(onlineHost)msg+=' · تبدأ المباراة تلقائيًا عند اكتمال العدد';$('onlineStatus').textContent=msg;if(onlineSeats(s)===s.max)startFullRoom(ref);return}if(s.status==='playing'&&s.game){try{g=normalizeOnlineGame(s.game);if(!g)throw Error('بيانات المباراة غير مكتملة');active=g.order;onlineReady=true;busy=false;turnSerial++;$('setup').classList.add('hidden');$('winOverlay').classList.add('hidden');if(g.captures>lastShownOnlineCapture){if(lastShownOnlineCapture>=0)captureMoment('اتاكلت قطعة!');lastShownOnlineCapture=g.captures;}if(g.rolls>lastShownOnlineRoll){lastShownOnlineRoll=g.rolls;dice(g.lastDie||g.die||1);visualDiceThrow(g.lastDie||g.die||1,true)}else dice(g.lastDie||g.die||1);render();$('turnBannerAhwa').textContent='🎲 '+(g.playerNames?.[g.order[g.turn]]||'اللاعب الحالي')+' — '+(g.turn===onlineSeat?'دورك الآن':'انتظر دوره');$('onlineStatus').textContent=msg;}catch(err){console.error('Online render:',err);$('onlineStatus').textContent='تعذر عرض المباراة: '+err.message;}}} ,ludoErr);$('onlineStatus').textContent='جاري متابعة الغرفة '+code}
 function makeFullOnlineGame(state){const n=state.max;const order=n===2?[0,2]:n===3?[0,1,2]:[0,1,2,3];const ids={};const names={};for(let i=0;i<n;i++){const p=order[i],person=state.players[String(i)];ids[p]=person?.avatar||'curly-man';names[p]=person?.name||'لاعب'}return {order,turn:0,phase:'roll',die:1,lastDie:1,sixes:0,pieces:Array.from({length:4},()=>Array(4).fill(-1)),winners:[],round:1,captures:0,rolls:0,avatarIds:ids,playerNames:names}}
 function maybeStartRoom(s){if(s.status==='waiting'&&onlineSeats(s)===s.max){s.game=makeFullOnlineGame(s);s.status='playing';s.version=(s.version||0)+1}return s}
 // Host starts once all required seats are filled.
@@ -527,31 +555,55 @@ async function startFullRoom(ref){
 }
 async function triggerRoomStart(){if(!onlineRef)return;await startFullRoom(onlineRef)}
 async function onlineTx(mutator){
- if(!onlineRef||!onlineReady)return;
- try{
-  const serverState=(await onlineRef.once('value')).val();
-  if(!serverState||serverState.status!=='playing'||!serverState.game)throw Error('تعذر قراءة المباراة من الخادم');
-  const result=await onlineRef.transaction(current=>{
-   // Firebase can initially call a transaction with null before its local cache is filled.
-   // Use the freshly fetched state instead of falsely treating the room as deleted.
-   const s=current===null?JSON.parse(JSON.stringify(serverState)):current;
-   if(!s||s.status!=='playing'||!s.game)return;
-   s.game=normalizeOnlineGame(s.game);
-   if(!s.game)return;
-   if(s.players?.[String(onlineSeat)]?.id!==onlineSid)return;
-   const p=s.game.order[s.game.turn];
-   if(s.game.order.indexOf(p)!==onlineSeat)return;
-   if(!mutator(s.game,p))return;
-   s.version=(s.version||0)+1;
-   return s;
-  },undefined,false);
-  if(!result.committed)console.debug('الحركة لم تُعتمد؛ أعد المحاولة');
- }catch(e){ludoErr(e)}
+ if(!onlineRef||!onlineReady)throw Error('الاتصال بالغرفة غير جاهز');
+ const serverState=(await onlineRef.once('value')).val();
+ if(!serverState||serverState.status!=='playing'||!serverState.game)throw Error('تعذر قراءة المباراة من الخادم');
+ let rejection='الحركة لم تُقبل';
+ const result=await onlineRef.transaction(current=>{
+  // Wait for actual server state: do not write a stale copy after a null local read.
+  if(!current){rejection='جاري تحديث بيانات الغرفة؛ حاول مرة أخرى';return;}
+  if(current.status!=='playing'||!current.game){rejection='المباراة غير نشطة';return;}
+  current.game=normalizeOnlineGame(current.game);
+  if(!current.game){rejection='بيانات المباراة غير مكتملة';return;}
+  if(current.players?.[String(onlineSeat)]?.id!==onlineSid){rejection='هذا الجهاز غير مسجل بصاحب هذا الدور؛ أعد الانضمام بالغرفة';return;}
+  const p=current.game.order[current.game.turn];
+  if(current.game.order.indexOf(p)!==onlineSeat){rejection='مش دورك حاليًا؛ انتظر اللاعب الآخر';return;}
+  if(!mutator(current.game,p)){rejection='الحركة غير قانونية أو تغيرت حالة الزهر';return;}
+  current.version=(current.version||0)+1;
+  return current;
+ },undefined,false);
+ if(!result.committed)throw Error(rejection);
+ return result.snapshot.val();
 }
 
 function onlineNext(gm){gm.turn=(gm.turn+1)%gm.order.length;gm.phase='roll';gm.die=1;gm.sixes=0;while(gm.winners.includes(gm.order[gm.turn]))gm.turn=(gm.turn+1)%gm.order.length}
-async function onlineRoll(){if(!g||g.phase!=='roll'||busy)return;busy=true;render();await onlineTx((gm,p)=>{if(gm.phase!=='roll')return false;const val=1+Math.floor(Math.random()*6);gm.rolls++;gm.die=val;gm.lastDie=val;gm.sixes=val===6?gm.sixes+1:0;if(gm.sixes===3){onlineNext(gm);return true}const avail=gm.pieces[p].map((st,k)=>({k,st,target:st===-1?(val===6?0:null):(st+val<=56?st+val:null)})).filter(v=>v.target!==null&&v.st!==56);if(avail.length){gm.phase='choose'}else if(val!==6)onlineNext(gm);return true});busy=false}
-async function onlineMove(k){if(!g||g.phase!=='choose'||busy)return;busy=true;render();await onlineTx((gm,p)=>{if(gm.phase!=='choose')return false;const st=gm.pieces[p][k],target=st===-1?(gm.die===6?0:null):(st+gm.die<=56?st+gm.die:null);if(target===null||st===56)return false;gm.pieces[p][k]=target;let captured=false;if(target>=0&&target<51){const pos=(START[p]+target)%52;if(!SAFE.has(pos))for(const q of gm.order){if(q===p)continue;for(let j=0;j<4;j++){const other=gm.pieces[q][j];if(other>=0&&other<=50&&(START[q]+other)%52===pos){gm.pieces[q][j]=-1;captured=true;gm.captures++}}}}if(gm.pieces[p].every(x=>x===56)){gm.winners.push(p);gm.phase='finished'}else if(gm.die===6||captured||target===56){gm.phase='roll';gm.die=1}else onlineNext(gm);return true});busy=false;render()}
+async function onlineRoll(){if(!g||g.phase!=='roll'||busy)return;busy=true;render();try{await onlineTx((gm,p)=>{if(gm.phase!=='roll')return false;const val=1+Math.floor(Math.random()*6);gm.rolls++;gm.die=val;gm.lastDie=val;gm.sixes=val===6?gm.sixes+1:0;if(gm.sixes===3){onlineNext(gm);return true}const avail=gm.pieces[p].map((st,k)=>({k,st,target:st===-1?(val===6?0:null):(st+val<=56?st+val:null)})).filter(v=>v.target!==null&&v.st!==56);if(avail.length){gm.phase='choose'}else if(val!==6)onlineNext(gm);return true});}catch(e){console.error('Ludo roll rejected',e);$('onlineStatus').textContent='⚠️ '+(e?.message||'تعذر رمي الزهر')}finally{busy=false;render();}}
+async function onlineMove(k){
+ if(!g||g.phase!=='choose'||busy)return;
+ const selected=current();
+ if(g.order.indexOf(selected)!==onlineSeat){
+  $('turnText').textContent='⏳ مش دورك؛ انتظر حركة اللاعب الآخر';return;
+ }
+ const legal=moves(selected,g.die).some(m=>m.k===k);
+ if(!legal){$('turnText').textContent='اختار قطعة من القطع المضيئة الخاصة بلونك';return;}
+ busy=true;render();
+ try{
+  await onlineTx((gm,p)=>{
+   if(gm.phase!=='choose')return false;
+   const st=gm.pieces[p][k],target=st===-1?(gm.die===6?0:null):(st+gm.die<=56?st+gm.die:null);
+   if(target===null||st===56)return false;
+   gm.pieces[p][k]=target;
+   let captured=false;
+   if(target>=0&&target<51){const pos=(START[p]+target)%52;if(!SAFE.has(pos))for(const q of gm.order){if(q===p)continue;for(let j=0;j<4;j++){const other=gm.pieces[q][j];if(other>=0&&other<=50&&(START[q]+other)%52===pos){gm.pieces[q][j]=-1;captured=true;gm.captures++;}}}}
+   if(gm.pieces[p].every(x=>x===56)){gm.winners.push(p);gm.phase='finished'}
+   else if(gm.die===6||captured||target===56){gm.phase='roll';gm.die=1}
+   else onlineNext(gm);
+   return true;
+  });
+ }catch(e){console.error('Ludo move rejected',e);$('onlineStatus').textContent='⚠️ '+(e?.message||'تعذر تنفيذ الحركة');$('turnText').textContent='⚠️ '+(e?.message||'تعذر تنفيذ الحركة');}
+ finally{busy=false;render();}
+}
+
 // Permission for rolling and moving is enforced by Firebase transactions and room seats.
 // Room starts automatically after the final seat is registered and verified.
 $('createRoom').onclick=createOnlineRoom;$('joinRoom').onclick=joinOnlineRoom;
