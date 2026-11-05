@@ -1112,7 +1112,45 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 </style>
 <style>
 .aq-quick-modal{max-width:520px}.aq-quick-options{display:grid;gap:14px}.aq-quick-options>button{padding:14px;font-size:17px}.aq-join-box{border:1px solid #8b6838;border-radius:12px;padding:10px}.aq-join-box label{display:block;margin-bottom:7px}.aq-join-line{display:flex;gap:7px}.aq-join-line input{min-width:0;flex:1;background:#140c07;color:#ffecc3;border:1px solid #9d793b;padding:10px;border-radius:9px}.aq-join-line button{white-space:nowrap}.aq-room-ready{border:1px solid #e7b85e;background:#17433136;border-radius:13px;padding:15px;margin-top:14px;text-align:center;display:grid;gap:11px}.aq-room-ready strong{font:900 clamp(27px,4vw,42px) monospace;letter-spacing:2px;color:#ffde8b}.aq-ready-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}.aq-room-ready small{color:#eed6a6}
-</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#25140c"><link rel="apple-touch-icon" href="./ahwa-icon-192.png"><link rel="stylesheet" href="./ahwa-mobile.css"></head>
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#25140c"><link rel="apple-touch-icon" href="./ahwa-icon-192.png"><link rel="stylesheet" href="./ahwa-mobile.css"><style>
+/* V2: Actual connected domino snake, no artificial line breaks or empty rows. */
+.chain-viewport.aq-serpentine-viewport{
+ display:block!important;position:relative!important;overflow:hidden!important;
+ padding:0!important;min-height:0!important;width:100%!important;
+}
+.chain-track.aq-serpentine-track{
+ display:block!important;position:relative!important;flex:none!important;
+ width:100%!important;height:100%!important;max-width:none!important;
+ min-width:0!important;min-height:0!important;margin:0!important;
+ overflow:visible!important;transform:none!important;
+}
+.aq-serpentine-slot{
+ position:absolute!important;box-sizing:border-box!important;
+ display:flex!important;align-items:stretch!important;justify-content:stretch!important;
+ padding:0!important;margin:0!important;transform:none!important;
+}
+.aq-serpentine-slot .domino.aq-serpentine-tile{
+ display:flex!important;flex-direction:row!important;position:relative!important;
+ inset:auto!important;transform:none!important;animation:none!important;
+ width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+ box-sizing:border-box!important;margin:0!important;padding:2px!important;
+ border-radius:3px!important;flex:1 1 100%!important;
+}
+.aq-serpentine-slot .domino.aq-serpentine-vertical-tile{
+ flex-direction:column!important;
+}
+.aq-serpentine-slot .aq-serpentine-vertical-tile .divider{
+ height:1px!important;width:auto!important;margin:0 1px!important;
+}
+.aq-serpentine-slot .aq-serpentine-vertical-tile .half{
+ width:100%!important;min-width:0!important;min-height:0!important;
+}
+.aq-serpentine-slot .aq-serpentine-tile .dot{
+ width:clamp(2px,calc(var(--aq-serp-unit)*.15),5px)!important;
+ height:clamp(2px,calc(var(--aq-serp-unit)*.15),5px)!important;
+}
+</style>
+</head>
 <body data-skin="ivory">
 <div id="app">
  <header class="header">
@@ -1338,7 +1376,7 @@ function randCode(){let out='';for(let i=0;i<6;i++)out+=safeAlphabet[Math.floor(
 function tileSet(){const out=[];for(let a=0;a<=6;a++)for(let b=a;b<=6;b++)out.push({id:`${a}-${b}`,a,b});return out;}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pipSum(hand){return (hand||[]).reduce((s,t)=>s+t.a+t.b,0);}
-function dealRound(g){const ids=g.turnOrder;const deck=shuffle(tileSet());ids.forEach(id=>{g.players[id].hand=[];});g.boneyard=[];g.chain=[];g.openLeft=null;g.openRight=null;g.requiredOpeningId=null;g.consecutivePasses=0;g.round=(g.round||0)+1;g.roundWinner=null;g.roundMessage='';g.status='playing';ids.forEach((id,i)=>{g.players[id].hand=deck.splice(0,7);});g.boneyard=deck;
+function dealRound(g){const ids=g.turnOrder;const deck=shuffle(tileSet());ids.forEach(id=>{g.players[id].hand=[];});g.boneyard=[];g.chain=[];g.openingTileId=null;g.openLeft=null;g.openRight=null;g.requiredOpeningId=null;g.consecutivePasses=0;g.round=(g.round||0)+1;g.roundWinner=null;g.roundMessage='';g.status='playing';ids.forEach((id,i)=>{g.players[id].hand=deck.splice(0,7);});g.boneyard=deck;
  // Egyptian friendly opening: the first player can place ANY tile in their hand.
  // Do not lock opening to a double that may be held by the opponent.
  g.current=ids[0];g.requiredOpeningId=null;g.openingPlayer=g.current;g.lastAction='';g.updatedAt=Date.now();return g;}
@@ -1367,7 +1405,7 @@ function applyAction(g,pid,action){normalizeDominoState(g);if(!g||g.status!=='pl
  if(action.type==='play'){const tile=player.hand.find(t=>t.id===action.tileId);if(!tile)return{ok:false,reason:'القطعة مش موجودة في إيدك.'};const actions=legalActions(g,pid);if(!actions.some(a=>a.tileId===tile.id&&a.side===action.side))return{ok:false,reason:'القطعة دي مش راكبة على الطرف المختار.'};let a=tile.a,b=tile.b;
   if(action.side==='right'){if(tile.a===g.openRight){a=tile.a;b=tile.b;}else{a=tile.b;b=tile.a;}g.chain.push({id:tile.id,a,b,player:pid});g.openRight=b;}
   else if(action.side==='left'){if(tile.b===g.openLeft){a=tile.a;b=tile.b;}else{a=tile.b;b=tile.a;}g.chain.unshift({id:tile.id,a,b,player:pid});g.openLeft=a;}
-  else {g.chain.push({id:tile.id,a,b,player:pid});g.openLeft=a;g.openRight=b;g.requiredOpeningId=null;}
+  else {g.chain.push({id:tile.id,a,b,player:pid});g.openingTileId=tile.id;g.openLeft=a;g.openRight=b;g.requiredOpeningId=null;}
   player.hand=player.hand.filter(t=>t.id!==tile.id);g.consecutivePasses=0;g.lastAction=`${player.name} لعب ${tile.a}|${tile.b}`;g.updatedAt=Date.now();if(player.hand.length===0)finishRound(g,pid,false);else g.current=g.turnOrder[(g.turnOrder.indexOf(pid)+1)%g.turnOrder.length];return{ok:true,tile};
  }
  return{ok:false,reason:'حركة غير معروفة.'};}
@@ -1450,75 +1488,103 @@ function buildConnectedChainLayout(chain, interiorCols){
  }
  return {placements,minX:Number.isFinite(minX)?minX:0,maxX:Number.isFinite(maxX)?maxX:0,maxY};
 }
+// Continuous, two-sided snake path. Each tile is attached to its neighbour,
+// and the actual next domino forms the vertical corner when the row reaches its end.
+// Units represent half a horizontally oriented domino; turns span the two rows.
+function buildSerpentineDominoLayout(chain,openingTileId,width,height){
+ const n=chain.length;
+ const startIndex=Math.max(0,chain.findIndex(t=>t.id===openingTileId));
+ const anchorIndex=chain.some(t=>t.id===openingTileId)?startIndex:Math.floor((n-1)/2);
+ const anchor=chain[anchorIndex];
+ const make=(unit)=>{
+  const padding=10;
+  const bound=Math.max(5,Math.floor((width/2-padding)/unit));
+  const occupied=[];
+  const anchorDouble=Number(anchor.a)===Number(anchor.b);
+  // The first tile stays in the middle of the felt, with both playing ends open.
+  const anchorW=anchorDouble?1:2;
+  const begin=-anchorW/2;
+  const tiles=[{index:anchorIndex,x:begin,y:anchorDouble?-.5:0,vertical:anchorDouble,corner:false}];
+  const putArm=(indices,initialX,dir,verticalDirection)=>{
+   let x=initialX,y=0,d=dir;
+   for(let j=0;j<indices.length;j++){
+    const index=indices[j],t=chain[index],double=Number(t.a)===Number(t.b);
+    const needed=double?1:2;
+    // Leave one half-cell at the edge for the physical bridging domino.
+    const xAfter=x+d*needed;
+    const room=d===1?xAfter<=bound-1:xAfter>=-bound+1;
+    const isLast=j===indices.length-1;
+    const enoughRoom=room || (isLast && (d===1?xAfter<=bound:xAfter>=-bound));
+    if(enoughRoom){
+     const px=d===1?x:x-needed;
+     tiles.push({index,x:px,y:double?y-.5:y,vertical:double,corner:false});
+     x=xAfter;
+    }else{
+     // This piece is the connecting elbow itself, never a blank gap.
+     const px=d===1?x:x-1;
+     const py=verticalDirection===1?y+.5:y-1.5;
+     tiles.push({index,x:px,y:py,vertical:true,corner:true});
+     y+=verticalDirection*2;
+     d=-d;
+     x=d===1?px+1:px;
+    }
+   }
+  };
+  putArm(Array.from({length:anchorIndex},(_,i)=>anchorIndex-1-i),begin,-1,-1);
+  putArm(Array.from({length:n-anchorIndex-1},(_,i)=>anchorIndex+1+i),begin+anchorW,1,1);
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  for(const t of tiles){
+   minX=Math.min(minX,t.x);maxX=Math.max(maxX,t.x+(t.vertical?1:2));
+   minY=Math.min(minY,t.y);maxY=Math.max(maxY,t.y+(t.vertical?2:1));
+  }
+  return {unit,tiles,minX,maxX,minY,maxY,anchorIndex,fit:(minX*unit>=-width/2+8)&&(maxX*unit<=width/2-8)&&(minY*unit>=-height/2+unit/2+8)&&(maxY*unit<=height/2+unit/2-8)};
+ };
+ let layout;
+ for(let u=Math.min(46,Math.floor(width/9));u>=9;u--){
+  const attempt=make(u);
+  if(attempt.fit){layout=attempt;break;}
+ }
+ layout=layout||make(8);
+ return layout;
+}
 function renderChain(g){
  const track=$('chainTrack'),view=$('chainViewport'),chain=Array.isArray(g?.chain)?g.chain:[];
  track.replaceChildren();
- track.classList.add('aq-natural-chain','aq-fit-chain');
- view.classList.add('aq-natural-viewport','aq-fit-viewport');
+ track.classList.remove('aq-natural-chain','aq-fit-chain');
+ track.classList.add('aq-serpentine-track');
+ view.classList.remove('aq-natural-viewport','aq-fit-viewport');
+ view.classList.add('aq-serpentine-viewport');
  track.removeAttribute('style');
  if(!chain.length){
   track.innerHTML='<div class="empty-table">الطاولة لسه فاضية ☕<small>ابدأ بأي قطعة من إيدك</small></div>';
   return;
  }
- const w=Math.max(150,view.clientWidth-20),h=Math.max(100,view.clientHeight-16);
- const n=chain.length,maxRows=Math.min(n,7);
- const weight=t=>Number(t.a)===Number(t.b)?1:2;
- const makeRows=(unit,capUnits)=>{
-  const rows=[];
-  let current=[],used=0;
-  for(const t of chain){
-   const need=weight(t);
-   if(current.length && used+need>capUnits){
-    rows.push(current);
-    current=[];
-    used=0;
-   }
-   current.push(t);
-   used+=need;
+ const w=Math.max(180,view.clientWidth),h=Math.max(110,view.clientHeight);
+ const layout=buildSerpentineDominoLayout(chain,g.openingTileId,w,h);
+ const {unit,tiles,minX,maxX,minY,maxY,anchorIndex}=layout;
+ // Keep the opening domino centered as both ends grow in opposite directions.
+ const left=w/2;
+ const top=h/2-unit/2;
+ track.style.setProperty('--aq-serp-unit',unit+'px');
+ track.setAttribute('aria-label',`سلسلة دومينو متصلة من ${chain.length} قطعة، تبدأ من منتصف الطاولة وتنعطف بقطع حقيقية`);
+ for(const t of tiles){
+  const tile=chain[t.index];
+  const slot=document.createElement('div');
+  slot.className='aq-serpentine-slot'+(t.vertical?' aq-serpentine-vertical':'')+(t.corner?' aq-serpentine-corner':'');
+  slot.style.left=(left+t.x*unit)+'px';
+  slot.style.top=(top+t.y*unit)+'px';
+  slot.style.width=(t.vertical?unit:2*unit)+'px';
+  slot.style.height=(t.vertical?2*unit:unit)+'px';
+  slot.innerHTML=tileHtml(tile,'table','aq-serpentine-tile');
+  if(t.vertical){
+   // When growing to the left/up, the connected half belongs at the bottom.
+   // The actual faces still match the game-state values.
+   slot.firstElementChild.classList.add('aq-serpentine-vertical-tile');
   }
-  if(current.length)rows.push(current);
-  return rows;
- };
- let best=null;
- for(let rowsWanted=1;rowsWanted<=maxRows;rowsWanted++){
-  const approxPieces=Math.ceil(n/rowsWanted);
-  const unit=Math.min(49,Math.floor((w-18)/(approxPieces*2+0.4)));
-  if(unit<11)continue;
-  const capUnits=Math.max(4,Math.floor((w-6)/unit));
-  const rows=makeRows(unit,capUnits);
-  const heightNeeded=rows.length*(unit*2+5)+Math.max(0,rows.length-1)*Math.max(0,Math.round(unit*.08));
-  if(rows.length>maxRows||heightNeeded>h)continue;
-  const fullness=rows.reduce((acc,row)=>acc+row.reduce((s,t)=>s+weight(t),0),0)/(rows.length*capUnits);
-  const quality=(unit*1.9)+(fullness*8)-(rows.length*1.35);
-  if(!best||quality>best.quality)best={unit,capUnits,rows,quality};
+  if(t.index===anchorIndex)slot.dataset.openingTile='true';
+  track.appendChild(slot);
  }
- if(!best){
-  const unit=Math.max(8,Math.min(25,Math.floor((w-18)/(Math.ceil(n/maxRows)*2)),Math.floor((h-18)/(maxRows*2+1))));
-  const capUnits=Math.max(4,Math.floor((w-6)/Math.max(1,unit)));
-  best={unit,capUnits,rows:makeRows(unit,capUnits)};
- }
- const {rows,unit,capUnits}=best;
- track.style.setProperty('--aq-unit',unit+'px');
- track.style.setProperty('--aq-capacity',capUnits);
- track.style.setProperty('--aq-row-gap',Math.max(0,Math.round(unit*.08))+'px');
- track.setAttribute('aria-label',`سلسلة الدومينو: ${n} قطعة ظاهرة بالكامل في ${rows.length} صف`);
- for(let r=0;r<rows.length;r++){
-  const pieces=rows[r];
-  const line=document.createElement('div');
-  line.className='aq-chain-line'+(r%2?' aq-chain-return':'');
-  for(const t of pieces){
-   const double=Number(t.a)===Number(t.b);
-   const slot=document.createElement('div');
-   slot.className='aq-chain-slot'+(double?' aq-double-slot':'');
-   slot.style.flex='0 0 '+(double?unit:unit*2)+'px';
-   slot.innerHTML=tileHtml(t,'table','aq-real-tile');
-   if(double)slot.firstElementChild.classList.add('aq-double');
-   line.appendChild(slot);
-  }
-  track.appendChild(line);
- }
- view.scrollLeft=0;
- view.scrollTop=0;
+ view.scrollLeft=0;view.scrollTop=0;
 }
 function updateButtonState(g,me,acts){const myTurn=g?.status==='playing'&&g.current===myId();const chosen=acts.filter(a=>a.tileId===selectedTileId);const sides=new Set(chosen.map(x=>x.side));$('playLeftBtn').disabled=!myTurn||!sides.has('left');$('playRightBtn').disabled=!myTurn||!sides.has('right');$('playCenterBtn').disabled=!myTurn||!sides.has('center');$('drawBtn').disabled=!myTurn||acts.length>0||!g.boneyard.length;$('passBtn').disabled=!myTurn||acts.length>0||g.boneyard.length>0;$('nextRoundBtn').disabled=!g||!['round-over','match-over'].includes(g.status);$('drawBtn').textContent=g?.boneyard?.length?`＋ اسحب قطعة (${g.boneyard.length})`:'السحب خلص';const hint=$('handHelp');if(!myTurn)hint.textContent=g.status==='playing'?'استنى دورك يا معلم':'الجولة انتهت';else if(!g.chain.length)hint.textContent='اختار أي قطعة من إيدك لبدء الجولة';else if(acts.length)hint.textContent='اختار قطعة وحدّد الطرف';else if(g.boneyard.length)hint.textContent='مفيش قطعة راكبة — اسحب من الرصيد';else hint.textContent='مفيش حركة صالحة — مرّر الدور';}
 function renderStockPile(count){
@@ -1789,7 +1855,7 @@ async function aqStartWaitingRoom(){
   await onlineRef.update({
    status:next.status, round:next.round, turnOrder:next.turnOrder,
    current:next.current, requiredOpeningId:next.requiredOpeningId,
-   openingPlayer:next.openingPlayer, chain:next.chain, boneyard:next.boneyard,
+   openingPlayer:next.openingPlayer, openingTileId:next.openingTileId??null, chain:next.chain, boneyard:next.boneyard,
    openLeft:next.openLeft,openRight:next.openRight,consecutivePasses:0,
    roundWinner:null,roundMessage:'',lastAction:'',updatedAt:Date.now(),
    ['players/'+next.turnOrder[0]+'/hand']:next.players[next.turnOrder[0]].hand,
@@ -1823,7 +1889,7 @@ async function onlineAction(action){
   const changes={
    status:next.status,round:next.round,turnOrder:next.turnOrder,current:next.current,
    chain:next.chain,boneyard:next.boneyard,openLeft:next.openLeft,openRight:next.openRight,
-   requiredOpeningId:next.requiredOpeningId??null,openingPlayer:next.openingPlayer??null,
+   requiredOpeningId:next.requiredOpeningId??null,openingPlayer:next.openingPlayer??null,openingTileId:next.openingTileId??null,
    consecutivePasses:next.consecutivePasses,roundWinner:next.roundWinner??null,
    roundMessage:next.roundMessage||'',roundPoints:next.roundPoints??null,
    lastAction:next.lastAction||'',updatedAt:Date.now()
