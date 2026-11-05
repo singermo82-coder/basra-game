@@ -2473,9 +2473,21 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       return deck;
     }
 
-    // اسحب الأربع ورقات الأولى للأرض، ثم اجعل قواعد تأخير الولد تطبّق على كل التوزيعة الافتتاحية.
+    // قاعدة البصرة: الكومي (7 كاروه) لا يُوزَّع على الأرض إطلاقًا في بداية أي جولة.
+    // إذا خرج ضمن الأربع ورقات الافتتاحية، نستبدله بورقة من السحب، ثم نُعيد الكومي
+    // إلى موضع عشوائي داخل السحب. بذلك يبقى مجموع أوراق اللعب 52 بلا حذف أو تكرار.
     function takeInitialTable(deck) {
-      return Array.isArray(deck) ? deck.splice(0, 4) : [];
+      if (!Array.isArray(deck)) return [];
+      const table = deck.splice(0, 4);
+      for (let i = 0; i < table.length; i++) {
+        if (!isSevenOfDiamonds(table[i])) continue;
+        const replacementIndex = deck.findIndex(card => !isSevenOfDiamonds(card));
+        if (replacementIndex < 0) throw new Error('لا توجد ورقة بديلة للكومي عند توزيع الأرض.');
+        const koumi = table[i];
+        table[i] = deck.splice(replacementIndex, 1)[0];
+        deck.splice(Math.floor(Math.random() * (deck.length + 1)), 0, koumi);
+      }
+      return table;
     }
 
     // القانون: أي ولد (J) يظهر في التوزيعة الافتتاحية (أيدي اللاعبين + الأرض) يُستبدل بورقة
@@ -4503,6 +4515,5 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
     applyInviteFromUrl();
   </script>
 <script src="./landscape-mode.js"></script>
-<script src="ahwa-mazag-radio.js"></script>
 </body>
 </html>
