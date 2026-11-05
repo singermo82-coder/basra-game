@@ -18,7 +18,21 @@
 .routes{filter:contrast(1.08) saturate(1.18)}
 .boardFrame{padding:13px;border:2px solid #b88a47}
 @media(max-width:690px){.cell,.cell:nth-child(odd),.cell:nth-child(even){font-size:clamp(10px,2.5vw,15px)!important;padding:2px 2px!important}}
-</style></head><body><main class="app"><header class="top premium-head">
+</style><style id="ahwa-responsive-mobile-release">
+/* AHWA MOBILE 2026-11-05: prevent fixed-width clipping; preserve desktop styles */
+@media(max-width:760px){
+ html{width:100%;max-width:100%;-webkit-text-size-adjust:100%;}
+ body{width:100%;max-width:100%;overflow-x:hidden!important;}
+ *,*::before,*::after{box-sizing:border-box;}
+ img,video,canvas,svg{max-width:100%;}
+ input,button,select{max-width:100%;}
+ .modal,.dialog,[role="dialog"]{max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px)!important;overflow-y:auto!important;}
+}
+@media(max-width:390px){button{touch-action:manipulation;}}
+@media(max-width:760px){.app{width:100%!important;max-width:100%!important;padding:7px!important}.layout{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;gap:8px!important}.layout>*{min-width:0!important;max-width:100%!important;width:100%!important}.board{width:min(100%,calc(100dvh - 190px))!important;max-width:100%!important;height:auto!important;aspect-ratio:1!important;margin-inline:auto!important}.top,.premium-head{max-width:100%!important;flex-wrap:wrap!important}}
+@media(max-width:760px) and (max-height:620px){.board{width:min(100%,calc(100dvh - 155px))!important}}
+</style>
+</head><body><main class="app"><header class="top premium-head">
  <a href="index.html" class="brand brandlink"><img src="logo-plaque.webp" alt="شعار ع القهوة"><span><strong>ع القهوة</strong><small>من ملاهي | ألعاب مصرية أونلاين</small></span></a>
  <div class="head-center"><button id="profileButton" class="profile-chip" type="button"><span class="profile-avatar" id="headerAvatar">☕</span><span><b id="headerName">ضيف القهوة</b><small>عضو القهوة ★ 1</small></span><span class="plus">＋</span></button><div class="head-stat"><span>اللعبة</span><b>السلم والثعبان</b></div><div class="head-stat"><span>الهدف</span><b>🏁 100</b></div><div class="head-stat"><span>اللاعبين</span><b id="headerPlayers">2 لاعبين</b></div></div>
  <nav class="nav head-actions"><span class="online-indicator" id="onlineIndicator">🟢 محلي</span><button class="head-action" id="radioBtn" type="button"><span>📻</span><small>الراديو</small></button><button class="head-action" id="chatBtn" type="button"><span>💬</span><small>الشات</small></button><button class="head-action" id="fullBtn" type="button"><span>⛶</span><small>ملء الشاشة</small></button><a class="head-action" href="index.html"><span>⌂</span><small>الرئيسية</small></a></nav>

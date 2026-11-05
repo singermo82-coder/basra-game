@@ -2012,6 +2012,19 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 @media(max-width:610px){body.game-active .table-surface{padding-left:94px!important}body.game-active .basra-left-stacks{width:85px;left:5px}body.game-active .basra-stack-box{padding:4px 2px}body.game-active .basra-stack-box h4{font-size:8px}body.game-active .basra-stack-box .basra-stack-info{font-size:8px}body.game-active .basra-deck-box{min-height:100px;max-height:118px}body.game-active .table-area .card{--card-w:clamp(40px,10vw,57px)!important;--card-h:calc(var(--card-w) * 1.48)!important}}
 </style>
 
+<style id="ahwa-responsive-mobile-release">
+/* AHWA MOBILE 2026-11-05: prevent fixed-width clipping; preserve desktop styles */
+@media(max-width:760px){
+ html{width:100%;max-width:100%;-webkit-text-size-adjust:100%;}
+ body{width:100%;max-width:100%;overflow-x:hidden!important;}
+ *,*::before,*::after{box-sizing:border-box;}
+ img,video,canvas,svg{max-width:100%;}
+ input,button,select{max-width:100%;}
+ .modal,.dialog,[role="dialog"]{max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px)!important;overflow-y:auto!important;}
+}
+@media(max-width:390px){button{touch-action:manipulation;}}
+@media(max-width:760px){body.game-active .game-stage{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;width:100%!important;min-width:0!important;max-width:100%!important;gap:6px!important}body.game-active .game-stage>*{max-width:100%!important;min-width:0!important}body.game-active .game-board{width:100%!important;max-width:100%!important;min-width:0!important}body.game-active .table-surface{max-width:100%!important;min-width:0!important;min-height:210px!important}body.game-active .game-topbar{grid-template-columns:minmax(0,1fr)!important;max-width:100%!important}body{overflow-x:hidden!important}}
+</style>
 </head>
 <body>
   <main class="container">
