@@ -1504,7 +1504,7 @@ function buildSerpentineDominoLayout(chain,openingTileId,width,height){
   // The first tile stays in the middle of the felt, with both playing ends open.
   const anchorW=anchorDouble?1:2;
   const begin=-anchorW/2;
-  const tiles=[{index:anchorIndex,x:begin,y:anchorDouble?-.5:0,vertical:anchorDouble,corner:false}];
+  const tiles=[{index:anchorIndex,x:begin,y:anchorDouble?-.5:0,vertical:anchorDouble,corner:false,faceA:Number(anchor.a),faceB:Number(anchor.b)}];
   const putArm=(indices,initialX,dir,verticalDirection)=>{
    let x=initialX,y=0,d=dir;
    for(let j=0;j<indices.length;j++){
@@ -1517,13 +1517,25 @@ function buildSerpentineDominoLayout(chain,openingTileId,width,height){
     const enoughRoom=room || (isLast && (d===1?xAfter<=bound:xAfter>=-bound));
     if(enoughRoom){
      const px=d===1?x:x-needed;
-     tiles.push({index,x:px,y:double?y-.5:y,vertical:double,corner:false});
+     // Chain state always stores left-to-right (a|b). The left arm grows
+     // from b toward a, and both arms can reverse direction after an elbow.
+     // Display the matching values in the physical direction of travel.
+     const entry=indices[0]<anchorIndex?Number(t.b):Number(t.a);
+     const exit=indices[0]<anchorIndex?Number(t.a):Number(t.b);
+     const faceA=d===1?entry:exit;
+     const faceB=d===1?exit:entry;
+     tiles.push({index,x:px,y:double?y-.5:y,vertical:double,corner:false,faceA,faceB});
      x=xAfter;
     }else{
      // This piece is the connecting elbow itself, never a blank gap.
      const px=d===1?x:x-1;
      const py=verticalDirection===1?y+.5:y-1.5;
-     tiles.push({index,x:px,y:py,vertical:true,corner:true});
+     // On a corner the upper/lower face must also follow the path.
+     const entry=indices[0]<anchorIndex?Number(t.b):Number(t.a);
+     const exit=indices[0]<anchorIndex?Number(t.a):Number(t.b);
+     const faceA=verticalDirection===1?entry:exit;
+     const faceB=verticalDirection===1?exit:entry;
+     tiles.push({index,x:px,y:py,vertical:true,corner:true,faceA,faceB});
      y+=verticalDirection*2;
      d=-d;
      x=d===1?px+1:px;
@@ -1575,10 +1587,11 @@ function renderChain(g){
   slot.style.top=(top+t.y*unit)+'px';
   slot.style.width=(t.vertical?unit:2*unit)+'px';
   slot.style.height=(t.vertical?2*unit:unit)+'px';
-  slot.innerHTML=tileHtml(tile,'table','aq-serpentine-tile');
+  // Visual orientation ONLY: preserve the canonical a/b values used by
+  // legalActions, openLeft/openRight and Firebase. Never swap game-state data.
+  slot.innerHTML=tileHtml({...tile,a:t.faceA,b:t.faceB},'table','aq-serpentine-tile');
   if(t.vertical){
-   // When growing to the left/up, the connected half belongs at the bottom.
-   // The actual faces still match the game-state values.
+   // The two face values were already mapped to top/bottom for elbows.
    slot.firstElementChild.classList.add('aq-serpentine-vertical-tile');
   }
   if(t.index===anchorIndex)slot.dataset.openingTile='true';
