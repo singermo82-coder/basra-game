@@ -2526,7 +2526,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       <div class="modal-topline"><span class="mini-lamp"></span><span class="modal-kicker">التحكم في أجواء القعدة</span><button class="modal-close" onclick="closeSoundSettings()" aria-label="إغلاق">×</button></div>
       <h2 id="soundTitle">🔊 صوت القهوة</h2>
       <p class="modal-subtitle">ظبط كل صوت لوحده، أو اقفل أي طبقة في أي وقت.</p>
-      <div class="sound-setting"><div><strong>أجواء القهوة</strong><small>همهمة القعدة وصوت المكان</small></div><input id="ambienceVolume" class="volume-range" type="range" min="0" max="100" value="20" oninput="setAudioVolume('ambience',this.value)"></div>
+      <div class="sound-setting"><div><strong>أجواء القهوة</strong><small>همهمة القعدة وصوت المكان</small></div><input id="ambienceVolume" class="volume-range" type="range" min="0" max="100" value="0" oninput="setAudioVolume('ambience',this.value)"></div>
       <div class="sound-setting"><div><strong>موسيقى القعدة</strong><small>عود وناي بإيقاع هادئ</small></div><input id="musicVolume" class="volume-range" type="range" min="0" max="100" value="18" oninput="setAudioVolume('music',this.value)"></div>
       <div class="sound-setting"><div><strong>صوت الكوتشينة والفنجان</strong><small>تقليب وسحب الورق ورنة الكوب</small></div><input id="effectsVolume" class="volume-range" type="range" min="0" max="100" value="55" oninput="setAudioVolume('effects',this.value)"></div>
       <div class="sound-setting"><div><strong>نداءات القهوجي</strong><small>شاي خمسين، قهوة ع الريحة، حلبة حصا، وحاجة ساقعة</small></div><input id="calloutVolume" class="volume-range" type="range" min="0" max="100" value="32" oninput="setAudioVolume('callouts',this.value)"></div>
@@ -4772,5 +4772,6 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 <script src="./landscape-mode.js"></script>
 </body>
 </html>
+
 
 

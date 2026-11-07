@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -1365,7 +1365,7 @@ const TABLE_SKINS=[
  {id:'sand',name:'رملي شعبي',desc:'لون دافي',swatch:'sand'}
 ];
 const safeAlphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=true, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
+let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=false, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
 let firebaseReady=false, db=null, cafeCueTimer=null, lastCafeCue='', cafeCueFirst=true;
 // Keep the same five radio choices and stream/official fallbacks as the Basra game.
 const DOMINO_RADIO_STATIONS={
@@ -2066,6 +2066,96 @@ document.addEventListener('DOMContentLoaded',aqAutoJoinInvite);
 <style>
 #ahwaSoundTest{position:fixed;bottom:118px;right:15px;z-index:48;border:2px solid #f5c36d;background:#2e1b0d;color:#fff1cd;padding:9px 13px;border-radius:14px;font-weight:900;box-shadow:0 4px 18px #0009}
 @media(max-width:760px){#ahwaSoundTest{bottom:65px;right:7px;padding:6px 9px;font-size:11px}}
+
+  /* ============================================================
+     ع القهوة — Domino portrait fix (v2)
+     ============================================================ */
+  #aq-landscape-gate{display:none!important}
+  body.aq-landscape-blocked{overflow:auto!important}
+
+  /* Portrait موبايل */
+  @media(max-width:600px) and (orientation:portrait),(max-width:480px){
+    html,body{overflow:hidden!important}
+    #app{
+      height:100dvh!important;
+      grid-template-rows:54px minmax(0,1fr) 72px!important;
+      padding:3px!important;gap:3px!important;
+    }
+    .header{height:54px!important;padding:2px 6px!important;border-radius:12px!important}
+    .brand-text .brand-title{font-size:13px!important}
+    .top-shortcuts,.head-stats-group{display:none!important}
+
+    /* إخفاء الـ side panel — كل المساحة للطاولة */
+    .layout{
+      display:block!important;
+      height:100%!important;
+      min-height:0!important;
+      overflow:hidden!important;
+    }
+    #sidePanel,.side-panel{display:none!important}
+
+    .arena{
+      height:100%!important;width:100%!important;
+      border-radius:12px!important;
+      padding:5px!important;gap:4px!important;
+      grid-template-rows:44px minmax(0,1fr) 120px 50px!important;
+    }
+    .table-shell{border-radius:12px!important;padding:6px!important;overflow:hidden!important}
+    .chain-viewport{padding:4px!important}
+
+    /* قطع الدومينو في الأسفل */
+    .hand-zone{
+      height:120px!important;min-height:120px!important;max-height:120px!important;
+      grid-template-rows:14px minmax(0,1fr) 24px!important;
+    }
+    .hand-track{
+      overflow-x:auto!important;overflow-y:visible!important;
+      padding:4px 6px!important;min-height:70px!important;
+      scrollbar-width:none;
+    }
+    .hand-track::-webkit-scrollbar{display:none}
+    .hand-tile{
+      height:52px!important;min-height:52px!important;
+      flex:0 0 auto!important;
+    }
+  }
+
+  /* Landscape موبايل */
+  @media(max-width:900px) and (orientation:landscape) and (max-height:500px){
+    #app{
+      grid-template-rows:42px minmax(0,1fr) 62px!important;
+      padding:3px!important;gap:3px!important;
+    }
+    .layout{
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 180px!important;
+      gap:5px!important;height:100%!important;min-height:0!important;
+    }
+    #sidePanel,.side-panel{
+      display:flex!important;flex-direction:column!important;
+      overflow-y:auto!important;min-height:0!important;
+      gap:4px!important;
+    }
+    .arena{
+      grid-template-rows:34px minmax(0,1fr) 88px 40px!important;
+      padding:3px!important;gap:3px!important;
+    }
+    .hand-zone{height:88px!important;min-height:88px!important;max-height:88px!important}
+    .hand-tile{height:40px!important;min-height:40px!important}
+  }
+
+  /* تابليت portrait */
+  @media(min-width:601px) and (max-width:900px) and (orientation:portrait){
+    .layout{
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 200px!important;
+      gap:8px!important;height:100%!important;min-height:0!important;
+    }
+    #sidePanel,.side-panel{
+      display:flex!important;flex-direction:column!important;
+      overflow-y:auto!important;min-height:0!important;
+    }
+  }
 </style>
 <button id="ahwaSoundTest" type="button" onclick="ahwaAudioTest()" title="اضغط لتجربة صوت الدومينو والقهوة">🔊 اختبار الصوت</button>
 <script>
@@ -2083,3 +2173,6 @@ async function ahwaAudioTest(){
 </script>
 <script src="./ahwa-mobile.js" defer></script><script src="ahwa-mazag-radio.js"></script>
 </body></html>
+
+
+

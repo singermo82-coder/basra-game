@@ -1,4 +1,4 @@
-/* ع القهوة — portrait-first v2
+﻿/* ع القهوة — portrait-first v2
    Previously forced landscape on mobile; now portrait play is fully supported.
    File kept for backward compatibility — just clears any lingering gate. */
 (function () {
@@ -6,6 +6,7 @@
   if (window.__aqLandscapeModeInstalled) return;
   window.__aqLandscapeModeInstalled = true;
 
+  /* Remove any old gate that may have been injected server-side or cached. */
   function removeGate() {
     var gate = document.getElementById('aq-landscape-gate');
     if (gate) gate.remove();
