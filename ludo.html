@@ -931,5 +931,7 @@ button,[role=button]{touch-action:manipulation}
 })();
 
 </script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const name=localStorage.getItem('ahwa-player-name');const input=document.getElementById('onlineNickname');if(name&&input&&!input.value.trim())input.value=name;});</script>
+<script defer src="./ahwa-account-widget.js"></script>
 </body></html>
 
