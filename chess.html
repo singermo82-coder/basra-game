@@ -1,5 +1,5 @@
-﻿<!doctype html>
-<html dir="rtl" lang="ar" style="--chess-light: #e7cfa6; --chess-dark: #896444;"><head>
+<!doctype html>
+<html data-aq-fit-game="chess" dir="rtl" lang="ar" style="--chess-light: #e7cfa6; --chess-dark: #896444;"><head>
 <meta charset="utf-8">
 <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" name="viewport">
 <meta content="#1a0e08" name="theme-color">
@@ -1192,6 +1192,14 @@ body.ahwa-design #designSelection .design-resize{touch-action:none}
 @media(max-width:390px){button{touch-action:manipulation;}}
 @media(max-width:760px){#app,.layout,.arena,.board,.chess-viewport,.table-shell{min-width:0!important;max-width:100%!important}.chess-viewport{overflow:hidden!important}.header{min-width:0!important}.side-panel{max-width:calc(100vw - 10px)!important}}
 </style>
+
+<meta name="theme-color" content="#20130b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ع القهوة">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./ahwa-app-icon-192.png">
+
 </head>
 <body data-skin="ivory" class="table-theme-walnut">
 <div id="app">
@@ -1526,131 +1534,96 @@ body.chess-3d-active .chess3d-tools{display:flex}
 .tv-controls{display:flex;gap:4px;justify-content:space-between;align-items:center;color:#e8cc93;font-size:9px}.tv-controls button{padding:3px 5px;font-size:9px;border-radius:6px;box-shadow:none}
 @keyframes tvFloat{from{transform:translateY(2px) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}@keyframes tvShimmer{from{opacity:.45}to{opacity:.9}}
 @media(max-width:760px){.ahwa-tv{display:none!important}.arena .turn-banner{top:18px!important}}
-
-  /* ============================================================
-     ع القهوة — Chess portrait+landscape fix (v2)
-     الرقعة تملأ الشاشة بدون قص في أي اتجاه
-     ============================================================ */
-
-  /* إخفاء gate لو ظهر */
-  #aq-landscape-gate{display:none!important}
-  body.aq-landscape-blocked{overflow:auto!important}
-
-  /* ── Portrait موبايل (≤600px) ── */
-  @media(max-width:600px) and (orientation:portrait),(max-width:480px){
-    html,body{height:100%;overflow:hidden}
-
-    #app{
-      height:100dvh!important;
-      grid-template-rows:50px minmax(0,1fr) 52px!important;
-      padding:3px!important;
-      gap:3px!important;
-    }
-
-    /* Header مضغوط */
-    .header{
-      grid-template-columns:90px minmax(0,1fr) auto!important;
-      padding:2px 4px!important;
-      border-radius:10px!important;
-      height:50px!important;min-height:50px!important;
-    }
-    .brand{height:44px!important}
-    .brand-title{font-size:13px!important}
-    .brand-sub{font-size:6px!important}
-    .head-stats-group,.top-shortcuts{display:none!important}
-
-    /* Layout: إخفاء الـ panels الجانبية، الرقعة تاخد كل المساحة */
-    .layout{
-      display:block!important;
-      height:100%!important;
-      min-height:0!important;
-      position:relative!important;
-      overflow:hidden!important;
-    }
-    .side-panel,.left-panel,.left-nav{display:none!important}
-
-    .arena{
-      width:100%!important;
-      height:100%!important;
-      border-radius:12px!important;
-      padding:4px!important;
-      gap:3px!important;
-      grid-template-rows:38px minmax(0,1fr) auto!important;
-      overflow:hidden!important;
-    }
-
-    /* الرقعة تملأ المساحة المتاحة */
-    .chess-viewport{
-      flex:1 1 0!important;
-      min-height:0!important;
-      display:flex!important;
-      align-items:center!important;
-      justify-content:center!important;
-      padding:2px!important;
-      overflow:hidden!important;
-    }
-    .chess-board{
-      width:min(100%,calc(100dvh - 100px),98vw)!important;
-      max-width:100%!important;
-      max-height:calc(100dvh - 100px)!important;
-      aspect-ratio:1!important;
-      flex-shrink:0!important;
-    }
-  }
-
-  /* ── Landscape موبايل (≤900px height في landscape) ── */
-  @media(max-width:900px) and (orientation:landscape) and (max-height:500px){
-    html,body{overflow:hidden}
-    #app{
-      height:100dvh!important;
-      grid-template-rows:40px minmax(0,1fr) 46px!important;
-      padding:3px!important;gap:3px!important;
-    }
-    .header{height:40px!important;min-height:40px!important;padding:1px 4px!important}
-    .brand-title{font-size:12px!important}.brand-sub{display:none!important}
-    .head-stats-group,.top-shortcuts{display:none!important}
-    .left-nav{display:none!important}
-    .layout{
-      display:grid!important;
-      grid-template-columns:minmax(0,1fr) 160px!important;
-      gap:4px!important;
-      height:100%!important;
-      min-height:0!important;
-    }
-    .side-panel{display:flex!important;flex-direction:column!important;gap:4px!important;overflow:hidden!important;min-height:0!important}
-    .arena{
-      padding:3px!important;gap:2px!important;
-      grid-template-rows:30px minmax(0,1fr) auto!important;
-    }
-    .chess-viewport{padding:2px!important}
-    .chess-board{
-      width:min(calc(100dvh - 90px),calc(100dvw - 175px),98%)!important;
-      max-height:calc(100dvh - 90px)!important;
-      aspect-ratio:1!important;
-    }
-  }
-
-  /* ── تابليت portrait (601px–900px) ── */
-  @media(min-width:601px) and (max-width:900px) and (orientation:portrait){
-    #app{
-      height:100dvh!important;
-      grid-template-rows:58px minmax(0,1fr) 60px!important;
-      padding:5px!important;gap:5px!important;
-    }
-    .layout{
-      display:grid!important;
-      grid-template-columns:minmax(0,1fr) 200px!important;
-      gap:8px!important;height:100%!important;min-height:0!important;
-    }
-    .left-nav{display:none!important}
-    .side-panel{overflow-y:auto!important;min-height:0!important}
-    .chess-board{
-      width:min(100%,calc(100dvh - 130px))!important;
-      max-height:calc(100dvh - 130px)!important;
-      aspect-ratio:1!important;
-    }
-  }
 </style><script type="module" src="./chess-runtime.js?v=11"></script>
 <script src="./chess-tv.js?v=19" defer></script><script src="./ahwa-mobile.js" defer></script><script src="ahwa-mazag-radio.js"></script>
-</body></html>
+<style id="aq-device-fit-v2">
 
+/* AQ device fit layer — placed after legacy CSS to break old conflicting sizing. */
+:root{--aq-vh:1dvh;--aq-vw:1vw}
+html{box-sizing:border-box;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;max-width:100%;overscroll-behavior-x:none}
+button,[role=button]{touch-action:manipulation}
+@media (max-width:1100px){
+ html,body{width:100%!important;max-width:100%!important}
+ input,button,select,textarea{min-width:0}
+ img,video,canvas,svg{max-width:100%}
+ [role=dialog],.modal,.modalwrap,.overlay .modal,.lux-overlay .modal{max-width:calc(100vw - 12px)!important;max-height:calc(100dvh - 12px)!important}
+ :root{--aq-safe-top:env(safe-area-inset-top,0px);--aq-safe-bottom:env(safe-area-inset-bottom,0px)}
+}
+@media (pointer:coarse){button,a,[role=button]{-webkit-tap-highlight-color:transparent}}
+#aq-ios-install-help{position:fixed;z-index:2147483647;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;direction:rtl}
+#aq-ios-install-help.aq-visible{display:flex}
+#aq-ios-install-help>div{width:min(420px,100%);border:2px solid #bd944c;border-radius:20px;background:#24160d;color:#fff2d9;padding:20px;font-family:Tahoma,Arial,sans-serif;text-align:center;box-shadow:0 15px 60px #0009;line-height:1.7}
+#aq-ios-install-help button{border:1px solid #d9b775;border-radius:12px;background:#146d45;color:#fff;padding:10px 24px;font-weight:bold}
+
+
+/* Chess & 3D board: never crop squares in portrait or landscape. */
+@media (max-width:1100px){
+ #app{width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:clip!important;padding-inline:3px!important}
+ .layout{min-width:0!important;max-width:100%!important;grid-template-columns:minmax(0,1fr)!important;display:grid!important}
+ .left-nav,.side-panel{display:none!important}
+ .arena{min-width:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
+ .table-shell,.felt,.chess-felt,.chess-viewport{min-width:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
+ .chess-viewport{display:flex!important;align-items:center!important;justify-content:center!important;flex:1 1 auto!important;min-height:0!important}
+ #board.chess-board,.chess-board{width:var(--aq-board-fit,340px)!important;height:var(--aq-board-fit,340px)!important;min-width:0!important;max-width:calc(100% - 4px)!important;max-height:100%!important;flex:0 0 auto!important;aspect-ratio:1/1!important;margin:auto!important;box-sizing:border-box!important}
+ #chess3dMount,.chess-3d-mount{max-width:100%!important;max-height:100%!important}
+}
+@media (max-width:1100px) and (orientation:portrait){
+ #app{height:100dvh!important;max-height:100dvh!important;grid-template-rows:clamp(44px,7dvh,66px) minmax(0,1fr) clamp(45px,7dvh,65px)!important;overflow:hidden!important}
+ .arena{grid-template-rows:minmax(33px,auto) minmax(0,1fr) auto!important;min-height:0!important;gap:4px!important}
+ .table-shell{min-height:0!important;max-height:100%!important;padding:3px!important}
+ .chess-felt{min-height:0!important;padding:2px!important;gap:2px!important}
+ .under-board-zone{max-height:clamp(55px,12dvh,116px)!important;overflow-y:auto!important}
+}
+@media (max-width:1100px) and (orientation:landscape){
+ #app{height:100dvh!important;grid-template-rows:clamp(36px,10dvh,55px) minmax(0,1fr) clamp(28px,7dvh,45px)!important;overflow:hidden!important}
+ .arena{grid-template-rows:0 minmax(0,1fr) 0!important;padding:2px!important}
+ .player-row,.under-board-zone{display:none!important}
+ .table-shell{height:100%!important;min-height:0!important}
+ .chess-viewport{height:100%!important;flex:1!important}
+}
+
+</style>
+<script id="aq-device-fit-js">
+
+(function(){
+ 'use strict';
+ const kind=document.documentElement.dataset.aqFitGame;
+ const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+ const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ const showHelp=()=>{
+  let overlay=document.getElementById('aq-ios-install-help');
+  if(!overlay){overlay=document.createElement('div');overlay.id='aq-ios-install-help';overlay.innerHTML='<div><h2>📱 ملء الشاشة على الآيفون والآيباد</h2><p>من Safari اضغط <b>مشاركة</b> ثم <b>إضافة إلى الشاشة الرئيسية</b>، وافتح «ع القهوة» من الأيقونة الجديدة لتظهر كتطبيق بدون شريط المتصفح.</p><button type="button">فهمت</button></div>';overlay.querySelector('button').addEventListener('click',()=>overlay.classList.remove('aq-visible'));document.body.appendChild(overlay)}
+  overlay.classList.add('aq-visible');
+ };
+ function fit(){
+  const vw=Math.max(240,document.documentElement.clientWidth),vh=Math.max(260,window.visualViewport?.height||innerHeight),wide=vw>vh;
+  const board=Math.max(170,Math.floor(Math.min(vw-20,vh-(wide?104:kind==='chess'?235:kind==='ludo'?230:kind==='snakes'?190:180))));
+  document.documentElement.style.setProperty('--aq-board-fit',board+'px');
+  document.documentElement.style.setProperty('--aq-basra-table-h',Math.max(210,Math.min(500,Math.floor(vh*.43)))+'px');
+  if(kind==='chess'){
+   const vp=document.querySelector('.chess-viewport');
+   if(vp){const r=vp.getBoundingClientRect();const max=Math.floor(Math.min(vw-20, r.width-6, r.height-6));if(max>100)document.documentElement.style.setProperty('--aq-board-fit',Math.max(100,max)+'px')}
+  }
+ }
+ let raf=0;
+ const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit)};
+ document.addEventListener('DOMContentLoaded',()=>{
+  fit();setTimeout(fit,250);setTimeout(fit,900);
+  // Safari cannot enter true fullscreen using the regular Fullscreen API on iPhone.
+  if(isIOS&&!standalone){document.addEventListener('click',event=>{
+   const btn=event.target.closest('button,a,[role="button"]');if(!btn)return;
+   const label=((btn.textContent||'')+' '+(btn.getAttribute('title')||'')+' '+(btn.getAttribute('aria-label')||'')+' '+(btn.id||'')).toLowerCase();
+   if(/ملء الشاشة|fullscreen|fullbtn|full-screen|تكبير الشاشة/.test(label)){
+    event.preventDefault();event.stopImmediatePropagation();showHelp();
+   }
+  },true)}
+ });
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(fit,220),{passive:true});
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+})();
+
+</script>
+</body></html>

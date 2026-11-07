@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html data-aq-fit-game="basra" lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <link rel="preconnect" href="https://webisso.github.io" crossorigin>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <meta name="theme-color" content="#1a0f08">
@@ -2024,249 +2024,15 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 }
 @media(max-width:390px){button{touch-action:manipulation;}}
 @media(max-width:760px){body.game-active .game-stage{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;width:100%!important;min-width:0!important;max-width:100%!important;gap:6px!important}body.game-active .game-stage>*{max-width:100%!important;min-width:0!important}body.game-active .game-board{width:100%!important;max-width:100%!important;min-width:0!important}body.game-active .table-surface{max-width:100%!important;min-width:0!important;min-height:210px!important}body.game-active .game-topbar{grid-template-columns:minmax(0,1fr)!important;max-width:100%!important}body{overflow-x:hidden!important}}
-
-  /* ============================================================
-     ع القهوة — Portrait-first mobile layout  (v2)
-     تشغيل كامل على الموبايل والتابليت في الوضع العمودي
-     ============================================================ */
-
-  /* ── 1. إخفاء شاشة "لف الموبايل" نهائياً ── */
-  #aq-landscape-gate { display:none!important; }
-  body.aq-landscape-blocked { overflow:auto!important; }
-
-  /* ── 2. Portrait على الموبايل (≤ 600px عرض) ── */
-  @media (max-width:600px) and (orientation:portrait),
-         (max-width:600px) {
-
-    html, body {
-      height:100%;
-      overflow-x:hidden;
-    }
-
-    /* الـ container يملأ الشاشة كاملاً */
-    body.game-active .container {
-      display:flex;
-      flex-direction:column;
-      height:100dvh;
-      max-height:100dvh;
-      padding:4px 4px env(safe-area-inset-bottom,8px)!important;
-      gap:4px!important;
-      overflow:hidden!important;
-    }
-
-    /* Header مضغوط */
-    body.game-active .header {
-      flex:0 0 auto;
-      padding:7px 10px!important;
-      margin:0 0 0!important;
-      border-radius:14px!important;
-      min-height:0!important;
-    }
-    body.game-active .header h1 { font-size:1.15rem!important; margin:0!important; }
-    body.game-active .header p { display:none!important; }
-    body.game-active .header:after { display:none!important; }
-    body.game-active .brand-row { margin-bottom:4px!important; flex-wrap:nowrap!important; }
-    body.game-active .brand-tag { font-size:.68rem!important; padding:3px 7px!important; }
-    body.game-active .version-tag { font-size:.6rem!important; padding:3px 6px!important; }
-    body.game-active .header-actions { gap:5px!important; flex-wrap:nowrap!important; }
-    body.game-active .header-actions .btn { font-size:.7rem!important; padding:5px 8px!important; min-height:30px!important; }
-    body.game-active .status { font-size:.68rem!important; padding:4px 8px!important; }
-
-    /* topbar مضغوطة */
-    body.game-active .game-topbar {
-      flex:0 0 64px!important;
-      height:64px!important;
-      min-height:64px!important;
-      max-height:64px!important;
-      grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;
-      gap:4px!important;
-      overflow:hidden!important;
-    }
-    body.game-active .game-topbar .info-card {
-      padding:3px 4px!important;
-      border-radius:10px!important;
-    }
-    body.game-active .game-topbar .info-card h3 { font-size:.52rem!important; margin:0 0 2px!important; }
-    body.game-active .game-topbar .info-card p  { font-size:.78rem!important; }
-
-    /* game notice شريط رفيع */
-    body.game-active #gameNotice {
-      flex:0 0 20px!important;
-      height:20px!important;
-      min-height:20px!important;
-      max-height:20px!important;
-      font-size:.58rem!important;
-      padding:2px 6px!important;
-      line-height:1.2!important;
-      margin:0!important;
-    }
-
-    /* game-board يملأ المساحة المتبقية */
-    body.game-active .game-board {
-      flex:1 1 0!important;
-      min-height:0!important;
-      display:flex!important;
-      flex-direction:column!important;
-      gap:4px!important;
-      overflow:hidden!important;
-    }
-
-    /* game-stage: عمود واحد بدل 3 أعمدة */
-    body.game-active .game-stage {
-      flex:1 1 0!important;
-      min-height:0!important;
-      display:flex!important;
-      flex-direction:column!important;
-      gap:4px!important;
-      grid-template-columns:none!important;
-      overflow:hidden!important;
-    }
-
-    /* إخفاء الـ side rail (قائمة اللاعبين + chat) وتحويله لـ bottom bar */
-    body.game-active .game-side-rail {
-      display:none!important;
-    }
-    body.game-active .game-chat-rail {
-      display:none!important;
-    }
-
-    /* الطاولة تاخد كل المساحة */
-    body.game-active .game-main-column {
-      flex:1 1 0!important;
-      min-height:0!important;
-      display:flex!important;
-      flex-direction:column!important;
-      gap:4px!important;
-      overflow:hidden!important;
-    }
-
-    body.game-active .table-panel {
-      flex:1 1 0!important;
-      min-height:0!important;
-      overflow:hidden!important;
-      border-radius:14px!important;
-      padding:8px!important;
-    }
-
-    body.game-active .table-area {
-      min-height:120px!important;
-      padding:8px 4px!important;
-      gap:4px!important;
-    }
-
-    /* أوراق اللاعب في الأسفل */
-    body.game-active .hand-panel {
-      flex:0 0 auto!important;
-      min-height:80px!important;
-      max-height:110px!important;
-      overflow:visible!important;
-      padding:4px!important;
-      border-radius:12px!important;
-    }
-    body.game-active .hand-cards {
-      height:auto!important;
-      min-height:72px!important;
-      max-height:100px!important;
-      gap:4px!important;
-      flex-wrap:nowrap!important;
-      overflow-x:auto!important;
-      overflow-y:hidden!important;
-      padding:4px 6px!important;
-      justify-content:center!important;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
-    }
-    body.game-active .hand-cards::-webkit-scrollbar { display:none; }
-
-    /* حجم الأوراق على الموبايل */
-    body.game-active .hand-cards .card,
-    body.game-active .hand-panel .card {
-      --card-w: clamp(46px,13vw,58px)!important;
-      --card-h: clamp(68px,19vw,85px)!important;
-      flex:0 0 var(--card-w)!important;
-    }
-
-    /* أوراق الطاولة */
-    body.game-active .table-area .card {
-      --card-w: clamp(44px,12vw,56px)!important;
-      --card-h: clamp(64px,17.5vw,82px)!important;
-    }
-
-    /* game-actions-panel (أزرار اللعب) */
-    body.game-active .game-actions-panel {
-      flex:0 0 auto!important;
-      padding:5px 6px!important;
-      border-radius:12px!important;
-    }
-    body.game-active .game-actions-panel h3 { display:none!important; }
-    body.game-active .game-action {
-      font-size:.72rem!important;
-      padding:7px 8px!important;
-      min-height:36px!important;
-    }
-  }
-
-  /* ── 3. تابليت / آيباد portrait (601px – 900px) ── */
-  @media (min-width:601px) and (max-width:900px) and (orientation:portrait) {
-
-    body.game-active .container {
-      display:flex;
-      flex-direction:column;
-      height:100dvh;
-      max-height:100dvh;
-      padding:6px 8px env(safe-area-inset-bottom,10px)!important;
-      gap:6px!important;
-      overflow:hidden!important;
-    }
-
-    body.game-active .game-stage {
-      flex:1 1 0!important;
-      min-height:0!important;
-      display:grid!important;
-      /* طاولة في المنتصف، sidebar على الجانب بس أصغر */
-      grid-template-columns:minmax(0,180px) minmax(0,1fr)!important;
-      gap:8px!important;
-    }
-
-    body.game-active .game-chat-rail { display:none!important; }
-
-    body.game-active .game-side-rail {
-      display:flex!important;
-      flex-direction:column!important;
-      gap:6px!important;
-      overflow-y:auto!important;
-      min-height:0!important;
-    }
-
-    body.game-active .hand-cards {
-      flex-wrap:nowrap!important;
-      overflow-x:auto!important;
-      scrollbar-width:none;
-    }
-    body.game-active .hand-cards::-webkit-scrollbar { display:none; }
-
-    body.game-active .hand-cards .card,
-    body.game-active .hand-panel .card {
-      --card-w: clamp(52px,9vw,70px)!important;
-      --card-h: clamp(76px,13vw,102px)!important;
-      flex:0 0 var(--card-w)!important;
-    }
-  }
-
-  /* ── 4. ضمان ظهور أزرار اللعب واضحة دائماً ── */
-  @media (max-width:900px) {
-    body.game-active .btn {
-      touch-action:manipulation;
-      -webkit-tap-highlight-color:transparent;
-    }
-    /* تأكد إن أزرار اللعب ما تتقطعش */
-    body.game-active .game-actions-grid {
-      display:flex!important;
-      flex-wrap:wrap!important;
-      gap:5px!important;
-    }
-  }
 </style>
+
+<meta name="theme-color" content="#20130b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ع القهوة">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./ahwa-app-icon-192.png">
+
 </head>
 <body>
   <main class="container">
@@ -2526,7 +2292,7 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
       <div class="modal-topline"><span class="mini-lamp"></span><span class="modal-kicker">التحكم في أجواء القعدة</span><button class="modal-close" onclick="closeSoundSettings()" aria-label="إغلاق">×</button></div>
       <h2 id="soundTitle">🔊 صوت القهوة</h2>
       <p class="modal-subtitle">ظبط كل صوت لوحده، أو اقفل أي طبقة في أي وقت.</p>
-      <div class="sound-setting"><div><strong>أجواء القهوة</strong><small>همهمة القعدة وصوت المكان</small></div><input id="ambienceVolume" class="volume-range" type="range" min="0" max="100" value="0" oninput="setAudioVolume('ambience',this.value)"></div>
+      <div class="sound-setting"><div><strong>أجواء القهوة</strong><small>همهمة القعدة وصوت المكان</small></div><input id="ambienceVolume" class="volume-range" type="range" min="0" max="100" value="20" oninput="setAudioVolume('ambience',this.value)"></div>
       <div class="sound-setting"><div><strong>موسيقى القعدة</strong><small>عود وناي بإيقاع هادئ</small></div><input id="musicVolume" class="volume-range" type="range" min="0" max="100" value="18" oninput="setAudioVolume('music',this.value)"></div>
       <div class="sound-setting"><div><strong>صوت الكوتشينة والفنجان</strong><small>تقليب وسحب الورق ورنة الكوب</small></div><input id="effectsVolume" class="volume-range" type="range" min="0" max="100" value="55" oninput="setAudioVolume('effects',this.value)"></div>
       <div class="sound-setting"><div><strong>نداءات القهوجي</strong><small>شاي خمسين، قهوة ع الريحة، حلبة حصا، وحاجة ساقعة</small></div><input id="calloutVolume" class="volume-range" type="range" min="0" max="100" value="32" oninput="setAudioVolume('callouts',this.value)"></div>
@@ -4770,8 +4536,81 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
     applyInviteFromUrl();
   </script>
 <script src="./landscape-mode.js"></script>
+<style id="aq-device-fit-v2">
+
+/* AQ device fit layer — placed after legacy CSS to break old conflicting sizing. */
+:root{--aq-vh:1dvh;--aq-vw:1vw}
+html{box-sizing:border-box;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;max-width:100%;overscroll-behavior-x:none}
+button,[role=button]{touch-action:manipulation}
+@media (max-width:1100px){
+ html,body{width:100%!important;max-width:100%!important}
+ input,button,select,textarea{min-width:0}
+ img,video,canvas,svg{max-width:100%}
+ [role=dialog],.modal,.modalwrap,.overlay .modal,.lux-overlay .modal{max-width:calc(100vw - 12px)!important;max-height:calc(100dvh - 12px)!important}
+ :root{--aq-safe-top:env(safe-area-inset-top,0px);--aq-safe-bottom:env(safe-area-inset-bottom,0px)}
+}
+@media (pointer:coarse){button,a,[role=button]{-webkit-tap-highlight-color:transparent}}
+#aq-ios-install-help{position:fixed;z-index:2147483647;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;direction:rtl}
+#aq-ios-install-help.aq-visible{display:flex}
+#aq-ios-install-help>div{width:min(420px,100%);border:2px solid #bd944c;border-radius:20px;background:#24160d;color:#fff2d9;padding:20px;font-family:Tahoma,Arial,sans-serif;text-align:center;box-shadow:0 15px 60px #0009;line-height:1.7}
+#aq-ios-install-help button{border:1px solid #d9b775;border-radius:12px;background:#146d45;color:#fff;padding:10px 24px;font-weight:bold}
+
+
+/* Basra: playing surface never overflows viewport, move secondary controls below. */
+@media(max-width:1100px){
+ html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+ .container{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+ body.game-active .container{position:relative!important;height:auto!important;max-height:none!important;min-height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;display:flex!important;flex-direction:column!important}
+ body.game-active .game-board{width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important}
+ body.game-active .game-stage{display:flex!important;flex-direction:column!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;max-height:none!important;overflow:visible!important;gap:6px!important}
+ body.game-active .game-stage>*{max-width:100%!important;min-width:0!important;flex-shrink:0!important}
+ body.game-active .table-surface{min-width:0!important;max-width:100%!important;width:100%!important;min-height:var(--aq-basra-table-h,250px)!important;box-sizing:border-box!important;overflow:hidden!important}
+ body.game-active .game-topbar{max-width:100%!important;min-width:0!important}
+}
+
+</style>
+<script id="aq-device-fit-js">
+
+(function(){
+ 'use strict';
+ const kind=document.documentElement.dataset.aqFitGame;
+ const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+ const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ const showHelp=()=>{
+  let overlay=document.getElementById('aq-ios-install-help');
+  if(!overlay){overlay=document.createElement('div');overlay.id='aq-ios-install-help';overlay.innerHTML='<div><h2>📱 ملء الشاشة على الآيفون والآيباد</h2><p>من Safari اضغط <b>مشاركة</b> ثم <b>إضافة إلى الشاشة الرئيسية</b>، وافتح «ع القهوة» من الأيقونة الجديدة لتظهر كتطبيق بدون شريط المتصفح.</p><button type="button">فهمت</button></div>';overlay.querySelector('button').addEventListener('click',()=>overlay.classList.remove('aq-visible'));document.body.appendChild(overlay)}
+  overlay.classList.add('aq-visible');
+ };
+ function fit(){
+  const vw=Math.max(240,document.documentElement.clientWidth),vh=Math.max(260,window.visualViewport?.height||innerHeight),wide=vw>vh;
+  const board=Math.max(170,Math.floor(Math.min(vw-20,vh-(wide?104:kind==='chess'?235:kind==='ludo'?230:kind==='snakes'?190:180))));
+  document.documentElement.style.setProperty('--aq-board-fit',board+'px');
+  document.documentElement.style.setProperty('--aq-basra-table-h',Math.max(210,Math.min(500,Math.floor(vh*.43)))+'px');
+  if(kind==='chess'){
+   const vp=document.querySelector('.chess-viewport');
+   if(vp){const r=vp.getBoundingClientRect();const max=Math.floor(Math.min(vw-20, r.width-6, r.height-6));if(max>100)document.documentElement.style.setProperty('--aq-board-fit',Math.max(100,max)+'px')}
+  }
+ }
+ let raf=0;
+ const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit)};
+ document.addEventListener('DOMContentLoaded',()=>{
+  fit();setTimeout(fit,250);setTimeout(fit,900);
+  // Safari cannot enter true fullscreen using the regular Fullscreen API on iPhone.
+  if(isIOS&&!standalone){document.addEventListener('click',event=>{
+   const btn=event.target.closest('button,a,[role="button"]');if(!btn)return;
+   const label=((btn.textContent||'')+' '+(btn.getAttribute('title')||'')+' '+(btn.getAttribute('aria-label')||'')+' '+(btn.id||'')).toLowerCase();
+   if(/ملء الشاشة|fullscreen|fullbtn|full-screen|تكبير الشاشة/.test(label)){
+    event.preventDefault();event.stopImmediatePropagation();showHelp();
+   }
+  },true)}
+ });
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(fit,220),{passive:true});
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+})();
+
+</script>
 </body>
 </html>
-
-
-

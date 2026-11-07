@@ -1,8 +1,8 @@
-﻿<!doctype html>
-<html lang="ar" dir="rtl">
+<!doctype html>
+<html data-aq-fit-game="domino" lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1a0e08">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1164,6 +1164,14 @@ body[data-table-skin="sand"] .felt{background:radial-gradient(ellipse at center,
 @media(max-width:760px){#app{width:100vw!important;max-width:100vw!important;overflow:hidden!important}.layout,.arena,.table-shell,.felt,.chain-viewport,.hand-zone{min-width:0!important;max-width:100%!important}.chain-viewport{overflow-x:auto!important}.hand-track{overflow-x:auto!important;min-width:0!important}.header,.bottom-hub{max-width:100%!important}}
 @media(max-height:670px) and (max-width:760px){.arena{grid-template-rows:32px minmax(140px,1fr) 105px 35px!important}.hand-zone{height:105px!important;min-height:105px!important;max-height:105px!important}.bottom-hub{height:65px!important;min-height:65px!important;max-height:65px!important}}
 </style>
+
+<meta name="theme-color" content="#20130b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ع القهوة">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./ahwa-app-icon-192.png">
+
 </head>
 <body data-skin="ivory">
 <div id="app">
@@ -1365,7 +1373,7 @@ const TABLE_SKINS=[
  {id:'sand',name:'رملي شعبي',desc:'لون دافي',swatch:'sand'}
 ];
 const safeAlphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=false, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
+let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=true, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
 let firebaseReady=false, db=null, cafeCueTimer=null, lastCafeCue='', cafeCueFirst=true;
 // Keep the same five radio choices and stream/official fallbacks as the Basra game.
 const DOMINO_RADIO_STATIONS={
@@ -2066,96 +2074,6 @@ document.addEventListener('DOMContentLoaded',aqAutoJoinInvite);
 <style>
 #ahwaSoundTest{position:fixed;bottom:118px;right:15px;z-index:48;border:2px solid #f5c36d;background:#2e1b0d;color:#fff1cd;padding:9px 13px;border-radius:14px;font-weight:900;box-shadow:0 4px 18px #0009}
 @media(max-width:760px){#ahwaSoundTest{bottom:65px;right:7px;padding:6px 9px;font-size:11px}}
-
-  /* ============================================================
-     ع القهوة — Domino portrait fix (v2)
-     ============================================================ */
-  #aq-landscape-gate{display:none!important}
-  body.aq-landscape-blocked{overflow:auto!important}
-
-  /* Portrait موبايل */
-  @media(max-width:600px) and (orientation:portrait),(max-width:480px){
-    html,body{overflow:hidden!important}
-    #app{
-      height:100dvh!important;
-      grid-template-rows:54px minmax(0,1fr) 72px!important;
-      padding:3px!important;gap:3px!important;
-    }
-    .header{height:54px!important;padding:2px 6px!important;border-radius:12px!important}
-    .brand-text .brand-title{font-size:13px!important}
-    .top-shortcuts,.head-stats-group{display:none!important}
-
-    /* إخفاء الـ side panel — كل المساحة للطاولة */
-    .layout{
-      display:block!important;
-      height:100%!important;
-      min-height:0!important;
-      overflow:hidden!important;
-    }
-    #sidePanel,.side-panel{display:none!important}
-
-    .arena{
-      height:100%!important;width:100%!important;
-      border-radius:12px!important;
-      padding:5px!important;gap:4px!important;
-      grid-template-rows:44px minmax(0,1fr) 120px 50px!important;
-    }
-    .table-shell{border-radius:12px!important;padding:6px!important;overflow:hidden!important}
-    .chain-viewport{padding:4px!important}
-
-    /* قطع الدومينو في الأسفل */
-    .hand-zone{
-      height:120px!important;min-height:120px!important;max-height:120px!important;
-      grid-template-rows:14px minmax(0,1fr) 24px!important;
-    }
-    .hand-track{
-      overflow-x:auto!important;overflow-y:visible!important;
-      padding:4px 6px!important;min-height:70px!important;
-      scrollbar-width:none;
-    }
-    .hand-track::-webkit-scrollbar{display:none}
-    .hand-tile{
-      height:52px!important;min-height:52px!important;
-      flex:0 0 auto!important;
-    }
-  }
-
-  /* Landscape موبايل */
-  @media(max-width:900px) and (orientation:landscape) and (max-height:500px){
-    #app{
-      grid-template-rows:42px minmax(0,1fr) 62px!important;
-      padding:3px!important;gap:3px!important;
-    }
-    .layout{
-      display:grid!important;
-      grid-template-columns:minmax(0,1fr) 180px!important;
-      gap:5px!important;height:100%!important;min-height:0!important;
-    }
-    #sidePanel,.side-panel{
-      display:flex!important;flex-direction:column!important;
-      overflow-y:auto!important;min-height:0!important;
-      gap:4px!important;
-    }
-    .arena{
-      grid-template-rows:34px minmax(0,1fr) 88px 40px!important;
-      padding:3px!important;gap:3px!important;
-    }
-    .hand-zone{height:88px!important;min-height:88px!important;max-height:88px!important}
-    .hand-tile{height:40px!important;min-height:40px!important}
-  }
-
-  /* تابليت portrait */
-  @media(min-width:601px) and (max-width:900px) and (orientation:portrait){
-    .layout{
-      display:grid!important;
-      grid-template-columns:minmax(0,1fr) 200px!important;
-      gap:8px!important;height:100%!important;min-height:0!important;
-    }
-    #sidePanel,.side-panel{
-      display:flex!important;flex-direction:column!important;
-      overflow-y:auto!important;min-height:0!important;
-    }
-  }
 </style>
 <button id="ahwaSoundTest" type="button" onclick="ahwaAudioTest()" title="اضغط لتجربة صوت الدومينو والقهوة">🔊 اختبار الصوت</button>
 <script>
@@ -2172,7 +2090,91 @@ async function ahwaAudioTest(){
 }
 </script>
 <script src="./ahwa-mobile.js" defer></script><script src="ahwa-mazag-radio.js"></script>
+<style id="aq-device-fit-v2">
+
+/* AQ device fit layer — placed after legacy CSS to break old conflicting sizing. */
+:root{--aq-vh:1dvh;--aq-vw:1vw}
+html{box-sizing:border-box;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;max-width:100%;overscroll-behavior-x:none}
+button,[role=button]{touch-action:manipulation}
+@media (max-width:1100px){
+ html,body{width:100%!important;max-width:100%!important}
+ input,button,select,textarea{min-width:0}
+ img,video,canvas,svg{max-width:100%}
+ [role=dialog],.modal,.modalwrap,.overlay .modal,.lux-overlay .modal{max-width:calc(100vw - 12px)!important;max-height:calc(100dvh - 12px)!important}
+ :root{--aq-safe-top:env(safe-area-inset-top,0px);--aq-safe-bottom:env(safe-area-inset-bottom,0px)}
+}
+@media (pointer:coarse){button,a,[role=button]{-webkit-tap-highlight-color:transparent}}
+#aq-ios-install-help{position:fixed;z-index:2147483647;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;direction:rtl}
+#aq-ios-install-help.aq-visible{display:flex}
+#aq-ios-install-help>div{width:min(420px,100%);border:2px solid #bd944c;border-radius:20px;background:#24160d;color:#fff2d9;padding:20px;font-family:Tahoma,Arial,sans-serif;text-align:center;box-shadow:0 15px 60px #0009;line-height:1.7}
+#aq-ios-install-help button{border:1px solid #d9b775;border-radius:12px;background:#146d45;color:#fff;padding:10px 24px;font-weight:bold}
+
+
+/* Domino: table remains inside the safe viewing area; hand scrolls independently. */
+@media(max-width:1100px){
+ #app{width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;padding-inline:3px!important}
+ .layout{min-width:0!important;max-width:100%!important;grid-template-columns:minmax(0,1fr)!important;display:grid!important}
+ .left-nav,.side-panel{display:none!important}
+ .arena{min-width:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
+ .table-shell,.felt,.chain-viewport,.hand-zone,.hand-track{min-width:0!important;max-width:100%!important}
+ .chain-viewport{overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior:contain!important}
+ .hand-track{overflow-x:auto!important;overscroll-behavior-x:contain!important}
+}
+@media(max-width:1100px) and (orientation:portrait){
+ #app{height:100dvh!important;grid-template-rows:clamp(45px,8dvh,67px) minmax(0,1fr) clamp(40px,8dvh,70px)!important}
+ .arena{grid-template-rows:clamp(30px,6dvh,45px) minmax(0,1fr) clamp(102px,18dvh,150px) clamp(28px,5dvh,40px)!important;gap:3px!important}
+ .table-shell{min-height:0!important;height:100%!important;padding:2px!important}
+ .hand-zone{height:100%!important;min-height:0!important;max-height:100%!important}
+}
+@media(max-width:1100px) and (orientation:landscape){
+ #app{height:100dvh!important;grid-template-rows:clamp(35px,10dvh,55px) minmax(0,1fr) clamp(27px,7dvh,45px)!important}
+ .arena{grid-template-rows:0 minmax(0,1fr) clamp(64px,20dvh,100px) 0!important;gap:2px!important}
+ .player-row,.skin-strip{display:none!important}
+ .hand-zone{height:100%!important;min-height:0!important;max-height:100%!important}
+}
+
+</style>
+<script id="aq-device-fit-js">
+
+(function(){
+ 'use strict';
+ const kind=document.documentElement.dataset.aqFitGame;
+ const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+ const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ const showHelp=()=>{
+  let overlay=document.getElementById('aq-ios-install-help');
+  if(!overlay){overlay=document.createElement('div');overlay.id='aq-ios-install-help';overlay.innerHTML='<div><h2>📱 ملء الشاشة على الآيفون والآيباد</h2><p>من Safari اضغط <b>مشاركة</b> ثم <b>إضافة إلى الشاشة الرئيسية</b>، وافتح «ع القهوة» من الأيقونة الجديدة لتظهر كتطبيق بدون شريط المتصفح.</p><button type="button">فهمت</button></div>';overlay.querySelector('button').addEventListener('click',()=>overlay.classList.remove('aq-visible'));document.body.appendChild(overlay)}
+  overlay.classList.add('aq-visible');
+ };
+ function fit(){
+  const vw=Math.max(240,document.documentElement.clientWidth),vh=Math.max(260,window.visualViewport?.height||innerHeight),wide=vw>vh;
+  const board=Math.max(170,Math.floor(Math.min(vw-20,vh-(wide?104:kind==='chess'?235:kind==='ludo'?230:kind==='snakes'?190:180))));
+  document.documentElement.style.setProperty('--aq-board-fit',board+'px');
+  document.documentElement.style.setProperty('--aq-basra-table-h',Math.max(210,Math.min(500,Math.floor(vh*.43)))+'px');
+  if(kind==='chess'){
+   const vp=document.querySelector('.chess-viewport');
+   if(vp){const r=vp.getBoundingClientRect();const max=Math.floor(Math.min(vw-20, r.width-6, r.height-6));if(max>100)document.documentElement.style.setProperty('--aq-board-fit',Math.max(100,max)+'px')}
+  }
+ }
+ let raf=0;
+ const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit)};
+ document.addEventListener('DOMContentLoaded',()=>{
+  fit();setTimeout(fit,250);setTimeout(fit,900);
+  // Safari cannot enter true fullscreen using the regular Fullscreen API on iPhone.
+  if(isIOS&&!standalone){document.addEventListener('click',event=>{
+   const btn=event.target.closest('button,a,[role="button"]');if(!btn)return;
+   const label=((btn.textContent||'')+' '+(btn.getAttribute('title')||'')+' '+(btn.getAttribute('aria-label')||'')+' '+(btn.id||'')).toLowerCase();
+   if(/ملء الشاشة|fullscreen|fullbtn|full-screen|تكبير الشاشة/.test(label)){
+    event.preventDefault();event.stopImmediatePropagation();showHelp();
+   }
+  },true)}
+ });
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('orientationchange',()=>setTimeout(fit,220),{passive:true});
+ window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+})();
+
+</script>
 </body></html>
-
-
-
