@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -2024,6 +2024,248 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 }
 @media(max-width:390px){button{touch-action:manipulation;}}
 @media(max-width:760px){body.game-active .game-stage{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;width:100%!important;min-width:0!important;max-width:100%!important;gap:6px!important}body.game-active .game-stage>*{max-width:100%!important;min-width:0!important}body.game-active .game-board{width:100%!important;max-width:100%!important;min-width:0!important}body.game-active .table-surface{max-width:100%!important;min-width:0!important;min-height:210px!important}body.game-active .game-topbar{grid-template-columns:minmax(0,1fr)!important;max-width:100%!important}body{overflow-x:hidden!important}}
+
+  /* ============================================================
+     ع القهوة — Portrait-first mobile layout  (v2)
+     تشغيل كامل على الموبايل والتابليت في الوضع العمودي
+     ============================================================ */
+
+  /* ── 1. إخفاء شاشة "لف الموبايل" نهائياً ── */
+  #aq-landscape-gate { display:none!important; }
+  body.aq-landscape-blocked { overflow:auto!important; }
+
+  /* ── 2. Portrait على الموبايل (≤ 600px عرض) ── */
+  @media (max-width:600px) and (orientation:portrait),
+         (max-width:600px) {
+
+    html, body {
+      height:100%;
+      overflow-x:hidden;
+    }
+
+    /* الـ container يملأ الشاشة كاملاً */
+    body.game-active .container {
+      display:flex;
+      flex-direction:column;
+      height:100dvh;
+      max-height:100dvh;
+      padding:4px 4px env(safe-area-inset-bottom,8px)!important;
+      gap:4px!important;
+      overflow:hidden!important;
+    }
+
+    /* Header مضغوط */
+    body.game-active .header {
+      flex:0 0 auto;
+      padding:7px 10px!important;
+      margin:0 0 0!important;
+      border-radius:14px!important;
+      min-height:0!important;
+    }
+    body.game-active .header h1 { font-size:1.15rem!important; margin:0!important; }
+    body.game-active .header p { display:none!important; }
+    body.game-active .header:after { display:none!important; }
+    body.game-active .brand-row { margin-bottom:4px!important; flex-wrap:nowrap!important; }
+    body.game-active .brand-tag { font-size:.68rem!important; padding:3px 7px!important; }
+    body.game-active .version-tag { font-size:.6rem!important; padding:3px 6px!important; }
+    body.game-active .header-actions { gap:5px!important; flex-wrap:nowrap!important; }
+    body.game-active .header-actions .btn { font-size:.7rem!important; padding:5px 8px!important; min-height:30px!important; }
+    body.game-active .status { font-size:.68rem!important; padding:4px 8px!important; }
+
+    /* topbar مضغوطة */
+    body.game-active .game-topbar {
+      flex:0 0 64px!important;
+      height:64px!important;
+      min-height:64px!important;
+      max-height:64px!important;
+      grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;
+      gap:4px!important;
+      overflow:hidden!important;
+    }
+    body.game-active .game-topbar .info-card {
+      padding:3px 4px!important;
+      border-radius:10px!important;
+    }
+    body.game-active .game-topbar .info-card h3 { font-size:.52rem!important; margin:0 0 2px!important; }
+    body.game-active .game-topbar .info-card p  { font-size:.78rem!important; }
+
+    /* game notice شريط رفيع */
+    body.game-active #gameNotice {
+      flex:0 0 20px!important;
+      height:20px!important;
+      min-height:20px!important;
+      max-height:20px!important;
+      font-size:.58rem!important;
+      padding:2px 6px!important;
+      line-height:1.2!important;
+      margin:0!important;
+    }
+
+    /* game-board يملأ المساحة المتبقية */
+    body.game-active .game-board {
+      flex:1 1 0!important;
+      min-height:0!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:4px!important;
+      overflow:hidden!important;
+    }
+
+    /* game-stage: عمود واحد بدل 3 أعمدة */
+    body.game-active .game-stage {
+      flex:1 1 0!important;
+      min-height:0!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:4px!important;
+      grid-template-columns:none!important;
+      overflow:hidden!important;
+    }
+
+    /* إخفاء الـ side rail (قائمة اللاعبين + chat) وتحويله لـ bottom bar */
+    body.game-active .game-side-rail {
+      display:none!important;
+    }
+    body.game-active .game-chat-rail {
+      display:none!important;
+    }
+
+    /* الطاولة تاخد كل المساحة */
+    body.game-active .game-main-column {
+      flex:1 1 0!important;
+      min-height:0!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:4px!important;
+      overflow:hidden!important;
+    }
+
+    body.game-active .table-panel {
+      flex:1 1 0!important;
+      min-height:0!important;
+      overflow:hidden!important;
+      border-radius:14px!important;
+      padding:8px!important;
+    }
+
+    body.game-active .table-area {
+      min-height:120px!important;
+      padding:8px 4px!important;
+      gap:4px!important;
+    }
+
+    /* أوراق اللاعب في الأسفل */
+    body.game-active .hand-panel {
+      flex:0 0 auto!important;
+      min-height:80px!important;
+      max-height:110px!important;
+      overflow:visible!important;
+      padding:4px!important;
+      border-radius:12px!important;
+    }
+    body.game-active .hand-cards {
+      height:auto!important;
+      min-height:72px!important;
+      max-height:100px!important;
+      gap:4px!important;
+      flex-wrap:nowrap!important;
+      overflow-x:auto!important;
+      overflow-y:hidden!important;
+      padding:4px 6px!important;
+      justify-content:center!important;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    body.game-active .hand-cards::-webkit-scrollbar { display:none; }
+
+    /* حجم الأوراق على الموبايل */
+    body.game-active .hand-cards .card,
+    body.game-active .hand-panel .card {
+      --card-w: clamp(46px,13vw,58px)!important;
+      --card-h: clamp(68px,19vw,85px)!important;
+      flex:0 0 var(--card-w)!important;
+    }
+
+    /* أوراق الطاولة */
+    body.game-active .table-area .card {
+      --card-w: clamp(44px,12vw,56px)!important;
+      --card-h: clamp(64px,17.5vw,82px)!important;
+    }
+
+    /* game-actions-panel (أزرار اللعب) */
+    body.game-active .game-actions-panel {
+      flex:0 0 auto!important;
+      padding:5px 6px!important;
+      border-radius:12px!important;
+    }
+    body.game-active .game-actions-panel h3 { display:none!important; }
+    body.game-active .game-action {
+      font-size:.72rem!important;
+      padding:7px 8px!important;
+      min-height:36px!important;
+    }
+  }
+
+  /* ── 3. تابليت / آيباد portrait (601px – 900px) ── */
+  @media (min-width:601px) and (max-width:900px) and (orientation:portrait) {
+
+    body.game-active .container {
+      display:flex;
+      flex-direction:column;
+      height:100dvh;
+      max-height:100dvh;
+      padding:6px 8px env(safe-area-inset-bottom,10px)!important;
+      gap:6px!important;
+      overflow:hidden!important;
+    }
+
+    body.game-active .game-stage {
+      flex:1 1 0!important;
+      min-height:0!important;
+      display:grid!important;
+      /* طاولة في المنتصف، sidebar على الجانب بس أصغر */
+      grid-template-columns:minmax(0,180px) minmax(0,1fr)!important;
+      gap:8px!important;
+    }
+
+    body.game-active .game-chat-rail { display:none!important; }
+
+    body.game-active .game-side-rail {
+      display:flex!important;
+      flex-direction:column!important;
+      gap:6px!important;
+      overflow-y:auto!important;
+      min-height:0!important;
+    }
+
+    body.game-active .hand-cards {
+      flex-wrap:nowrap!important;
+      overflow-x:auto!important;
+      scrollbar-width:none;
+    }
+    body.game-active .hand-cards::-webkit-scrollbar { display:none; }
+
+    body.game-active .hand-cards .card,
+    body.game-active .hand-panel .card {
+      --card-w: clamp(52px,9vw,70px)!important;
+      --card-h: clamp(76px,13vw,102px)!important;
+      flex:0 0 var(--card-w)!important;
+    }
+  }
+
+  /* ── 4. ضمان ظهور أزرار اللعب واضحة دائماً ── */
+  @media (max-width:900px) {
+    body.game-active .btn {
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+    /* تأكد إن أزرار اللعب ما تتقطعش */
+    body.game-active .game-actions-grid {
+      display:flex!important;
+      flex-wrap:wrap!important;
+      gap:5px!important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -4530,3 +4772,5 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 <script src="./landscape-mode.js"></script>
 </body>
 </html>
+
+
