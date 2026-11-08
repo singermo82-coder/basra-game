@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html data-aq-fit-game="domino" lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -1373,7 +1373,7 @@ const TABLE_SKINS=[
  {id:'sand',name:'رملي شعبي',desc:'لون دافي',swatch:'sand'}
 ];
 const safeAlphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=true, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
+let localGame=null, onlineGame=null, onlineRef=null, onlineListener=null, mode='local', myOnlineId=null, myRoomCode='', selectedTileId=null, difficulty='normal', targetScore=100, mutedIds=new Set(), chatSoundOn=true, fxEnabled=true, ambienceEnabled=false, calloutEnabled=false, teaCuesEnabled=false, volume=.65, unread=0, chatOpen=true, lastChatCount=0, lastSentAt=0, aiTimer=null, soundReady=false, toastTimer=null, masterMuted=false, dominoAudioContext=null, cafeGestureRetry=null, chainResizeTimer=null;
 let firebaseReady=false, db=null, cafeCueTimer=null, lastCafeCue='', cafeCueFirst=true;
 // Keep the same five radio choices and stream/official fallbacks as the Basra game.
 const DOMINO_RADIO_STATIONS={
@@ -2069,7 +2069,7 @@ function aqAutoJoinInvite(){
 document.addEventListener('DOMContentLoaded',aqAutoJoinInvite);
 
 </script>
-<script src="./landscape-mode.js"></script>
+
 
 <style>
 #ahwaSoundTest{position:fixed;bottom:118px;right:15px;z-index:48;border:2px solid #f5c36d;background:#2e1b0d;color:#fff1cd;padding:9px 13px;border-radius:14px;font-weight:900;box-shadow:0 4px 18px #0009}
@@ -2178,4 +2178,9 @@ button,[role=button]{touch-action:manipulation}
 
 </script>
 <script defer src="./ahwa-account-widget.js"></script>
+
+False
+<style id="aq-domino-r">@media(max-width:600px){html,body{overflow:hidden!important;height:100%!important}#app{height:100dvh!important;grid-template-rows:52px minmax(0,1fr) 70px!important;padding:3px!important;gap:3px!important}.header{height:52px!important;padding:2px 5px!important;border-radius:11px!important}.top-shortcuts,.head-stats-group{display:none!important}.layout{display:block!important;height:100%!important;min-height:0!important;overflow:hidden!important}#sidePanel,.side-panel{display:none!important}.arena{height:100%!important;width:100%!important;border-radius:11px!important;padding:4px!important;gap:3px!important;grid-template-rows:42px minmax(0,1fr) 116px 48px!important}.table-shell{border-radius:10px!important;padding:5px!important;overflow:hidden!important}.hand-zone{height:116px!important;min-height:116px!important;max-height:116px!important;grid-template-rows:13px minmax(0,1fr) 22px!important}.hand-track{overflow-x:auto!important;overflow-y:visible!important;padding:3px 5px!important;min-height:68px!important;scrollbar-width:none}.hand-track::-webkit-scrollbar{display:none}.hand-tile{height:50px!important;min-height:50px!important;flex:0 0 auto!important}}@media(orientation:landscape) and (max-height:500px){#app{grid-template-rows:40px minmax(0,1fr) 60px!important;padding:3px!important;gap:3px!important}.layout{display:grid!important;grid-template-columns:minmax(0,1fr) 175px!important;gap:4px!important;height:100%!important;min-height:0!important}#sidePanel,.side-panel{display:flex!important;flex-direction:column!important;overflow-y:auto!important;min-height:0!important;gap:3px!important}.arena{grid-template-rows:32px minmax(0,1fr) 84px 38px!important;padding:3px!important;gap:3px!important}.hand-zone{height:84px!important;min-height:84px!important;max-height:84px!important}.hand-tile{height:38px!important;min-height:38px!important}}</style>
+<style id="aq-fs-ui">#aq-fs-btn{position:fixed;z-index:9999;bottom:max(14px,env(safe-area-inset-bottom,14px));left:max(12px,env(safe-area-inset-left,12px));width:44px;height:44px;border-radius:12px;border:1px solid #e8c876;background:linear-gradient(145deg,#4a2510,#1a0d08);color:#ffe3a4;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px #0009;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#aq-fs-btn:active{transform:scale(.92)}#aq-fs-toast{position:fixed;z-index:10000;bottom:max(68px,env(safe-area-inset-bottom,68px));left:max(8px,env(safe-area-inset-left,8px));max-width:min(280px,85vw);background:#2a160ef5;border:1px solid #e6bd72;border-radius:10px;color:#fff2ca;font:600 12px Cairo,Tahoma,sans-serif;padding:8px 12px;line-height:1.7;opacity:0;pointer-events:none;transition:opacity .3s}#aq-fs-toast.show{opacity:1}#aq-landscape-gate{display:none!important}body.aq-landscape-blocked{overflow:auto!important}</style><script id="aq-fs-js">(function(){if(document.getElementById("aq-fs-btn"))return;var b=document.createElement("button");b.id="aq-fs-btn";b.setAttribute("aria-label","ملء الشاشة");b.textContent="\u26f6";document.body.appendChild(b);var t=document.createElement("div");t.id="aq-fs-toast";document.body.appendChild(t);var tt=null;function showMsg(m){t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("show");},5000);}var iOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/i.test(navigator.userAgent)&&navigator.maxTouchPoints>1);function upd(){b.textContent=document.fullscreenElement?"\u22df":"\u26f6";b.setAttribute("aria-label",document.fullscreenElement?"خروج":"ملء الشاشة");}b.addEventListener("click",function(){if(document.fullscreenElement){document.exitFullscreen().then(upd).catch(function(){});}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen({navigationUI:"hide"}).then(upd).catch(function(){if(iOS)showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");else showMsg("اضغط F11 أو قائمة المتصفح لملء الشاشة");});}else if(document.documentElement.webkitRequestFullscreen){document.documentElement.webkitRequestFullscreen();upd();}else if(iOS){showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");}else{showMsg("افتح اللعبة من Chrome لملء الشاشة");}});document.addEventListener("fullscreenchange",upd);document.addEventListener("webkitfullscreenchange",upd);})();</script>
 </body></html>
+
