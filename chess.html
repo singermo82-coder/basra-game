@@ -1200,6 +1200,103 @@ body.ahwa-design #designSelection .design-resize{touch-action:none}
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./ahwa-app-icon-192.png">
 
+<style id="ahwa-mobile-pro-2026">
+/* MOBILE-FIRST PROFESSIONAL: Remove profile, prominent home button, full-screen board */
+@media(max-width:760px){
+  /* Hide all unnecessary header elements */
+  .profile-chip, .head-center, .head-stat, .online-indicator{display:none!important}
+  
+  /* Compact header */
+  .app{padding:3px!important}
+  .top, .premium-head{
+    padding:5px 8px!important;
+    min-height:45px!important;
+    gap:8px!important;
+  }
+  
+  /* Brand smaller */
+  .brandlink{gap:6px!important}
+  .brandlink img{width:32px!important;height:32px!important}
+  .brandlink strong{font-size:15px!important;line-height:1.2!important}
+  .brandlink small{font-size:7px!important}
+  
+  /* Actions row */
+  .head-actions{
+    flex:1!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+  }
+  
+  /* Make home button PROMINENT */
+  .head-action[href="index.html"], a.head-action[href="index.html"]{
+    background:linear-gradient(135deg,#f4d792,#d4a34e)!important;
+    border:2px solid #ffe9b8!important;
+    color:#2a1805!important;
+    min-width:65px!important;
+    min-height:42px!important;
+    padding:4px 8px!important;
+    font-weight:900!important;
+    box-shadow:0 2px 8px #00000066!important;
+  }
+  .head-action[href="index.html"] span{font-size:20px!important}
+  .head-action[href="index.html"] small{font-size:9px!important;font-weight:900!important}
+  
+  /* Other action buttons smaller */
+  .head-action:not([href="index.html"]){
+    min-width:36px!important;
+    min-height:38px!important;
+    padding:2px 3px!important;
+  }
+  .head-action:not([href="index.html"]) span{font-size:15px!important}
+  .head-action:not([href="index.html"]) small{font-size:7px!important}
+  
+  /* Layout: board first, full screen */
+  .layout{
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+    gap:4px!important;
+  }
+  .layout>*{min-width:0!important;max-width:100%!important;width:100%!important}
+  
+  /* Board takes maximum space */
+  .boardFrame{
+    padding:3px!important;
+    order:-1!important;
+    margin:0!important;
+  }
+  .board{
+    width:min(98vw,calc(100dvh - 120px))!important;
+    max-width:100%!important;
+    height:auto!important;
+    aspect-ratio:1!important;
+    margin-inline:auto!important;
+  }
+  
+  /* Panels compact */
+  .panel{padding:6px!important}
+  .panel h2{font-size:13px!important;margin-bottom:5px!important}
+  .panel p, .panel .label{font-size:11px!important}
+  .panel .btn{padding:7px 10px!important;font-size:12px!important}
+  
+  /* Footer smaller */
+  .footer{font-size:9px!important;margin:5px 0 2px!important}
+}
+
+/* Extra small phones */
+@media(max-width:760px) and (max-height:620px){
+  .board{width:min(98vw,calc(100dvh - 100px))!important}
+}
+
+/* Landscape mode on mobile */
+@media(max-width:900px) and (orientation:landscape){
+  .board{width:min(calc(100dvh - 60px),90vw)!important}
+  .top, .premium-head{padding:3px 6px!important;min-height:38px!important}
+  .brandlink img{width:28px!important;height:28px!important}
+  .brandlink strong{font-size:13px!important}
+  .head-action[href="index.html"]{min-width:55px!important;min-height:36px!important}
+}
+</style>
 </head>
 <body data-skin="ivory" class="table-theme-walnut">
 <div id="app">
@@ -1632,3 +1729,4 @@ True
 <style id="aq-chess-r">@media(max-width:600px){html,body{overflow:hidden!important;height:100%!important}#app{height:100dvh!important;display:grid!important;grid-template-rows:50px minmax(0,1fr) 50px!important;padding:3px!important;gap:3px!important}.header{height:50px!important;min-height:50px!important;grid-template-columns:80px minmax(0,1fr) auto!important;padding:2px 4px!important;border-radius:10px!important}.brand{height:44px!important}.brand-title{font-size:12px!important}.brand-sub{font-size:6px!important}.head-stats-group,.top-shortcuts{display:none!important}.layout{display:block!important;height:100%!important;min-height:0!important;overflow:hidden!important}.side-panel,.left-panel,.left-nav{display:none!important}.arena{width:100%!important;height:100%!important;border-radius:10px!important;padding:4px!important;gap:3px!important;grid-template-rows:36px minmax(0,1fr) auto!important;overflow:hidden!important}.chess-viewport{flex:1 1 0!important;min-height:0!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:2px!important}.chess-board{width:min(98vw,calc(100dvh - 106px))!important;height:min(98vw,calc(100dvh - 106px))!important;max-width:100%!important;max-height:100%!important;aspect-ratio:1/1!important;flex-shrink:0!important}.chess-square{font-size:clamp(20px,9.5vw,34px)!important}}@media(orientation:landscape) and (max-height:500px){html,body{overflow:hidden!important;height:100%!important}#app{height:100dvh!important;grid-template-rows:40px minmax(0,1fr) 44px!important;padding:3px!important;gap:3px!important}.header{height:40px!important;min-height:40px!important;padding:1px 4px!important}.brand-title{font-size:11px!important}.brand-sub,.head-stats-group,.top-shortcuts{display:none!important}.layout{display:grid!important;grid-template-columns:minmax(0,1fr) 148px!important;gap:4px!important;height:100%!important;min-height:0!important}.left-nav{display:none!important}.side-panel{display:flex!important;flex-direction:column!important;gap:4px!important;overflow:hidden!important;min-height:0!important}.arena{padding:3px!important;gap:2px!important;grid-template-rows:28px minmax(0,1fr) auto!important;overflow:hidden!important}.chess-viewport{padding:2px!important;overflow:hidden!important}.chess-board{width:min(calc(100dvh - 86px),calc(100dvw - 162px))!important;height:min(calc(100dvh - 86px),calc(100dvw - 162px))!important;aspect-ratio:1/1!important;flex-shrink:0!important}.chess-square{font-size:clamp(16px,4.8vh,28px)!important}}@media(min-width:601px) and (max-width:900px) and (orientation:portrait){#app{height:100dvh!important;grid-template-rows:58px minmax(0,1fr) 58px!important;padding:5px!important;gap:5px!important}.layout{display:grid!important;grid-template-columns:minmax(0,1fr) 190px!important;gap:8px!important;height:100%!important;min-height:0!important}.left-nav{display:none!important}.side-panel{overflow-y:auto!important;min-height:0!important}.chess-board{width:min(100%,calc(100dvh - 130px))!important;height:min(100%,calc(100dvh - 130px))!important;aspect-ratio:1/1!important}}</style>
 <style id="aq-fs-ui">#aq-fs-btn{position:fixed;z-index:9999;bottom:max(14px,env(safe-area-inset-bottom,14px));left:max(12px,env(safe-area-inset-left,12px));width:44px;height:44px;border-radius:12px;border:1px solid #e8c876;background:linear-gradient(145deg,#4a2510,#1a0d08);color:#ffe3a4;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px #0009;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#aq-fs-btn:active{transform:scale(.92)}#aq-fs-toast{position:fixed;z-index:10000;bottom:max(68px,env(safe-area-inset-bottom,68px));left:max(8px,env(safe-area-inset-left,8px));max-width:min(280px,85vw);background:#2a160ef5;border:1px solid #e6bd72;border-radius:10px;color:#fff2ca;font:600 12px Cairo,Tahoma,sans-serif;padding:8px 12px;line-height:1.7;opacity:0;pointer-events:none;transition:opacity .3s}#aq-fs-toast.show{opacity:1}#aq-landscape-gate{display:none!important}body.aq-landscape-blocked{overflow:auto!important}</style><script id="aq-fs-js">(function(){if(document.getElementById("aq-fs-btn"))return;var b=document.createElement("button");b.id="aq-fs-btn";b.setAttribute("aria-label","ملء الشاشة");b.textContent="\u26f6";document.body.appendChild(b);var t=document.createElement("div");t.id="aq-fs-toast";document.body.appendChild(t);var tt=null;function showMsg(m){t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("show");},5000);}var iOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/i.test(navigator.userAgent)&&navigator.maxTouchPoints>1);function upd(){b.textContent=document.fullscreenElement?"\u22df":"\u26f6";b.setAttribute("aria-label",document.fullscreenElement?"خروج":"ملء الشاشة");}b.addEventListener("click",function(){if(document.fullscreenElement){document.exitFullscreen().then(upd).catch(function(){});}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen({navigationUI:"hide"}).then(upd).catch(function(){if(iOS)showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");else showMsg("اضغط F11 أو قائمة المتصفح لملء الشاشة");});}else if(document.documentElement.webkitRequestFullscreen){document.documentElement.webkitRequestFullscreen();upd();}else if(iOS){showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");}else{showMsg("افتح اللعبة من Chrome لملء الشاشة");}});document.addEventListener("fullscreenchange",upd);document.addEventListener("webkitfullscreenchange",upd);})();</script>
 </body></html>
+

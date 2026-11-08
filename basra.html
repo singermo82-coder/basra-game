@@ -2033,6 +2033,103 @@ body.game-active .table-area .card{box-shadow:0 5px 12px #0008!important}
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./ahwa-app-icon-192.png">
 
+<style id="ahwa-mobile-pro-2026">
+/* MOBILE-FIRST PROFESSIONAL: Remove profile, prominent home button, full-screen board */
+@media(max-width:760px){
+  /* Hide all unnecessary header elements */
+  .profile-chip, .head-center, .head-stat, .online-indicator{display:none!important}
+  
+  /* Compact header */
+  .app{padding:3px!important}
+  .top, .premium-head{
+    padding:5px 8px!important;
+    min-height:45px!important;
+    gap:8px!important;
+  }
+  
+  /* Brand smaller */
+  .brandlink{gap:6px!important}
+  .brandlink img{width:32px!important;height:32px!important}
+  .brandlink strong{font-size:15px!important;line-height:1.2!important}
+  .brandlink small{font-size:7px!important}
+  
+  /* Actions row */
+  .head-actions{
+    flex:1!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+  }
+  
+  /* Make home button PROMINENT */
+  .head-action[href="index.html"], a.head-action[href="index.html"]{
+    background:linear-gradient(135deg,#f4d792,#d4a34e)!important;
+    border:2px solid #ffe9b8!important;
+    color:#2a1805!important;
+    min-width:65px!important;
+    min-height:42px!important;
+    padding:4px 8px!important;
+    font-weight:900!important;
+    box-shadow:0 2px 8px #00000066!important;
+  }
+  .head-action[href="index.html"] span{font-size:20px!important}
+  .head-action[href="index.html"] small{font-size:9px!important;font-weight:900!important}
+  
+  /* Other action buttons smaller */
+  .head-action:not([href="index.html"]){
+    min-width:36px!important;
+    min-height:38px!important;
+    padding:2px 3px!important;
+  }
+  .head-action:not([href="index.html"]) span{font-size:15px!important}
+  .head-action:not([href="index.html"]) small{font-size:7px!important}
+  
+  /* Layout: board first, full screen */
+  .layout{
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+    gap:4px!important;
+  }
+  .layout>*{min-width:0!important;max-width:100%!important;width:100%!important}
+  
+  /* Board takes maximum space */
+  .boardFrame{
+    padding:3px!important;
+    order:-1!important;
+    margin:0!important;
+  }
+  .board{
+    width:min(98vw,calc(100dvh - 120px))!important;
+    max-width:100%!important;
+    height:auto!important;
+    aspect-ratio:1!important;
+    margin-inline:auto!important;
+  }
+  
+  /* Panels compact */
+  .panel{padding:6px!important}
+  .panel h2{font-size:13px!important;margin-bottom:5px!important}
+  .panel p, .panel .label{font-size:11px!important}
+  .panel .btn{padding:7px 10px!important;font-size:12px!important}
+  
+  /* Footer smaller */
+  .footer{font-size:9px!important;margin:5px 0 2px!important}
+}
+
+/* Extra small phones */
+@media(max-width:760px) and (max-height:620px){
+  .board{width:min(98vw,calc(100dvh - 100px))!important}
+}
+
+/* Landscape mode on mobile */
+@media(max-width:900px) and (orientation:landscape){
+  .board{width:min(calc(100dvh - 60px),90vw)!important}
+  .top, .premium-head{padding:3px 6px!important;min-height:38px!important}
+  .brandlink img{width:28px!important;height:28px!important}
+  .brandlink strong{font-size:13px!important}
+  .head-action[href="index.html"]{min-width:55px!important;min-height:36px!important}
+}
+</style>
 </head>
 <body>
   <main class="container">
@@ -4620,4 +4717,5 @@ button,[role=button]{touch-action:manipulation}
 <style id="aq-fs-ui">#aq-fs-btn{position:fixed;z-index:9999;bottom:max(14px,env(safe-area-inset-bottom,14px));left:max(12px,env(safe-area-inset-left,12px));width:44px;height:44px;border-radius:12px;border:1px solid #e8c876;background:linear-gradient(145deg,#4a2510,#1a0d08);color:#ffe3a4;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px #0009;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#aq-fs-btn:active{transform:scale(.92)}#aq-fs-toast{position:fixed;z-index:10000;bottom:max(68px,env(safe-area-inset-bottom,68px));left:max(8px,env(safe-area-inset-left,8px));max-width:min(280px,85vw);background:#2a160ef5;border:1px solid #e6bd72;border-radius:10px;color:#fff2ca;font:600 12px Cairo,Tahoma,sans-serif;padding:8px 12px;line-height:1.7;opacity:0;pointer-events:none;transition:opacity .3s}#aq-fs-toast.show{opacity:1}#aq-landscape-gate{display:none!important}body.aq-landscape-blocked{overflow:auto!important}</style><script id="aq-fs-js">(function(){if(document.getElementById("aq-fs-btn"))return;var b=document.createElement("button");b.id="aq-fs-btn";b.setAttribute("aria-label","ملء الشاشة");b.textContent="\u26f6";document.body.appendChild(b);var t=document.createElement("div");t.id="aq-fs-toast";document.body.appendChild(t);var tt=null;function showMsg(m){t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("show");},5000);}var iOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/i.test(navigator.userAgent)&&navigator.maxTouchPoints>1);function upd(){b.textContent=document.fullscreenElement?"\u22df":"\u26f6";b.setAttribute("aria-label",document.fullscreenElement?"خروج":"ملء الشاشة");}b.addEventListener("click",function(){if(document.fullscreenElement){document.exitFullscreen().then(upd).catch(function(){});}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen({navigationUI:"hide"}).then(upd).catch(function(){if(iOS)showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");else showMsg("اضغط F11 أو قائمة المتصفح لملء الشاشة");});}else if(document.documentElement.webkitRequestFullscreen){document.documentElement.webkitRequestFullscreen();upd();}else if(iOS){showMsg("على iPhone/iPad: زر المشاركة ثم إضافة إلى الشاشة الرئيسية");}else{showMsg("افتح اللعبة من Chrome لملء الشاشة");}});document.addEventListener("fullscreenchange",upd);document.addEventListener("webkitfullscreenchange",upd);})();</script>
 </body>
 </html>
+
 
